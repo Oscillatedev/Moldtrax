@@ -1,0 +1,174 @@
+﻿@model IEnumerable<Moldtrax.Models.tblSchedule>
+    @{ 
+        Layout = null;
+    }
+<style>
+   
+</style>
+<div class="card_body ">
+    <div class="table-con" id="table2">
+        <table class="table table-bordered table-responsive" id="inner_table_maintain">
+            <thead>
+                <tr>
+                    <th><input type="checkbox" id="MaintenenaceChkAll" value=""></th>
+                    <th>Date Noted</th>
+                    <th>Time</th>
+                    <th>Priority</th>
+                    <th>Action Item</th>
+                    <th>Cycles</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                    <tr>
+                        <td><input type="checkbox" id="ChkMaintenance" name="ChckMainName" class="Subcheckbox" value="@x.SchID"></td>
+                        <td>
+                            <input type="hidden" value="@x.SchID" id="SchID" />
+                            <input type="date" value="@Convert.ToDateTime(x.schDate).ToString("yyyy-MM-dd")" id="schDate" name="schDate" class="form-control">
+                        </td>
+                        <td>
+                            <input type="text" autocomplete="off" value="@Convert.ToDateTime(x.schTime).ToShortTimeString()" id="schTime" name="schTime" class="form-control">
+                        </td>
+                        <td>
+                            <input type="hidden" id="Priority" value="@x.schPriority" />
+                            <select id="schPriority" name="schPriority" class="form-control">
+                                @for (int i = 1; i <= 9; i++)
+                                {
+                                    <option>@i</option>
+                                }
+                            </select>
+                        </td>
+                        <td>
+                            <textarea id="schActionItem" autocomplete="off" name="schActionItem" class="Trbleditable">@x.schActionItem</textarea>
+                            @*<input type="text" value="@x.schActionItem" id="schActionItem" name="schActionItem" class="form-control Trbleditable" />*@
+                        </td>
+                        <td>
+                            <input type="text" value="@x.schCycles" autocomplete="off" id="schCycles" name="schCycles" class="form-control">
+                        </td>
+                        <td>
+                            <input type="hidden" value="@x.schStatus" id="StatusVal" />
+                            <select class="form-control" id="schStatus" name="schStatus">
+                                @foreach (var s in ViewBag.StatusVal)
+                                {
+                                    <option value="@s.Text">@s.Text</option>
+                                }
+                            </select>
+                            @*<input type="text" value="@x.schStatus" id="schStatus" name="schStatus" class="form-control">*@
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    </div>
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+<script>
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.Trbleditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+
+    $(function () {
+        $("#inner_table_maintain tbody tr").each(function () {
+            var row = $(this);
+            var Trouble;
+            var Date;
+            Trouble = row.find("TD").eq(3).find("#Priority").val();
+            row.find("TD").eq(3).find("#schPriority").val(Trouble);
+
+            Date = row.find("TD").eq(1).find("#MoldToolingDateOrdered").val();
+            if (Date == '0001-01-01') {
+                row.find("TD").eq(1).find("#MoldToolingDateOrdered").val('');
+            }
+            //var newdate = Date.split(' ')[0].split("/").reverse().join("-");
+            var st = row.find("TD").eq(6).find("#StatusVal").val();
+            row.find("TD").eq(6).find("#schStatus").val(st);
+            //row.find("TD").eq(10).find("#MoldToolingDateOrdered").val(newdate);
+        })
+    })
+
+    $(document).ready(function () {
+
+        $('#MaintenenaceChkAll').click(function () {
+            if ($(this).is(':checked'))
+                $('input[name="ChckMainName"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="ChckMainName"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="ChckMainName"].Subcheckbox').click(function () {
+            if ($('input:checkbox[name="ChckMainName"].Subcheckbox').length == $('input:checkbox[name="ChckMainName"].Subcheckbox:checked').length) {
+                $('input[name="ChckMainName"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="ChckMainName"].SelectAll').prop("checked", false);
+            }
+
+        })
+
+    })
+</script>

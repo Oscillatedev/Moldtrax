@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Moldtrax.Models.tblCategory>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="tblInspectCate">
+    @Html.Action("GetInspectData")
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#navchecksheet').addClass('actives');
+    });
+
+</script>

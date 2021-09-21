@@ -1,0 +1,151 @@
+﻿@model IEnumerable<Moldtrax.Models.DefectandCAChart>
+
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .code-cut {
+        /*overflow: auto;*/
+        display: inline-block;
+    }
+
+    body {
+        font: 90%/1.45em "Helvetica Neue", HelveticaNeue, Verdana, Arial, Helvetica, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        background-color: #fff;
+    }
+
+    .truncate {
+        max-width: 180px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+</style>
+<script src="~/Scripts/jquery.table2excel.js"></script>
+<div class="card box_design">
+    <div class="card_header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="main_top_head">Get Drill Report</h5>
+            </div>
+            <div class="col-md-6 text-right btn_css">
+                <button onclick="window.close()" class="back_btn">Back</button>
+                <button id="btnExport" onclick="fnExcelReport()" class="back_btn">Export to Excel</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <div class="row">
+            <div class="col-md-12" id="report_tables">
+                <div class="code-cut">
+                    <table id="MoldStopReasonCosts" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Mold <img src="~/images/sort.png" /></th>
+                                <th>Description <img src="~/images/sort.png" /></th>
+                                <th>Configuration <img src="~/images/sort.png" /></th>
+                                <th>Configuration #2 <img src="~/images/sort.png" /></th>
+                                <th>DoD <img src="~/images/sort.png" /></th>
+                                <th>Mold Start Date <img src="~/images/sort.png" /></th>
+                                <th>Mold Stop Date <img src="~/images/sort.png" /></th>
+                                <th>Stop Reason <img src="~/images/sort.png" /></th>
+                                <th>TroubleShooters Defect <img src="~/images/sort.png" /></th>
+                                <th>Defect Type <img src="~/images/sort.png" /></th>
+                                <th>Position <img src="~/images/sort.png" /></th>
+                                <th>Cavity ID <img src="~/images/sort.png" /></th>
+                                <th>Corrective Action <img src="~/images/sort.png" /></th>
+                                <th>Tooling Description <img src="~/images/sort.png" /></th>
+                                <th>CA Tech <img src="~/images/sort.png" /></th>
+                                <th>CA Date <img src="~/images/sort.png" /></th>
+                                <th>Qty <img src="~/images/sort.png" /></th>
+                                <th>Repair Date <img src="~/images/sort.png" /></th>
+                                <th>Repair Hours <img src="~/images/sort.png" /></th>
+                                <th>Labor Cost <img src="~/images/sort.png" /></th>
+                                <th>Tooling Cost <img src="~/images/sort.png" /></th>
+                                <th>Total Cost <img src="~/images/sort.png" /></th>
+                                <th>Cycle Count <img src="~/images/sort.png" /></th>
+                                <th>Repair Time <img src="~/images/sort.png" /></th>
+                                <th>Run Time Hours <img src="~/images/sort.png" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td>@x.Mold</td>
+                                    <td>@x.Description</td>
+                                    <td>@x.Configuration</td>
+                                    <td>@x.Configuration2</td>
+                                    <td>@x.DoD</td>
+                                    <td>@Convert.ToDateTime(x.MoldStartDate).ToShortDateString()</td>
+                                    <td>@Convert.ToDateTime(x.MoldStopDate).ToShortDateString()</td>
+                                    <td>@x.StopReason</td>
+                                    <td>@x.TroubleShootersDefect</td>
+                                    <td>@x.DefectType</td>
+                                    <td>@x.Position</td>
+                                    <td>@x.CavityID</td>
+                                    <td>@x.CorrectiveAction</td>
+                                    <td>@Html.Raw(x.ToolingDescription)</td>
+                                    <td>@x.CATech</td>
+                                    <td>@Convert.ToDateTime(x.CADate).ToShortDateString()</td>
+                                    <td>@x.QTY</td>
+                                    <td>@Convert.ToDateTime(x.RepairDate).ToShortDateString()</td>
+                                    <td>@x.RepairHours</td>
+                                    <td>@String.Format("{0:C}", x.LaborCost)</td>
+                                    <td>@String.Format("{0:C}", x.ToolingCost)</td>
+                                    <td>@String.Format("{0:C}", x.TotalCost)</td>
+                                    <td>@String.Format("{0:N0}", x.CycleCount)</td>
+                                    <td>@x.RepairTime</td>
+                                    <td>@x.RunTimeHours</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $('#MoldStopReasonCosts').DataTable({
+    //        "paging": false
+    //    });
+    //});
+
+    $(document).ready(function () {
+        var table = $('#MoldStopReasonCosts').DataTable({
+            "paging": false,
+            "aaSorting": [],
+            columnDefs: [{ targets: 13, className: "truncate" }],
+            createdRow: function (row) {
+                var td = $(row).find(".truncate");
+                td.attr("title", td.html());
+            }
+        });
+        $("#HeaderTop").hide();
+
+    });
+
+    function fnExcelReport() {
+        $("#MoldStopReasonCosts").table2excel({
+            // exclude CSS class
+            exclude: ".noExl",
+            name: "Worksheet Name",
+            filename: "Fastrax", //do not include extension
+            fileext: ".xls" // file extension
+        });
+    }
+
+</script>
+<script>
+    document.getElementById('report_tables').style.height = window.innerHeight - 100 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

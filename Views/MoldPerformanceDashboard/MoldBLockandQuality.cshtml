@@ -1,0 +1,196 @@
+﻿@model IEnumerable<Moldtrax.Models.DefectByMoldBlockandQuality>
+
+@{
+    ViewBag.Title = "MoldBLockandQuality";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="~/Scripts/jquery.table2excel.js"></script>
+<div class="card box_design">
+    <div class="card_header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="main_top_head">Mold Block and Quality</h5>
+            </div>
+            <div class="col-md-6 text-right btn_css">
+                <button onclick="window.close()" class="back_btn">Back</button>
+                <button id="btnExport" onclick="fnExcelReport()" class="back_btn">Export to Excel</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <div class="row">
+            <div class="col-md-12" id="report_tables">
+                <div class="code-cut">
+                    <table id="MoldBlockQuan" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Mold <img src="~/images/sort.png" /></th>
+                                <th>Description <img src="~/images/sort.png" /></th>
+                                <th>Configuration #1 <img src="~/images/sort.png" /></th>
+                                <th>Configuration #2 <img src="~/images/sort.png" /></th>
+                                <th>TroubleShooters Defects <img src="~/images/sort.png" /></th>
+                                <th>Type <img src="~/images/sort.png" /></th>
+                                <th>Blocked <img src="~/images/sort.png" /></th>
+                                <th>Quality <img src="~/images/sort.png" /></th>
+                                <th>Count <img src="~/images/sort.png" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td>@x.Mold</td>
+                                    <td>@x.Description</td>
+                                    <td>@x.Configuration</td>
+                                    <td>@x.Configuration2</td>
+                                    <td>@x.TroubleShootersDefects</td>
+                                    <td>@x.Type</td>
+                                    <td class="text-center">
+                                        @if (x.Blocked == true)
+                                        {
+                                            <input type="checkbox" checked disabled />
+                                            <p style="display:none;">Yes</p>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" disabled />
+                                            <p style="display:none;">No</p>
+                                        }
+
+                                    </td>
+                                    <td class="text-center">
+                                        @if (x.Quality == true)
+                                        {
+                                            <input type="checkbox" checked disabled />
+                                            <p style="display:none;">Yes</p>
+                                        }
+                                        else
+                                        {
+                                            <input type="checkbox" disabled />
+                                            <p style="display:none;">No</p>
+                                        }
+                                    </td>
+                                    <td class="num_right">@x.Count</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+    $.fn.dataTable.ext.order['dom-checkbox'] = function (settings, col) {
+        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+            return $('input', td).prop('checked') ? '1' : '0';
+        });
+    };
+
+
+    $(document).ready(function () {
+        var table = $("#MoldBlockQuan").DataTable({
+            "columnDefs": [
+                {
+                    "targets": [6, 7],
+                    "orderDataType": "dom-checkbox"
+                }
+            ],
+            "paging": false
+        });
+        $("#HeaderTop").hide();
+
+    });
+
+
+    //$(document).ready(function () {
+    //    $('#MoldBlockQuan').DataTable({
+    //        "paging": false,
+    //        columnDefs: [{
+    //            "targets": [6,7],
+    //            "orderDataType": "dom-checkbox"
+    //        }]
+    //    });
+    //});
+
+    function fnExcelReport() {
+        $("#MoldBlockQuan").table2excel({
+            // exclude CSS class
+            exclude: ".noExl",
+            name: "Worksheet Name",
+            filename: "Fastrax", //do not include extension
+            fileext: ".xls" // file extension
+        });
+    }
+
+
+    //function fnExcelReport()
+    //{
+    //    var model = new Array();
+
+    //    $("#MoldBlockQuan tbody tr").each(function () {
+
+    //        var row = $(this);
+    //        var Tooling = {};
+
+    //        Tooling.Mold = row.find("TD").eq(0).text();
+    //        Tooling.Description = row.find("TD").eq(1).text();
+    //        Tooling.Configuration = row.find("TD").eq(2).text();
+    //        Tooling.Configuration2 = row.find("TD").eq(3).text();
+    //        Tooling.TroubleShootersDefects = row.find("TD").eq(4).text();
+    //        Tooling.Type = row.find("TD").eq(5).text();
+    //        Tooling.Blocked = parseInt(row.find("TD").eq(6).text();
+    //        Tooling.Quality = row.find("TD").eq(7).text();
+    //        Tooling.Count = row.find("TD").eq(8).text();
+    //        model.push(Tooling);
+
+    //    })
+
+    //    const xls = new xlsExport(data, title);
+
+
+    //}
+
+
+    //function fnExcelReport() {
+    //    var tab_text = "<table border='2px'><tr bgcolor='#87AFC6'>";
+    //    var textRange; var j = 0;
+    //    tab = document.getElementById('MoldBlockQuan'); // id of table
+
+    //    for (j = 0; j < tab.rows.length; j++) {
+    //        tab_text = tab_text + tab.rows[j].innerHTML + "</tr>";
+    //        //tab_text=tab_text+"</tr>";
+    //    }
+
+    //    tab_text = tab_text + "</table>";
+    //    tab_text = tab_text.replace(/<A[^>]*>|<\/A>/g, "");//remove if u want links in your table
+    //    tab_text = tab_text.replace(/<img[^>]*>/gi, ""); // remove if u want images in your table
+    //    tab_text = tab_text.replace(/<input[^>]*>|<\/input>/gi, ""); // reomves input params
+
+    //    var ua = window.navigator.userAgent;
+    //    var msie = ua.indexOf("MSIE ");
+
+    //    if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./))      // If Internet Explorer
+    //    {
+    //        txtArea1.document.open("txt/html", "replace");
+    //        txtArea1.document.write(tab_text);
+    //        txtArea1.document.close();
+    //        txtArea1.focus();
+    //        sa = txtArea1.document.execCommand("SaveAs", true, "Say Thanks to Sumit.xls");
+    //    }
+    //    else                 //other browser not tested on IE 11
+    //        sa = window.open('data:application/vnd.ms-excel,' + encodeURIComponent(tab_text));
+
+    //    return (sa);
+    //}
+</script>
+
+<script>
+    document.getElementById('report_tables').style.height = window.innerHeight - 100 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

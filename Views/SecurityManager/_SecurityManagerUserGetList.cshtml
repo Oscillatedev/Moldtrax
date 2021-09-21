@@ -1,0 +1,424 @@
+﻿@model IEnumerable<Moldtrax.Models.ezy_Users>
+@{
+    int RoleID = 2;
+
+    if (!string.IsNullOrWhiteSpace(Session["RoleID"].ToString()))
+    {
+        RoleID = Convert.ToInt32(Session["RoleID"]);
+    }
+ }
+
+<style>
+    .modal-dialog {
+    position: static;
+}
+    #myModal_sm .card_header h4 {
+        font-size: 18px;
+        padding: 0 10px;
+    }
+
+    .Short {
+        width: 100%;
+        background-color: #dc3545;
+        margin-top: 5px;
+        height: 3px;
+        color: #dc3545;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .Weak {
+        width: 100%;
+        background-color: #ffc107;
+        margin-top: 5px;
+        height: 3px;
+        color: #ffc107;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .Good {
+        width: 100%;
+        background-color: #28a745;
+        margin-top: 5px;
+        height: 3px;
+        color: #28a745;
+        font-weight: 500;
+        font-size: 12px;
+    }
+
+    .Strong {
+        width: 100%;
+        background-color: #d39e00;
+        margin-top: 5px;
+        height: 3px;
+        color: #d39e00;
+        font-weight: 500;
+        font-size: 12px;
+    }  
+</style>
+
+<div class="card_inner_block">
+    <div class="card_header">
+        <h5>User:</h5>
+    </div>
+    <div class="card_body">
+        <div class="row">
+            @*@if(RoleID == 1)
+            {
+            <div class="col-md-12">
+                <label>Company ID:</label>
+                <select id="SelectedCompany" class="form-control">
+                    <option value="0">--Select User--</option>
+                    @foreach (var x in Model)
+                    {
+                        <option value="@x.CompanyID">@x.CompanyName</option>
+                    }
+                </select>
+            </div>
+            }*@
+            <div class="col-md-12">
+                <label>ID:</label>
+                <select id="SelectedUser" class="form-control">
+                    <option value="0">--Select User--</option>
+                    @foreach (var x in Model)
+                    {
+                        <option value="@x.UserID">@x.UserID  &nbsp;&nbsp; | &nbsp;&nbsp;  @x.FullName</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-12 btn_css select_full">
+                <input type="button" class="add_btn" value="New" data-toggle="modal" data-target="#myModal_sm" />
+                <input type="button" class="del_btn" onclick="DeleteSelectedUser()" value="Delete" />
+                <input type="button" class="create_btn" onclick="ChangeUserVal()" value="Change" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div class="modal fade" id="myModal_sm">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <div class="card_header">
+                    <h4>Add New User</h4>
+                </div>
+                @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+            </div>
+
+            <form id="UserAdd" autocomplete="off">
+                <!-- Modal body -->
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>User ID</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="text" autocomplete="off" id="UserID" name="UserID" class="form-control" />
+                        </div>
+                        <span id="UserIdErrMsg" style="display:none;">User ID is required.</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Full Name</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="text" autocomplete="off" id="FullName" name="FullName" class="form-control" />
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <span id="FullNameErrMsg" style="display:none;">Full Name is required.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Password</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="password" autocomplete="off" id="Password" name="Password" class="form-control" />
+                            <div id="strengthMessage"></div>
+                        </div>
+                        <span id="PassErrMsg" style="display:none;">Password is required.</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Confirm Password</label>
+                        </div>
+                        <div class="col-md-12">
+                            <input type="password" autocomplete="off" id="CnfrmPass" class="form-control" />
+                        </div>
+                        <span id="ErrCnfrmMsg" style="display:none;">Password do not match.</span>
+                        <span id="ErrCnfrmMsgRq" style="display:none;">Confirm Password is Required.</span>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label>Language</label>
+                        </div>
+                        <div class="col-md-12">
+                            <select id="Language">
+                                <option value="en">English</option>
+                                <option value="es">Spanish</option>
+                                <option value="de">German</option>
+                                <option value="it">Italian</option>
+                                <option value="pt">Portuguese</option>
+                                <option value="zh">Simplified Chinese</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="modal-footer">
+                    <div class="btn_css">
+                    <input type="submit" value="Create" class="add_btn" />
+                    <input type="button" class="del_btn" id="CloseBtn" data-dismiss="modal" value="Close" />
+                        </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+    $(document).ready(function () {  
+
+
+        $('#Password').keyup(function () {  
+            $('#strengthMessage').html(checkStrength($('#Password').val()))  
+         })  
+
+    function checkStrength(password) {  
+        var strength = 0  
+        if (password.length < 6) {  
+            $('#strengthMessage').removeClass()  
+            $('#strengthMessage').addClass('Short')  
+            return 'Too short'  
+        }  
+        if (password.length > 7) strength += 1  
+        // If password contains both lower and uppercase characters, increase strength value.  
+        if (password.match(/([a-z].*[A-Z])|([A-Z].*[a-z])/)) strength += 1  
+        // If it has numbers and characters, increase strength value.  
+        if (password.match(/([a-zA-Z])/) && password.match(/([0-9])/)) strength += 1  
+        // If it has one special character, increase strength value.  
+        if (password.match(/([!,%,&,@@,#,$,^,*,?,_,~])/)) strength += 1  
+        // If it has two special characters, increase strength value.  
+        if (password.match(/(.*[!,%,&,@@,#,$,^,*,?,_,~].*[!,%,&,@@,#,$,^,*,?,_,~])/)) strength += 1  
+        // Calculated strength value, we can return messages  
+        // If value is less than 2  
+        if (strength < 2) {  
+            $('#strengthMessage').removeClass()  
+            $('#strengthMessage').addClass('Weak')  
+            return 'Weak'  
+        } else if (strength == 2) {  
+            $('#strengthMessage').removeClass()  
+            $('#strengthMessage').addClass('Good')  
+            return 'Good'  
+        } else {  
+            $('#strengthMessage').removeClass()  
+            $('#strengthMessage').addClass('Strong')  
+            return 'Strong'  
+        }  
+    }  
+});  
+
+
+
+    $("#CnfrmPass").focusout(function()
+    {
+        var Cnfrmpass = $("#CnfrmPass").val();
+        var pass = $("#Password").val();
+
+        if (Cnfrmpass != pass) {
+            $("#ErrCnfrmMsg").show();
+        }
+        else
+        {
+            $("#ErrCnfrmMsg").hide();
+        }
+    })
+
+    //$("#SelectedCompany").change(function ()
+    //{
+    //    debugger
+    //    var CID = $("#SelectedCompany").val();
+    //    $.ajax({
+    //        url: '/SecurityManager/GetUserList?CID=' + CID,
+    //        type: 'Post',
+    //        success: function (data)
+    //        {
+    //            $("#SelectedUser").empty();
+
+    //            $("#SelectedUser").append("<option value='0'>--Select User--</option>");
+    //            $.each(data, function (i, el)
+    //            {
+    //                var td = "<option value='" + el.UserID + "'>" + el.FullName + "</option>"
+    //                $("#SelectedUser").append(td);
+    //            })
+
+    //        },
+    //        error: function ()
+    //        {
+
+    //        }
+    //    })
+    //})
+
+
+    $("#UserAdd").submit(function (e)
+    {
+        e.preventDefault();
+
+        var Userid = $("#UserID").val();
+        var pass = $("#Password").val();
+        var FullName = $("#FullName").val();
+        var CID = $("#MainCompanyID").val();
+        var language = $("#Language").val();
+
+        var Cnfrmpass = $("#CnfrmPass").val();
+        var pass = $("#Password").val();
+
+        if (Userid == null || Userid == "") {
+            $("#UserIdErrMsg").show();
+            return false;
+        }
+        else if (pass == null || pass == "") {
+            $("#PassErrMsg").show();
+            return false;
+        }
+        else if (FullName == null || FullName == "") {
+            $("#FullNameErrMsg").show();
+            return false;
+        }
+        else if (Cnfrmpass == null || Cnfrmpass == "")
+        {
+            $("#ErrCnfrmMsgRq").show();
+            return false;
+        }
+
+        if (Cnfrmpass != pass) {
+            $("#ErrCnfrmMsg").show();
+            return false;
+        }
+
+        //var data = $("#UserAdd").serialize();
+        var obj = new Object();
+        obj.UserID = Userid;
+        obj.Password = pass;
+        obj.FullName = FullName;
+        obj.CompanyID = CID;
+        obj.DefaultLanguage = language;
+
+        $.ajax({
+            url: '/SecurityManager/AddUser',
+            type: 'Post',
+            data: { obj: obj },
+            success: function (data)
+            {
+                Swal.fire({
+                    title: "Success",
+                    text: 'User saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $(".modal-backdrop").hide();
+                    $("#ShowUserList").html(data);
+                })
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    function DeleteSelectedUser()
+    {
+        var User = $("#SelectedUser").val();
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it'
+        }).then((result) => {
+            if (result.value) {
+                $(".loader__wrap").show();
+
+                $.ajax({
+                    url: '/SecurityManager/DeleteUser?Userid=' + User,
+                    type: 'Post',
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Success",
+                            text: 'User has been Deleted.',
+                            type: "success"
+                        }).then(function () {
+                            //$(".modal-backdrop").hide();
+                            $("#ShowUserList").html(data);
+                            $("#MemberTab").empty();
+                            $("#MemberTab2").empty();
+                        })
+                    },
+                    error: function ()
+                    {
+
+                    }
+                })
+            }
+        })
+    }
+
+
+    function ChangeUserVal()
+    {
+        var Userid = $("#SelectedUser").val();
+
+        $.ajax({
+            url: '/SecurityManager/ChangeUserVal?Userid=' + Userid,
+            type: 'Get',
+            success: function (data)
+            {
+                $("#UserID").val(data.UserID)
+                $("#FullName").val(data.FullName);
+                $("#Password").val(data.Password);
+                $("#Language").val(data.DefaultLanguage);
+                $("#myModal_sm").modal();
+            },
+            error: function ()
+            {
+
+            }
+        })
+
+    }
+
+    $("#SelectedUser").change(function ()
+    {
+        debugger;
+        var id = $("#SelectedUser").val();
+        $.ajax({
+            url: '/SecurityManager/GetMemberandGroups?Userid=' + id,
+            type: 'post',
+            success: function (data)
+            {
+                debugger;
+                $("#ShowGroupsMeme").html(data);
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+
+
+    })
+
+</script>

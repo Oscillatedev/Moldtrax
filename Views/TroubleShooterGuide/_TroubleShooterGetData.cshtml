@@ -1,0 +1,132 @@
+﻿@model IEnumerable<Moldtrax.Models.tblTSGuide>
+
+<style>
+    .MyFile {
+        visibility: hidden;
+    }
+    /* width */
+.editor_div textarea::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+.editor_div textarea::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 5px grey; 
+  border-radius: 10px;
+}
+ 
+/* Handle */
+.editor_div textarea::-webkit-scrollbar-thumb {
+  background: #343a4080; 
+  border-radius: 10px;
+}
+
+/* Handle on hover */
+.editor_div textarea::-webkit-scrollbar-thumb:hover {
+  background: #343a4080; 
+}
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+<script src="~/Scripts/jquery-3.3.1.js"></script>
+<br>
+<input type="button" onclick="CreateTroubleShooter()" value="Add" />
+<input type="button" value="Edit" />
+<input type="button" value="Delete" />
+<br>
+<div id="TroubleHtml">
+    <table class="table table-responsive table-bordered table-condensed table-striped" id="table_trouble">
+        <thead>
+            <tr>
+                <th>No Type</th>
+                <th>Defect Term</th>
+                <th>Detect or Task Explaination</th>
+                <th>Probable Cause</th>
+                <th>Corrective Action</th>
+                <th>Preventative Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td class="table_first_div">
+                        <div>
+                            <div class="w-100">
+                                <select>
+                                    <option></option>
+                                    @foreach (var i in ViewBag.NoType)
+                                    {
+                                        <option value="@i.Text">@i.Text</option>
+                                    }
+                                </select>
+                            </div>
+                            @*@Html.DropDownListFor(x.TSType, ViewBag.NoType as SelectList, "--Select Runner Type--", new { htmlAttributes = new { @class = "form-control" } })*@
+                            <div class="w-100">
+                                <button onclick="OpenImg()" class="add_btn">Add Image</button>
+                            </div>
+                            <div class="w-100">
+                                <button onclick="DelImg()" class="del_btn">Delete Image</button>
+                            </div>
+                            <div class="w-100">
+                                <input type="file" value="Add Image" id="AddImg" class="MyFile" />
+                            </div>
+                            <div class="w-100">
+                                <input type="file" value="Add Image" id="DelImg" class="MyFile" />
+                            </div>
+                        </div>
+                    </td>
+                    <td class="table_sec_div">
+                        <div class="w-100">
+                            <input type="text" id="DefectTerm" value="@x.TSDefects" class="form-control" />
+                            <div id="UpdatedImg">
+                                <img src="~/TroubleShooterImage/@x.ImagePath" />
+                                @*@x.TSImage*@
+                                @*<img id="myImg" src="~/Content/images/logo.png" style="width:100%;max-width:300px" />*@
+                            </div>
+                        </div>
+                    </td>
+                    <td class="table_third_div">
+                        <div class="editor_div">
+                            <textarea rows="10" class="textarea-editor">@x.TSExplanation</textarea>
+                        </div>
+                    </td>
+                    <td class="table_fourth_div">
+                        <div class="editor_div">
+                            <textarea rows="10" class="textarea-editor">@x.TSProbCause</textarea>
+                        </div>
+                    </td>
+                    <td class="table_fifth_div">
+                        <div class="editor_div">
+                            <textarea rows="10" class="textarea-editor">@x.TSSolution</textarea>
+                        </div>
+                    </td>
+                    <td class="table_six_div">
+                        <div class="editor_div">
+                            <textarea rows="10" class="textarea-editor">@x.TSPreventAction</textarea>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<!-- The Modal -->
+<div id="imgModal" class="modal_img">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+</div>
+
+<script src="~/Scripts/Trouble Shooter/TroubleShooter.js"></script>
+
+<script>
+    //function CreateTroubleShooter()
+    //{
+    //    var htmlstring = 
+
+
+    //}
+</script>
+<script>
+    document.getElementById('table').style.height = window.innerHeight - 200 + 'px';
+    window.onresize = autoResizeDiv;
+</script>

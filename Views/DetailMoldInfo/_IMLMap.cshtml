@@ -1,0 +1,166 @@
+﻿@model Moldtrax.Models.tblMoldData
+@{
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+ }
+
+
+@*<br />*@
+<style>
+    .iamge_full_div .table-con {
+        height: 512px;
+        /*overflow: hidden;*/
+    }
+
+
+    /*#loading {
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        position: fixed;
+        display: block;
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+        text-align: center;
+        display : none;
+    }*/
+
+    #loading {
+        width: 100%;
+        height: 100%;
+        /* top: 0; */
+        /* left: 0; */
+        position: static;
+        display: block;
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+        text-align: center;
+        display: none;
+    }
+
+    #loading-image {
+        position: absolute;
+        top: 32%;
+        left: 40%;
+        z-index: 100;
+        width: 25%;
+    }
+
+</style>
+<div class="row">
+    <div class="col-md-12 text-right btn_css" id="Container">
+        <button class="add_btn" onclick="AddIMLImg()">Add Image</button>
+        <input type="file" id="IMLImg" onchange="FChange()" onclick="this.value = null;"  class="IMLImg" style="display:none" />
+        <button class="del_btn" id="DelIMLImg">Delete Image</button>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 iamge_full_div">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>IML Map</h5>
+            </div>
+            <div class="card_body table-con" id="img_responsive">
+                @if (Model.MoldMapPath != null)
+                {
+                    <img id="UplaodImlImg"  src="@Model.MoldMapPath" />
+                }
+
+                else
+                {
+                    <img id="UplaodImlImg" />
+                }
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="loading">
+    <img id="loading-image" src="~/images/Loader3.gif" alt="Loading..." />
+</div>
+
+
+<script>
+
+   if (@Permission == 3)
+    {
+        //$(".add_btn").hide();
+        //$("#DelIMLImg").hide();
+    }
+    else if (@Permission == 4 || @Permission == 5 || @Permission == 6 )
+    {
+        $(".add_btn").hide();
+        $("#DelIMLImg").hide();
+    }
+
+    function AddIMLImg()
+    {
+        $("#IMLImg").click();
+    }
+
+    function FChange()
+    {
+        $("#loading").show();
+        debugger;
+        var file = document.getElementById("IMLImg").files[0];
+       
+        jQuery.ajaxSettings.traditional = true;
+
+        var formData = new FormData();
+        formData.append(file.name, file);
+
+        var MoldDataID = '@ViewBag.MoldDataID';
+
+        $.ajax({
+            url: '/DetailMoldInfo/SaveIMLImg?MoldID=' + MoldDataID,
+            type: 'Post',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data)
+            {
+                $("#MoldTb").html(data);
+            },
+
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+
+
+    $("#DelIMLImg").click(function () {
+        debugger;
+        $("#UplaodImlImg").attr('src', '').fadeIn();
+       var MoldDataID = '@ViewBag.MoldDataID';
+
+        $.ajax({
+            url: '/DetailMoldInfo/DeleteIMLIML?MoldID=' + MoldDataID,
+            type: 'Post',
+            success: function () { },
+            error: function () { }
+
+        })
+    })
+</script>
+
+<script>
+    document.getElementById('img_responsive').style.height = window.innerHeight - 203 + 'px';
+</script>

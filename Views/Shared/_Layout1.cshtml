@@ -1,0 +1,304 @@
+﻿@using Microsoft.AspNet.Identity
+@using System.Configuration;
+@{
+    string LoginUserName = "";
+    HttpCookie nameCookie = Request.Cookies["LoginMainUser"];
+    string name = nameCookie != null ? nameCookie.Value.Split('=')[1] : "undefined";
+    if (name != "undefined")
+    {
+        LoginUserName = name;
+    }
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoldTrax</title>
+    <link rel="icon" type="image/png" href="/images/logo_small.png" />
+    <link href="~/jquery files/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/jquery files/jquery.min.js"></script>
+    <script src="~/jquery files/popper.min.js"></script>
+    <script src="~/jquery files/bootstrap.min.js"></script>
+    <link href="~/jquery files/css1.css" rel="stylesheet" />
+    <link href="~/jquery files/css2.css" rel="stylesheet" />
+    <link href="~/jquery files/css3.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <script src="~/jquery files/all.js"></script>
+    <script src="~/Content/js/feather.js"></script>
+    <link href="~/jquery files/css.css" rel="stylesheet" />
+    <script src="~/jquery files/b3514468b8.js"></script>
+    <script src="~/Scripts/toastr.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <link href="~/Content/toastr.min.css" rel="stylesheet" />
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <script src="~/jquery files/sweetalert2@8.js"></script>
+    @*<link href="~/Content/Datatable/bootstrap.css" rel="stylesheet" />*@
+    <link href="~/Content/Datatable/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <script src="~/Scripts/DatatableJs/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/DatatableJs/jquery.dataTables.min.js"></script>
+    <script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://use.typekit.net/sxl2hik.css">
+    <style>
+        nav.navbar.navbar-expand-lg.navbar-light.bg-light {
+            width: 100%;
+        }
+
+        #sidebar ul.components {
+            margin-top: 6em;
+        }
+        .pcoded-inner-content {
+    padding: 0px 20px 0 20px!important;
+}
+
+        .main_error_msg {
+            color: #d71c33;
+            letter-spacing: 1px;
+            font-size: 20px;
+            font-weight: 900;
+            font-style: oblique;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header">
+                @*<h3>Moldtrax</h3>*@
+                <a href="#"><img src="~/Content/images/logo.png" /></a>
+                <strong><img class="small_logo" src="~/images/logo_small.png" /></strong>
+            </div>
+            <ul class="list-unstyled components" id="active_id">
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navDetail">
+                        <i data-feather="file-text" data-toggle="tooltip" title="Detail Mold Information"></i>
+                        <span class="slide_no">&nbsp; Detail Mold Information</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navMaint">
+                        <i data-feather="compass" data-toggle="tooltip" title="Maintenance Tracking"></i>
+                        <span class="slide_no">&nbsp; Maintenance Tracking</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navMaster">
+                        <i data-feather="calendar" data-toggle="tooltip" title="Master Schedule"></i>
+                        <span class="slide_no">&nbsp; Master Schedule</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navCompany">
+                        <i data-feather="trello" data-toggle="tooltip" title="Company Information"></i>
+                        <span class="slide_no">&nbsp; Company Information</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#sub_menu" data-toggle="modal" data-target="#myModalLogin" class="active_btn" data-toggle="collapse" id="navAdmin">
+                        <i data-feather="user" data-toggle="tooltip" title="Administration"></i>
+                        <span class="slide_no">&nbsp; Administration</span>
+                    </a>
+                    @*<ul class="list-unstyled collapse" id="sub_menu">
+                        <li>
+                            <a href="#" class="active_btn">
+                                <i data-feather="shield" data-toggle="tooltip" title="Security Manager"></i>
+                                <span class="slide_no">&nbsp; Security Manager</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#inner_sub_menu" class="dropdown-toggle active_btn" data-toggle="collapse" aria-expanded="true">
+                                <i data-feather="list" data-toggle="tooltip" title="All Drop Down Lists"></i>
+                                <span class="slide_no">&nbsp; All Drop Down Lists</span>
+                            </a>
+                            <ul class="list-unstyled collapse" id="inner_sub_menu">
+                                <li>
+                                    <a href="#" class="active_btn">
+                                        <i data-feather="chevron-right" data-toggle="tooltip" title="Detail Mold Lists"></i>
+                                        <span class="slide_no">&nbsp; Detail Mold Lists</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#" class="active_btn">
+                                        <i data-feather="chevron-right" data-toggle="tooltip" title="Maintenance Tracking Lists"></i>
+                                        <span class="slide_no">&nbsp; Maintenance Tracking Lists</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#" class="active_btn">
+                                <i data-feather="package" data-toggle="tooltip" title="Enter License Code"></i>
+                                <span class="slide_no">&nbsp; Enter License Code</span>
+                            </a>
+                        </li>
+                    </ul>*@
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navAlert">
+                        <i data-feather="bell" data-toggle="tooltip" title="Maintenance Alert Stats"></i>
+                        <span class="slide_no">&nbsp; Maintenance Alert Stats</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navPerform">
+                        <i data-feather="home" data-toggle="tooltip" title="Mold Performance Dashboard"></i>
+                        <span class="slide_no">&nbsp; Mold Performance Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navMaintain">
+                        <i data-feather="sliders" data-toggle="tooltip" title="Maintenance Efficiency Dashboard"></i>
+                        <span class="slide_no">&nbsp; Maintenance Efficiency Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navGuide">
+                        <i data-feather="user-check" data-toggle="tooltip" title="User Guide"></i>
+                        <span class="slide_no">&nbsp; User Guide</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navReport">
+                        <i data-feather="clipboard" data-toggle="tooltip" title="Reports"></i>
+                        <span class="slide_no">&nbsp; Reports</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn" id="navReport">
+                        <i data-feather="clipboard" data-toggle="tooltip" title="Reports"></i>
+                        <span class="slide_no">&nbsp; Checksheet</span>
+                    </a>
+                </li>
+                <li>
+                            <a href="#" data-toggle="modal" data-target="#myModalLogin" class="active_btn">
+                                <i data-feather="power" data-toggle="tooltip" title="Exit"></i>
+                                <span class="slide_no">&nbsp; Exit</span>
+                            </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i data-feather="more-horizontal"></i>
+                    </button>
+                    <ul class="navbar-left">
+                        <li class="right_side_li">
+                            <div id="MainTitleName" class="dropdown-primary">
+                                <p class="main_error_msg">@TempData["ErrorMsg"]</p>
+                            </div>
+                        </li>
+                    </ul>
+                    <ul class="nav-right">
+                        <li class="right_side_li">
+                            <div class="dropdown-primary">
+                                @*<img src="~/Content/images/profile1.jpg" class="profile_img" alt="User-Profile-Image" />*@
+                                <span>@*<strong>@LoginUserName</strong>*@</span>
+                            </div>
+                        </li>
+                        <li class="right_side_li">
+                            <button type="button" class="login_btn" data-toggle="modal" data-target="#myModalLogin">Login</button>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            <div class="image_sec">
+               
+                @*<img src="~/images/MoldTrax-SplashScreen-2019_v11_FN_fullsize.jpg" />*@
+            </div>
+            <div class="pcoded-inner-content">
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <div class="page-body report_body">
+                            <div class="row report_row">
+                                <div class="col-md-12 report_col">
+                                    @RenderBody()
+                                    @*<footer>
+                                            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                                        </footer>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Mold Info", "Index", "DetailMoldInfo")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div>*@
+
+    <script>
+        $(function () {
+            $(".Datepicker").datepicker({
+                dateFormat: 'mm/dd/yy',
+                showOn: "both",
+                buttonImage: "https://jqueryui.com/resources/demos/datepicker/images/calendar.gif",
+                buttonImageOnly: true
+            });
+        });
+
+
+
+        document.getElementById('table').addEventListener("scroll", function () {
+            var translate = "translate(0," + this.scrollTop + "px)";
+            var myElements = this.querySelectorAll("thead");
+            //myElements.style.border = '2px solid red';
+            for (var i = 0; i < myElements.length; i++) {
+                myElements[i].style.transform = translate;
+            }
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    <script>
+        feather.replace()
+    </script>
+
+    <script>
+        var header = document.getElementById("active_id");
+        var btns = header.getElementsByClassName("active_btn");
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function () {
+                var current = document.getElementsByClassName("actives");
+                current[0].className = current[0].className.replace(" actives", "");
+                this.className += " actives";
+            });
+        }
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Moldtrax.Models.MaintenanceAlertStats>
+@using ReportViewerForMvc;
+
+@{
+    ViewBag.Title = "ViewData";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    thead th:first-child {
+        width: 74px;
+        padding: .75rem;
+    }
+</style>
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)

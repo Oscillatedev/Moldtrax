@@ -1,0 +1,54 @@
+﻿@{ 
+    Layout = null;
+}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card_header">
+            <h5>Add Links</h5>
+        </div>
+    </div>
+
+</div>
+<div class="" id="">
+    <div class="col-md-12">
+        <table id="Linktbl" class="table table-bordered table-responsive">
+            <thead>
+                <tr>
+                    <th><input type='checkbox' class='SelectAll' id='QuotecheckallLink' value="0" name='checkname' /></th>
+                    <th class="th_tt1">Category</th>
+                    <th class="th_tt2">Name</th>
+                    <th class="th_tt3">Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="link_td1"><input type="checkbox" value='' class="Subcheckbox" name="checknameLink" /></td>
+                    <td class="link_td2">
+                        <input type="hidden" value="" class="form-control" id="DocID" name="DocID" />
+                        <input type="hidden" id="DocSection" class="form-control" name="DocSection" value="" />
+                        <input type="hidden" value="" class="form-control" id="DocMoldID" name="DocMoldID" />
+                        <select id="Category" name="Category" class="form-control">
+                            <option></option>
+                            @foreach (var i in ViewBag.CategoryVal)
+                            {
+                                <option value="@i.Text">@i.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="link_td3">
+                        <input type="text" autocomplete="off" value="" id="DocName" name="DocName" class="form-control" />
+                    </td>
+                    <td class="link_td4">
+                        <input type="text" value="" autocomplete="off" id="DocLink" name="DocLink" class="form-control" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-right btn_css">
+        <input type="submit" id="btnsubmit" value="Save" class="add_btn" />
+        <input type="button" class="del_btn" id="CnclBtn" value="Cancel" />
+    </div>
+</div>

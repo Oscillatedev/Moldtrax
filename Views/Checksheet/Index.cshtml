@@ -1,0 +1,775 @@
+﻿@model IEnumerable<Moldtrax.ViewMoldel.tblCategoryViewModel>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+        .check_header {
+            background: #808080;
+            padding: 8px;
+            color: #fff;
+        }
+
+            .check_header label {
+                color: #eaea6b;
+                font-size: 20px;
+                text-align: center;
+            }
+
+            .check_header .form-control, .check_header label {
+                margin: 0;
+            }
+
+        .green {
+            background: #22b14c;
+        }
+
+        .red {
+            background: #ed1c24;
+        }
+
+        .yellow {
+            background: #fff200;
+        }
+
+        #last_shot_inspection, #wear_check, #check_For_damage, #task_checkout, #last_shot_inspection2 {
+            display: table;
+            margin: 0;
+        }
+
+            #last_shot_inspection td, #wear_check td, #check_For_damage td, #task_checkout td {
+                padding: 0 3px;
+                margin: 0;
+                border-left: none;
+                border-right: none;
+                vertical-align: middle;
+            }
+
+            #last_shot_inspection .form-control, #wear_check .form-control, #check_For_damage .form-control, #task_checkout .form-control {
+                height: 26px;
+                border: none;
+                margin: 0;
+            }
+
+            #last_shot_inspection th, #wear_check th, #check_For_damage th, #task_checkout th {
+                vertical-align: middle;
+                text-align: center;
+                font-size: 12px;
+                color: white;
+                font-weight: 500;
+                padding: 4px;
+                border-top: none;
+                background: rgb(52, 58, 64);
+                border-bottom: none;
+                border-left: none;
+            }
+
+            #last_shot_inspection thead th:first-child, #wear_check thead th:first-child, #check_For_damage thead th:first-child, #task_checkout thead th:first-child {
+                width: 230px;
+                padding: 4px;
+            }
+
+            #last_shot_inspection thead th:nth-child(2), #wear_check thead th:nth-child(2), #check_For_damage thead th:nth-child(2), #task_checkout thead th:nth-child(2) {
+                width: 160px;
+            }
+
+            #last_shot_inspection thead th:nth-child(3), #wear_check thead th:nth-child(3), #check_For_damage thead th:nth-child(3), #task_checkout thead th:nth-child(3) {
+                width: 230px;
+            }
+
+            #last_shot_inspection thead th:nth-child(4), #wear_check thead th:nth-child(4), #check_For_damage thead th:nth-child(4), #task_checkout thead th:nth-child(4) {
+                width: 160px;
+            }
+
+            #last_shot_inspection thead th:nth-child(5), #wear_check thead th:nth-child(5), #check_For_damage thead th:nth-child(5), #task_checkout thead th:nth-child(5) {
+                width: 230px;
+            }
+
+            #last_shot_inspection thead th:nth-child(6), #wear_check thead th:nth-child(6), #check_For_damage thead th:nth-child(6), #task_checkout thead th:nth-child(6) {
+                width: 160px;
+            }
+
+            #last_shot_inspection thead th:nth-child(7), #wear_check thead th:nth-child(7), #check_For_damage thead th:nth-child(7), #task_checkout thead th:nth-child(7) {
+                width: 230px;
+            }
+
+            #last_shot_inspection2 thead th:nth-child(2), #last_shot_inspection2 thead th:nth-child(4), #last_shot_inspection2 thead th:nth-child(6) {
+                width: 160px;
+                display: inline-flex;
+            }
+
+            #last_shot_inspection2 thead th:first-child, #last_shot_inspection2 thead th:nth-child(3), #last_shot_inspection2 thead th:nth-child(5), #last_shot_inspection2 thead th:nth-child(7) {
+                width: 205px;
+            }
+
+            #last_shot_inspection2 th {
+                vertical-align: middle;
+                text-align: center;
+                font-size: 12px;
+                font-weight: 500;
+                padding: 4px;
+                border-top: none;
+                border-bottom: none;
+                border-left: none;
+                border: none !important;
+            }
+
+        table#last_shot_inspection2 {
+            border: none;
+        }
+
+        #last_shot_inspection2 th select {
+            height: 26px;
+            /*width: 150px;*/
+        }
+
+        .table-con.check_tab1 {
+            height: 200px;
+            padding: 0;
+        }
+
+        .table-con.check_tab2 {
+            height: 285px;
+            padding: 0;
+        }
+
+        .table-con.check_tab3 {
+            height: 173px;
+            padding: 0;
+        }
+
+        .table-con.check_tab4 {
+            height: 313px;
+            padding: 0;
+        }
+
+        .card_header h5 {
+            line-height: 10px;
+            font-style: italic;
+        }
+        /*.checkout_second_sec .form-control {
+        width: 75%;
+        float: left;
+    }*/
+        /*.checkout_second_sec label {
+        width: 24%;
+        float: left;
+    }*/
+        /*.inspected_box label {
+            width: 30%;
+            float: left;
+        }
+        .inspected_box .form-control {
+            width: 70%;
+            float: left;
+        }*/
+        .col-md-8.btn_css.text-right {
+            margin-top: 3px;
+        }
+
+        .textarea_box textarea.form-control {
+            margin-top: 10px;
+            min-height: 200px;
+            height: auto;
+            display: initial;
+        }
+
+        .w-33 {
+            width: 30%;
+            float: left;
+        }
+
+            .w-33 label {
+                display: block;
+                font-size: 14px;
+                color: white;
+            }
+
+        .date_check {
+            text-align: center;
+        }
+
+            .date_check .checkbox-inline {
+                width: 14px;
+                height: 14px;
+                margin-left: 7px;
+                margin-right: 7px;
+                vertical-align: bottom;
+            }
+
+        input[type=date] {
+            height: 24px;
+            margin: 0;
+        }
+
+        .card_header h5:after {
+            display: none;
+        }
+
+        .table-con {
+            border-bottom: 1px solid #c6c6c6;
+        }
+
+        .table-con {
+            border-bottom: 1px solid #c6c6c6;
+            margin-bottom: 15px;
+        }
+
+        .green, .yellow, .red {
+            width: 134px;
+            height: 20px;
+        }
+
+        .checkout_btn button {
+            background: #d5e2f6;
+            color: #231f20;
+            border: 1px solid #231f201a;
+            padding: 4px 12px;
+            font-size: 13px;
+            font-weight: 500;
+            margin: 0;
+            width: 100px;
+        }
+
+        .checkout_second_sec {
+            background: white;
+            padding: 10px;
+            border-bottom: 1px solid #dddddd73;
+        }
+
+        .box_design {
+            border-radius: 0 0 5px 5px;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            color: rgba(0, 0, 0, 0);
+            opacity: 1;
+            display: block;
+            background: url(https://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+            width: 20px;
+            height: 20px;
+            border-width: thin;
+            margin-top: 10px;
+            margin-right: -5px;
+        }
+
+        input[type="date"]::-webkit-inner-spin-button {
+            display: none;
+            -webkit-appearance: none;
+        }
+
+    .sticky-top {
+        width: 100%;
+        background: white;
+        border-bottom: 1px solid #dddddd73;
+    }
+    button#NewInspection {
+        width: 200px;
+    }
+    span.delete_trash {
+        color: #ea0d25;
+        padding-left: 6px;
+        padding-top: 5px;
+    }
+</style>
+
+<div id="MainContentDiv">
+    <div id="MainDiv" class="sticky-top">
+        <div class="check_header">
+            <div class="row">
+                <div class="col-md-4">
+                    <select id="MoldID" class="form-control">
+                        <option disabled></option>
+                        @foreach (var x in ViewBag.MoldList)
+                        {
+                            <option value="@x.Value">@x.Text</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4 text-center">
+                    <label id="MoldNAMEHdr">@ViewBag.MoldNAME</label>
+                </div>
+                <div class="col-md-4 text-right">
+                    <div class="w-100">
+                        <div class="w-33">
+                            <label>OK</label>
+                            <div class="green"></div>
+                        </div>
+                        <div class="w-33">
+                            <label>Attention</label>
+                            <div class="yellow"></div>
+                        </div>
+                        <div class="w-33">
+                            <label>No Run</label>
+                            <div class="red"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="checkout_second_sec">
+            <div class="row">
+
+                <div class="col-md-12 checkout_btn text-right">
+                    <button id="NewInspection">Add New Inspection</button>
+                    <button id="PreviosuBtn">Previous</button>
+                    <button id="NextBtn">Next</button>
+                    <button id="PrintBtn" onclick="printDiv()">Print</button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-bordered table-responsive" id="last_shot_inspection2">
+                    <thead>
+                        <tr>
+                            <th><b>Inspected By</b></th>
+                            <th>
+                                <select id="InspectedBy1" class="form-control">
+                                    <option value="0"></option>
+                                    @foreach (var x in ViewBag.EmployeeName)
+                                    {
+                                        <option value="@x.Value">@x.Text</option>
+                                    }
+                                </select>
+                                <span id="Delete1" class="delete_trash"><i class="fas fa-trash-alt"></i></span>
+                            </th>
+                            <th><b>Inspected By</b></th>
+                            <th>
+                                <select id="InspectedBy2" class="form-control">
+                                    <option value="0"></option>
+                                    @foreach (var x in ViewBag.EmployeeName)
+                                    {
+                                        <option value="@x.Value">@x.Text</option>
+                                    }
+                                </select>
+                                <span id="Delete2" class="delete_trash"><i class="fas fa-trash-alt"></i></span>
+                            </th>
+                            <th><b>Inspected By</b></th>
+                            <th>
+                                <select id="InspectedBy3" class="form-control">
+                                    <option value="0"></option>
+                                    @foreach (var x in ViewBag.EmployeeName)
+                                    {
+                                        <option value="@x.Value">@x.Text</option>
+                                    }
+                                </select>
+                                <span id="Delete3" class="delete_trash"><i class="fas fa-trash-alt"></i></span>
+                            </th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="card box_design">
+        <div class="card_body">
+
+            <div id="CommonPartialHtml">
+                @Html.Partial("_CommonChecksheet", Model)
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="AdditionalMaint">
+                        @Html.Action("AdditionalMaintenance", "Checksheet")
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#checkout_main').addClass('actives');
+        $("#MoldID").get(0).options[0].style.fontSize = "xx-large";
+    });
+
+
+    function printDiv() {
+        window.print();
+    }
+
+    (function () {
+
+        var beforePrint = function () {
+            $("#sidebar").hide();
+            $(".table-con").css("height", "auto");
+            $(".table-con").css("overflow-y", "visible");
+        };
+
+        var afterPrint = function () {
+            $("#sidebar").show();
+            $(".table-con").css("height", "200px");
+            $(".table-con").css("overflow-y", "auto");
+        };
+
+        if (window.matchMedia) {
+            var mediaQueryList = window.matchMedia('print');
+
+            mediaQueryList.addListener(function (mql) {
+                //alert($(mediaQueryList).html());
+                if (mql.matches) {
+                    beforePrint();
+                } else {
+                    afterPrint();
+                }
+            });
+        }
+
+        window.onbeforeprint = beforePrint;
+        window.onafterprint = afterPrint;
+
+    }());
+
+
+    $("#MoldID").on('change', function ()
+    {
+        var MID = $("#MoldID").val();
+        var MIDNAME = $("#MoldID option:selected").text();
+
+        $("#MoldNAMEHdr").html(MIDNAME);
+        $.ajax({
+            url: '/Checksheet/UpdateChecklist?MID=' + MID,
+            type: 'post',
+            success: function (data)
+            {
+                $("#CommonPartialHtml").html(data.CommonPartial);
+                //$("#table_cs1").html(data.LastShotInspection);
+                //$("#table_cs2").html(data.WearCheck);
+                //$("#table_cs3").html(data.CheckForDamage);
+                //$("#table_cs4").html(data.Task);
+                $("#AdditionalMaint").html(data.AdditionalMaintenance);
+                //$("#InspectedBy1").val(data.i1);
+                //$("#InspectedBy2").val(data.i2);
+                //$("#InspectedBy3").val(data.i3);
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    $("#InspectedBy1").change(function ()
+    {
+        var MoldID = $("#MoldID").val();
+
+         //var date = $("#SecLastShotDate").val();
+        //var InpspectID = $("#LastShotDate").val();
+        var InspectID = $("#last_shot_inspection tbody tr").find("td").eq(1).find("#InspectionID1").val();
+        var InspectBy = $("#InspectedBy1").val();
+
+        $.ajax({
+            url: '/Checksheet/UpdateInspectedBy?InspectID=' + InspectID + '&InspectedBy=' + InspectBy,
+            type: 'Post',
+            success: function ()
+            {
+
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+
+    })
+
+    $("#InspectedBy2").change(function () {
+        var MoldID = $("#MoldID").val();
+
+        var date = $("#SecLastShotDate").val();
+        var InspectID = $("#last_shot_inspection tbody tr").find("td").eq(3).find("#InspectionID2").val();
+        //var date = $("#LastShotDate").val();
+        var InspectBy = $("#InspectedBy2").val();
+
+        $.ajax({
+            url: '/Checksheet/UpdateInspectedBy?InspectID=' + InspectID + '&InspectedBy=' + InspectBy,
+            type: 'Post',
+            success: function () {
+            },
+            error: function () {
+
+            }
+
+        })
+
+    })
+
+    $("#InspectedBy3").change(function () {
+        var MoldID = $("#MoldID").val();
+
+        var date = $("#ThirdLastShotDate").val();
+        var InspectID = $("#last_shot_inspection tbody tr").find("td").eq(5).find("#InspectionID3").val();
+
+        //var date = $("#LastShotDate").val();
+        var InspectBy = $("#InspectedBy3").val();
+
+        $.ajax({
+            url: '/Checksheet/UpdateInspectedBy?InspectID=' + InspectID + '&InspectedBy=' + InspectBy,
+            type: 'Post',
+            success: function () {
+            },
+            error: function () {
+
+            }
+
+        })
+
+    })
+
+    $("#NewInspection").click(function ()
+    {
+        var MID = $("#MoldID").val();
+        var date = $("#LastShotDate").val();
+
+        $.ajax({
+            url: '/Checksheet/AddNewInspections?MID=' + MID + '&Date=' + date,
+            type: 'Post',
+            success: function (data)
+            {
+                $("#CommonPartialHtml").html(data.CommonPartial);
+                //$("#table_cs1").html(data.LastShotInspection);
+                //$("#table_cs2").html(data.WearCheck);
+                //$("#table_cs3").html(data.CheckForDamage);
+                //$("#table_cs4").html(data.Task);
+                $("#AdditionalMaint").html(data.AdditionalMaintenance);
+                //$("#InspectedBy1").val(data.i1);
+                //$("#InspectedBy2").val(data.i2);
+                //$("#InspectedBy3").val(data.i3);
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    $("#PreviosuBtn").click(function ()
+    {
+        var date = $("#ThirdLastShotDate").val();
+
+        var MID = $("#MoldID").val();
+        $.ajax({
+            url: '/Checksheet/PreviousDateFunc?MID=' + MID + '&Date=' + date,
+            type: 'post',
+            success: function (data) {
+                $("#CommonPartialHtml").html(data.CommonPartial);
+                $("#AdditionalMaint").html(data.AdditionalMaintenance);
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $("#NextBtn").click(function () {
+        var date = $("#LastShotDate").val();
+
+        var MID = $("#MoldID").val();
+        $.ajax({
+            url: '/Checksheet/NextDateFunc?MID=' + MID + '&Date=' + date,
+            type: 'post',
+            success: function (data) {
+
+                $("#CommonPartialHtml").html(data.CommonPartial);
+                //$("#table_cs1").html(data.LastShotInspection);
+                //$("#table_cs2").html(data.WearCheck);
+                //$("#table_cs3").html(data.CheckForDamage);
+                //$("#table_cs4").html(data.Task);
+                $("#AdditionalMaint").html(data.AdditionalMaintenance);
+                //$("#InspectedBy1").val(data.i1);
+                //$("#InspectedBy2").val(data.i2);
+                //$("#InspectedBy3").val(data.i3);
+
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $("#Delete1").click(function ()
+    {
+        var ID = $("#last_shot_inspection tbody tr").find("td").eq(1).find("#InspectionID1").val();
+        var MID = $("#MoldID").val();
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: "/Checksheet/DeleteInspectData?ID=" + ID + "&MID=" + MID,
+                    type: "post",
+                    success: function (data) {
+                        //$("#PaymentDiv").html(data);
+                        //$(".loader__wrap").hide();
+                        Swal.fire(
+                            'Deleted',
+                            'Data has been deleted.',
+                            'success'
+                        ).then(function () {
+                            $("#CommonPartialHtml").html(data.CommonPartial);
+                            //$("#table_cs1").html(data.LastShotInspection);
+                            //$("#table_cs2").html(data.WearCheck);
+                            //$("#table_cs3").html(data.CheckForDamage);
+                            //$("#table_cs4").html(data.Task);
+                            $("#AdditionalMaint").html(data.AdditionalMaintenance);
+                            //$("#InspectedBy1").val(data.i1);
+                            //$("#InspectedBy2").val(data.i2);
+                            //$("#InspectedBy3").val(data.i3);
+                        })
+                    },
+                    error: function () {
+                        //$(".loader__wrap").hide();
+                    }
+                });
+            }
+        })
+
+    })
+
+
+    $("#Delete2").click(function () {
+        var ID = $("#last_shot_inspection tbody tr").find("td").eq(3).find("#InspectionID2").val();
+        var MID = $("#MoldID").val();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: "/Checksheet/DeleteInspectData?ID=" + ID + "&MID=" + MID,
+                    type: "post",
+                    success: function (data) {
+                        //$("#PaymentDiv").html(data);
+                        //$(".loader__wrap").hide();
+                        Swal.fire(
+                            'Deleted',
+                            'Data has been deleted.',
+                            'success'
+                        ).then(function () {
+                            $("#CommonPartialHtml").html(data.CommonPartial);
+                            //$("#table_cs1").html(data.LastShotInspection);
+                            //$("#table_cs2").html(data.WearCheck);
+                            //$("#table_cs3").html(data.CheckForDamage);
+                            //$("#table_cs4").html(data.Task);
+                            $("#AdditionalMaint").html(data.AdditionalMaintenance);
+                            //$("#InspectedBy1").val(data.i1);
+                            //$("#InspectedBy2").val(data.i2);
+                            //$("#InspectedBy3").val(data.i3);
+                            //$("#MoldTb").html(data.MoldDetails);
+                            //$("#MainMoldDiv").html(data.MoldData);
+                        })
+                    },
+                    error: function () {
+                        //$(".loader__wrap").hide();
+                    }
+                });
+            }
+        })
+
+    })
+
+    $("#Delete3").click(function () {
+        var ID = $("#last_shot_inspection tbody tr").find("td").eq(5).find("#InspectionID3").val();
+        var MID = $("#MoldID").val();
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: "/Checksheet/DeleteInspectData?ID=" + ID + "&MID=" + MID,
+                    type: "post",
+                    success: function (data) {
+                        Swal.fire(
+                            'Deleted',
+                            'Data has been deleted.',
+                            'success'
+                        ).then(function () {
+                            $("#CommonPartialHtml").html(data.CommonPartial);
+                            //$("#table_cs1").html(data.LastShotInspection);
+                            //$("#table_cs2").html(data.WearCheck);
+                            //$("#table_cs3").html(data.CheckForDamage);
+                            //$("#table_cs4").html(data.Task);
+                            $("#AdditionalMaint").html(data.AdditionalMaintenance);
+                            //$("#InspectedBy1").val(data.i1);
+                            //$("#InspectedBy2").val(data.i2);
+                            //$("#InspectedBy3").val(data.i3);
+                        })
+                    },
+                    error: function () {
+                        //$(".loader__wrap").hide();
+                    }
+                });
+            }
+        })
+
+    })
+
+
+
+</script>
+<script>
+    document.getElementById('table_cs1').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+    document.getElementById('table_cs2').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+    document.getElementById('table_cs3').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+    document.getElementById('table_cs4').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>

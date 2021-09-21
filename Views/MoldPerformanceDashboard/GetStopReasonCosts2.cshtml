@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Moldtrax.Models.StopReasonCharts>
+
+@{
+    ViewBag.Title = "GetStopReasonCosts";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .card_header h5 {
+        margin-bottom: 8px;
+    }
+</style>
+<div class="card box_design">
+    <div class="card_header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="main_top_head">Get Stop Reason Costs</h5>
+            </div>
+            <div class="col-md-6 text-right btn_css">
+                <button onclick="window.close()" class="back_btn">Back</button>
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <div class="row">
+            <div class="col-md-12" id="report_tables">
+                <div class="code-cut">
+                    <table id="MoldStopReasonCosts" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Mold Stop Reason <img src="~/images/sort.png" /></th>
+                                <th>Stop Count <img src="~/images/sort.png" /></th>
+                                <th>Labor Hours <img src="~/images/sort.png" /></th>
+                                <th>Labor Cost <img src="~/images/sort.png" /></th>
+                                <th>Tooling Cost <img src="~/images/sort.png" /></th>
+                                <th>Total Cost <img src="~/images/sort.png" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td><a href="#" class="blue_link" target="_blank" onclick="CallFunc('@HttpUtility.UrlEncode(x.MoldStopReason)')">Drill Down on Molds</a></td>
+                                    <td>@x.MoldStopReason</td>
+                                    <td class="num_right">@x.StopCount</td>
+                                    <td class="num_right">@String.Format("{0:n2}", x.LaborHours)</td>
+                                    <td class="num_right">@String.Format("{0:C}", x.LaborCost)</td>
+                                    <td class="num_right">@String.Format("{0:C}", x.ToolingCost)</td>
+                                    <td class="num_right">@String.Format("{0:C}", x.TotalCost)</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#MoldStopReasonCosts').DataTable({
+            "paging": false
+        });
+        $("#HeaderTop").hide();
+
+    });
+
+    function CallFunc(str) {
+        debugger
+        //var Name = decodeURIComponent(str); 
+        var StartDate = '@ViewBag.StartDate';
+        var EndData = '@ViewBag.EndDate'
+        window.open("/MoldPerformanceDashboard/GetDrillReport?Name=" + str + "&StDate=" + StartDate + "&EDate=" + EndData)
+    }
+</script>
+<script>
+    document.getElementById('report_tables').style.height = window.innerHeight - 100 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

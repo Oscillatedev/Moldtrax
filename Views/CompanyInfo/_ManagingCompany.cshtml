@@ -1,0 +1,210 @@
+﻿@model Moldtrax.Models.tblCompany
+
+@*<br>*@
+
+<script>
+</script>
+<form id="FrmCompany">
+    <div class="row">
+        <div class="col-md-12 text-right btn_css">
+            @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Company Name & Address</h5>
+                </div>
+                <input type="hidden" value="@Model.CompanyID" id="CompanyID" name="CompanyID" />
+                <div class="card_body ">
+                    <label>Name</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyName" id="CompanyName" name="CompanyName" class="form-control ManagingFocusOut">
+
+                    <label>Address</label>
+                    <textarea autocomplete="off" class="form-control ManagingFocusOut" id="CompanyAddress" name="CompanyAddress" rows="3">@Model.CompanyAddress</textarea>
+
+                    <label>City</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyCity" id="CompanyCity" name="CompanyCity" class="form-control ManagingFocusOut">
+
+                    <label>State/Prov</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyState" id="CompanyState" name="CompanyState" class="form-control ManagingFocusOut">
+
+                    <label>Zip/Postal</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyZipCode" id="CompanyZipCode" name="CompanyZipCode" class="form-control ManagingFocusOut">
+
+                    <label>Country</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyCountry" id="CompanyCountry" name="CompanyCountry" class="form-control ManagingFocusOut">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Contact Information</h5>
+                </div>
+                <div class="card_body">
+                    <label>Phone</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyMainPhone" id="CompanyMainPhone" name="CompanyMainPhone" class="form-control ManagingFocusOut">
+
+                    <label>Fax</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyFax" id="CompanyFax" name="CompanyFax" class="form-control ManagingFocusOut">
+
+                    <label>Toll Free</label>
+                    <input type="text" autocomplete="off" value="@Model.Company800" id="Company800" name="Company800" class="form-control ManagingFocusOut">
+                </div>
+            </div>
+
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Web Information</h5>
+                </div>
+                <div class="card_body ">
+                    <label>Address</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyAddress" id="CompanyAddress" name="CompanyAddress" class="form-control ManagingFocusOut">
+
+                    <label>Email</label>
+                    <input type="text" autocomplete="off" value="@Model.CompanyEmail" id="CompanyEmail" name="CompanyEmail" class="form-control ManagingFocusOut">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Company Notes</h5>
+                </div>
+                <div class="card_body ">
+                    <textarea autocomplete="off" class="form-control Comditable ManagingFocusOut" id="CompanyNotes" name="CompanyNotes">@Model.CompanyNotes</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    //$(function () {
+    //    $('#CompanyMainPhone, #CompanyFax').keydown(function (e) {
+    //        var key = e.charCode || e.keyCode || 0;
+    //        $text = $(this);
+    //        if (key !== 8 && key !== 9) {
+    //            if ($text.val().length === 3) {
+    //                $text.val($text.val() + '.');
+    //            }
+    //            if ($text.val().length === 7) {
+    //                $text.val($text.val() + '.');
+    //            }
+
+    //        }
+
+    //        return (key == 8 || key == 9 || key == 46 || (key >= 48 && key <= 57) || (key >= 96 && key <= 105));
+    //    })
+    //});
+
+    $(".ManagingFocusOut").focusout(function ()
+    {
+        var dd = $("#FrmCompany").serialize();
+        $.ajax({
+            url: '/CompanyInfo/SaveInfo',
+            type: 'POST',
+            data: dd,
+            success: function () {
+            },
+            error: function () {
+
+            }
+
+        })
+
+    })
+
+    $(document).ready(function ()
+    {
+        $(".Comditable").attr("data-placeholder", "");
+    })
+
+    //$("#FrmCompany").submit(function (e)
+    //{
+    //    debugger
+    //    var dd = $("#FrmCompany").serialize();
+
+    //    e.preventDefault();
+    //    $.ajax({
+    //        url: '/CompanyInfo/SaveInfo',
+    //        type: 'POST',
+    //        data: dd,
+    //        success: function ()
+    //        {
+    //            Swal.fire('Data saved Successfully.');
+    //        },
+    //        error: function ()
+    //        {
+
+    //        }
+
+    //    })
+
+    //})
+
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.Comditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+</script>

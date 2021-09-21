@@ -1,0 +1,197 @@
+﻿@using Moldtrax.Models
+@model ezy_Users
+@{
+    ViewBag.Title = "Login1";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Moldtrax</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Hind&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/b3514468b8.js"></script>
+    <script src="~/Content/js/feather.js"></script>
+    <style>
+        .image_sec img {
+            width: 100%;
+        }
+
+        .login_block {
+            width: 220px;
+        }
+
+        /*.image_sec {
+            text-align: center;
+            width: 100%;
+            float: left;
+            margin-top: 0em;
+        }*/
+
+        .login_block label {
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: .5px;
+            line-height: 7px;
+        }
+
+        .login_block .form-control {
+            display: block;
+            width: 100%;
+            height: 28px;
+            padding: 4px;
+            font-size: 12px;
+            color: #000;
+            background-color: #fff;
+            background-image: none;
+            border: 1px solid #ccc;
+            border-radius: 0px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+            -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        }
+
+        .btn-6 {
+            display: inline-block;
+            position: relative;
+            background: rgba(35, 31, 32, 0.08);
+        }
+
+            .btn-6 span {
+                display: block;
+                padding: 15px 20px;
+            }
+
+            .btn-6::before, .btn-6::after {
+                content: "";
+                width: 0;
+                height: 2px;
+                position: absolute;
+                transition: all 0.2s linear;
+                background: #d71c33;
+            }
+
+            .btn-6 span::before, .btn-6 span::after {
+                content: "";
+                width: 2px;
+                height: 0;
+                position: absolute;
+                transition: all 0.2s linear;
+                background: #d71c33;
+            }
+
+            .btn-6:hover::before, .btn-6:hover::after {
+                width: 100%;
+            }
+
+            .btn-6:hover span::before, .btn-6:hover span::after {
+                height: 100%;
+            }
+            /*----- button 6 -----*/
+            .btn-6::before {
+                left: 50%;
+                top: 0;
+                transition-duration: 0.4s;
+            }
+
+            .btn-6::after {
+                left: 50%;
+                bottom: 0;
+                transition-duration: 0.4s;
+            }
+
+            .btn-6 span::before {
+                left: 0;
+                top: 50%;
+                transition-duration: 0.4s;
+            }
+
+            .btn-6 span::after {
+                right: 0;
+                top: 50%;
+                transition-duration: 0.4s;
+            }
+
+            .btn-6:hover::before, .btn-6:hover::after {
+                left: 0;
+            }
+
+            .btn-6:hover span::before, .btn-6:hover span::after {
+                top: 0;
+            }
+
+        button.login_btn {
+            border: none;
+            background: #d71c33;
+            color: white;
+            margin: 10px auto;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            padding: 2px 10px;
+        }
+
+        #myModalLogin .modal-body {
+            padding: 0;
+        }
+
+        #myModalLogin .modal-content {
+            border: none;
+            border-radius: 0;
+        }
+        /*.image_sec {
+            background-image: url('../../images/MoldTrax-SplashScreen-2019_v11_FN_fullsize.jpg');
+        }*/
+    </style>
+</head>
+<body>
+    <div class="right_big_logo">
+        @*<img src="~/images/web-mt.png" />*@
+        @*<img src="~/images/MoldTrax-SplashScreen-2019_v11_FN_fullsize.jpg" />*@
+
+        @*<div class="image_sec">
+            <img src="~/images/MoldTrax-SplashScreen-2019_v11.png" />
+
+
+        </div>*@
+    </div>
+    <div class="modal fade" id="myModalLogin">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-body">
+                    @*<button type="button" class="close" data-dismiss="modal">&times;</button>*@
+                      <div class="login_block btn-6">
+                          @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+                          {
+                          @*@Html.AntiForgeryToken()*@
+                          <span>
+                              <label>UserName</label>
+                              @Html.TextBoxFor(m => m.UserID, new { autocomplete = "off", @class = "form-control" })
+                              @*<input type="text" class="form-control">*@
+                              <label>Password</label>
+                              @Html.PasswordFor(m => m.Password, new { autocomplete = "off", @class = "form-control" })
+                              @*<input type="password" class="form-control">*@
+                              <input type="submit" value="Log In" class="login_btn" />
+                              @*<button class="login_btn">LOGIN</button>*@
+                          </span>
+                          }
+                      </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

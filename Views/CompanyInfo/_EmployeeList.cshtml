@@ -1,0 +1,395 @@
+﻿@model Moldtrax.Models.TbLEmployeeMain
+    @using Moldtrax.Models
+@{ 
+    int Total = 0;
+
+    foreach (var x in Model.TblEmployeesList)
+    {
+        Total += 1;
+    }
+}
+
+<style>
+    .table-con {
+        height: 570px;
+    }
+    .input-group.emp_width {
+    width: 70%;
+}
+</style>
+@*<br>*@
+<div class="row">
+    <div class="col-md-3 m-10">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Select Employee</h5>
+            </div>
+            <div class="card_body table_layout_left table-con" id="table3">
+                <table class="table table-mold table table-responsive">
+                    <tbody>
+                        @foreach (var x in Model.TblEmployeesList)
+                        {
+                        <tr onclick="CallEmployeeDetail(@x.EmployeeID, this)">
+                            <td>
+                                <label>@x.LastName</label>
+                            </td>
+                            <td>
+                                <label>@x.FirstName</label>
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <label class="red_total">Total Employees: @Total</label>
+        </div>
+    </div>
+    <div class="col-md-9" id="EmpListDiv">
+        <form id="EmployeeSbFrm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card_header m-0">
+                        <h5 class="main_top_head">@Model.TblEmployees.FirstName @Model.TblEmployees.LastName</h5>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right btn_css">
+                    @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+                    <input type="button" class="add_btn" value="Add" onclick="AddEmployee()" />
+                    @*<input type="submit" class="edit_btn" value="Save" />*@
+                    <input type="button" class="delete_btn" onclick="DeleteEmployee(@Model.TblEmployees.EmployeeID)" value="Delete Selected Customer" />
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card box_design emp_info">
+                        <div class="card_header">
+                            <h5>Employee Name & Address</h5>
+                        </div>
+                        <input type="hidden" value="@Model.TblEmployees.EmployeeID" id="EmployeeID" name="EmployeeID" />
+                        <input type="hidden" value="@Model.TblEmployees.CompanyID" id="CompanyID" name="CompanyID" />
+                        <div class="card_body">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.TblEmployees.FirstName" id="FirstName" name="FirstName" class="form-control">
+
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.TblEmployees.LastName" id="LastName" name="LastName" class="form-control SaveEmployeeFocusOut">
+
+                            <label>Address</label>
+                            <textarea autocomplete="off" class="form-control SaveEmployeeFocusOut" id="EmplAddress" name="EmplAddress" rows="3">@Model.TblEmployees.EmplAddress</textarea>
+
+                            <label>City</label>
+                            <input type="text" autocomplete="off" id="EmplCity" name="EmplCity" value="@Model.TblEmployees.EmplCity" class="form-control SaveEmployeeFocusOut">
+
+                            <label>State/Prov</label>
+                            <input type="text" autocomplete="off" value="@Model.TblEmployees.EmplState" id="EmplState" name="EmplState" class="form-control SaveEmployeeFocusOut">
+
+                            <label>Zip/Postal</label>
+                            <input type="text" autocomplete="off" value="@Model.TblEmployees.EmplZip" id="EmplZip" name="EmplZip" class="form-control SaveEmployeeFocusOut">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card box_design emp_info">
+                        <div class="card_header">
+                            <h5>Employee Phone & Hire Info</h5>
+                        </div>
+                        <div class="card_body">
+                            <label>Work Phone</label>
+                            <input value="@Model.TblEmployees.WorkPhone" autocomplete="off" id="WorkPhone" name="WorkPhone" type="text" class="form-control SaveEmployeeFocusOut">
+                            <label>Employee Number</label>
+                            <input type="text" value="@Model.TblEmployees.EmployeeNumber" autocomplete="off" id="EmployeeNumber" name="EmployeeNumber" class="form-control SaveEmployeeFocusOut">
+                            <label>Home Phone</label>
+                            <input type="text" value="@Model.TblEmployees.HomePhone" autocomplete="off" id="HomePhone" name="HomePhone" class="form-control SaveEmployeeFocusOut">
+                            <label>Email Address</label>
+                            <input type="text" value="@Model.TblEmployees.EmailName" autocomplete="off" id="EmailName" name="EmailName" class="form-control SaveEmployeeFocusOut">
+                            <div class="row">
+                                <div class="col-md-9">
+                                    <label style="width: 41%;">Department</label>
+                                    <input style="width: 59%;" type="text" value="@Model.TblEmployees.DepartmentID" id="DepartmentID" name="DepartmentID" class="form-control SaveEmployeeFocusOut">
+                                </div>
+                                <div class="col-md-3 shift_time">
+                                    <label>Shift</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblEmployees.Shift" id="Shift" name="Shift" class="form-control SaveEmployeeFocusOut">
+                                </div>
+                            </div>
+                            <label>Office Location</label>
+                            <input type="text" autocomplete="off" value="@Model.TblEmployees.OfficeLocation" id="OfficeLocation" name="OfficeLocation" class="form-control SaveEmployeeFocusOut">
+                            <label>Job Description</label>
+                            <input type="text" autocomplete="off" value="@Model.TblEmployees.EmplJobDescrip" id="EmplJobDescrip" name="EmplJobDescrip" class="form-control SaveEmployeeFocusOut">
+                            <label>Hire Date</label>
+                            <input type="hidden" value="@Model.TblEmployees.EmplHireDate" id="EmplDate" />
+                            @if (Convert.ToDateTime(Model.TblEmployees.EmplHireDate) == DateTime.MinValue)
+                            {
+                            <input type="date" autocomplete="off" value="" id="EmplHireDate" name="EmplHireDate" class="form-control SaveEmployeeFocusOut">
+                            }
+                            else
+                            {
+                            <input type="date" autocomplete="off" value="@Convert.ToDateTime(Model.TblEmployees.EmplHireDate).ToString("yyyy-MM-dd")" id="EmplHireDate" name="EmplHireDate" class="form-control SaveEmployeeFocusOut">
+                            }
+                            <label>Chargeout Rate</label>
+                            <div class="input-group emp_width">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input type="text" autocomplete="off" value="@string.Format("{0:n}", Model.TblEmployees.EmplHourlyRate)" id="EmplHourlyRate" name="EmplHourlyRate" class="form-control SaveEmployeeFocusOut">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Employee Notes</h5>
+                        </div>
+                        <div class="card_body ">
+                            <textarea autocomplete="off" class="form-control SaveEmployeeFocusOut" id="Notes" name="Notes" style="height: 127px;">@Model.TblEmployees.Notes</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function CallEmployeeDetail(ID,e)
+    {
+        debugger;
+        var id = 0;
+        $('.table-mold tr').each(function () {
+            $(this).removeClass('active');
+        });
+
+
+        //$(e).addClass('active');
+        id = $("table tr").index(e);
+
+        $.ajax({
+            url: '/CompanyInfo/EmployeeDetail?VenID=' + ID,
+            type: 'Post',
+            success: function (data) {
+
+                $("#home").html(data);
+                $(".table-mold tr").eq(id).addClass('active');
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    //$('#EmplHourlyRate').keyup(function (event) {
+
+    //    // skip for arrow keys
+    //    if (event.which >= 37 && event.which <= 40) {
+    //        event.preventDefault();
+    //    }
+
+    //    $(this).val(function (index, value) {
+    //        value = value.replace(/,/g, ''); // remove commas from existing input
+    //        return numberWithCommas(value); // add commas back in
+    //    });
+    //});
+
+    //function numberWithCommas(x) {
+    //    var parts = x.toString().split(".");
+    //    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    //    return parts.join(".");
+    //}
+
+    $(".SaveEmployeeFocusOut").focusout(function ()
+    {
+        //var data = $("#EmployeeSbFrm").serialize();
+        var obj = new Object();
+        obj.CompanyID = $("#CompanyID").val();
+        obj.EmployeeID = $("#EmployeeID").val();
+        obj.FirstName = $("#FirstName").val();
+        obj.LastName = $("#LastName").val();
+        obj.EmplAddress = $("#EmplAddress").val();
+        obj.EmplCity = $("#EmplCity").val();
+        obj.EmplState = $("#EmplState").val();
+        obj.EmplZip = $("#EmplZip").val();
+        obj.WorkPhone = $("#WorkPhone").val();
+        obj.EmployeeNumber = $("#EmployeeNumber").val();
+        obj.HomePhone = $("#HomePhone").val();
+        obj.EmailName = $("#EmailName").val();
+        obj.DepartmentID = $("#DepartmentID").val();
+        obj.Shift = $("#Shift").val();
+        obj.OfficeLocation = $("#OfficeLocation").val();
+        obj.EmplJobDescrip = $("#EmplJobDescrip").val();
+        obj.EmplHireDate = $("#EmplHireDate").val();
+
+        var ChargeRate = $("#EmplHourlyRate").val().replace(/\,/g, '');
+        var Cahrgedata = parseFloat(ChargeRate).toFixed(2);
+        $("#EmplHourlyRate").val(addCommas(Cahrgedata));
+
+        obj.EmplHourlyRate = $("#EmplHourlyRate").val().replace(/\,/g, '');
+        obj.Notes = $("#Notes").val();
+
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveFocusOutEmployeeDetails',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+              
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+     $(document).ready(function ()
+    {
+
+        $("#EmployeeName").html('@Model.TblEmployees.FirstName @Model.TblEmployees.LastName');
+        var data = $("#EmplDate").val(); 
+        if (data == '0001-01-01') {
+            $("#EmplHireDate").val('');
+        }
+
+    })
+
+
+    $("#EmployeeSbFrm").submit(function (e) {
+        var data = $("#EmployeeSbFrm").serialize();
+
+        e.preventDefault();
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveEmployeeDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    function AddEmployee() {
+        $.ajax({
+            url: '/CompanyInfo/EmployeeDetail?VenID=-1',
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+                $("input").attr('disabled', 'disabled');
+                $("#EmplAddress, #Notes").attr("disabled", 'disabled');
+                $("#FirstName").removeAttr('disabled');
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+
+
+
+    $("#FirstName").focusout(function () {
+        debugger;
+        var data = $("#EmployeeSbFrm").serialize();
+        $.ajax({
+
+            url: '/CompanyInfo/SaveEmployeeDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                $("#home").html(data);
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    function DeleteEmployee(ID) {
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $(".loader__wrap").show();
+
+                $.ajax({
+                    url: '/CompanyInfo/EmployeeDelete?CustID=' + ID,
+                    type: 'Post',
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: 'Data has been deleted.',
+                            type: "success"
+                        }).then(function () {
+                            $("#home").html(data);
+                        })
+                    },
+
+                    error: function () {
+
+                    }
+                })
+            }
+        })
+    }
+
+    $('.SaveEmployeeFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.SaveEmployeeFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblEmployees.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Employees.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    document.getElementById('table3').style.height = window.innerHeight - 168 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

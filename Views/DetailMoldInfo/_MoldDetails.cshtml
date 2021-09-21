@@ -1,0 +1,1020 @@
+﻿@model Moldtrax.Models.tblMoldData
+@using Moldtrax.Models
+@{
+
+    tblMoldData NewTbl = new tblMoldData();
+    List<tblMoldData> tbl = new List<tblMoldData>();
+    tbl.Add(Model);
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+}
+<style>
+    .swal2-container {
+        z-index: 99999 !important;
+    }
+
+    textarea::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    textarea::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    textarea::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+        /* Handle on hover */
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    #UploadFile {
+        display: none;
+    }
+
+    div#btn_icon {
+        width: auto;
+        display: inline-flex;
+        margin: 0;
+        vertical-align: bottom;
+        cursor: pointer;
+    }
+
+        div#btn_icon span.input-group-text {
+            background: #d71c33;
+            color: white;
+            height: 25px;
+            border: none;
+            padding: 3px 0px 3px 10px;
+            border-radius: 2px 0 0 2px;
+            letter-spacing: 1px;
+            font-family: 'Quicksand', sans-serif;
+            font-family: open sans,sans-serif;
+            margin-bottom: 3px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+    div#btn_icon {
+        padding-left: 0;
+    }
+
+    a#DownloadTemplate {
+        margin-right: 8px;
+    }
+
+    table#MainMoldList td {
+        white-space: pre-line;
+        word-break: break-word;
+    }
+</style>
+
+
+<form id="MoldForm">
+    <div class="row">
+        <div class="col-md-12 text-right btn_css">
+            <div class="input-group" id="btn_icon">
+                <a class="add_btn" id="DownloadTemplate" href="~/DropdownTemplateFormat/Mold Template.xlsx"><i class="fas fa-download"></i>@Moldtrax.Resources.Resource.DownloadTemplate </a>
+                <div id="UploadMoldBtn" class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-upload"></i></span>
+                </div>
+                <input type="button" id="UploadMoldData" class="delete_btn" value="@Moldtrax.Resources.Resource.UploadData" />
+            </div>
+            <input type="hidden" class="add_btn" value="Upload Template" id="MainMoldUploadtemplate" data-toggle="modal" data-target="#UploadMolds" />
+            <input type="button" class="add_btn" id="AddNewMOld" onclick="CreateMoldData()" value="@Moldtrax.Resources.Resource.AddNew" />
+            <input type="hidden" class="edit_btn" id="SaveBtnMoldDetails" value="Edit" />
+            <input type="button" class="delete_btn" onclick="DeleteMold(@Model.MoldDataID)" value="@Moldtrax.Resources.Resource.Delete" />
+        </div>
+    </div>
+    <div class="row">
+        <input type="hidden" id="MoldDataID" name="MoldDataID" value="@Model.MoldDataID" />
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Mold Identification</h5>
+                </div>
+                <div class="card_body ">
+                    <div class="width-100">
+                        <label>@Moldtrax.Resources.Resource.MoldNumber</label>
+                        @Html.EditorFor(model => model.MoldName, new { autocomplete = "off", htmlAttributes = new { @class = "form-control MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>@Moldtrax.Resources.Resource.PartDescription</label>
+                        @Html.EditorFor(model => model.MoldDesc, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>@Moldtrax.Resources.Resource.OwnerMoldID </label>
+                        @Html.EditorFor(model => model.ModelNumber, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Serial Number</label>
+                        @Html.EditorFor(model => model.SerialNumber, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Cycle Time Sec</label>
+                        @Html.EditorFor(model => model.MoldCyclesPerMinute, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Base/Style Type</label>
+                        @Html.DropDownListFor(model => model.MoldCategoryID, ViewBag.BaseStyle as SelectList, "--Select Base/Style Type--", new { @class = "form-control PropDis MoldInfoFocuOut" })
+                    </div>
+                    <div class="width-100">
+                        <label>Department</label>
+                        @Html.DropDownListFor(model => model.DepartmentID, ViewBag.Department as SelectList, "--Select Department--", new { @class = "form-control PropDis MoldInfoFocuOut" } )
+                    </div>
+                    <div class="width-100">
+                        <label>Product Line</label>
+                        @Html.DropDownListFor(model => model.ProductLine, ViewBag.ProdLine as SelectList, "--Select Product Line--", new { @class = "form-control PropDis MoldInfoFocuOut" } )
+                    </div>
+                    <div class="width-100">
+                        <label>Product Part#</label>
+                        @Html.DropDownListFor(model => model.ProductPart, ViewBag.ProdPart as SelectList, "--Select Product Part#--",  new { @class = "form-control PropDis MoldInfoFocuOut" })
+                    </div>
+                    <div class="width-100">
+                        <label>Degree of Difficulty</label>
+                        @Html.EditorFor(model => model.DoD, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Mold Flow Paths</h5>
+                </div>
+                <div class="card_body ">
+                    <div class="width-100">
+                        <label>Nozzle Size</label>
+                        @Html.EditorFor(model => model.MoldNozzleSize, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Sprue Size</label>
+                        @Html.EditorFor(model => model.MoldSprueSize, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Runner Size</label>
+                        @Html.EditorFor(model => model.MoldRunnerSize, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Gate Size</label>
+                        @Html.EditorFor(model => model.MoldGateSize, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                </div>
+            </div>
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5 class="traci_bold">TRACI- <small class="traci_small">Tool Risk and Condition Indicator (Beta) </small></h5>
+                </div>
+                <div class="card_body ">
+                    <div class="width-100">
+                        <label>Date Mold Built</label>
+                        @Html.EditorFor(model => model.MoldDateBuilt, new { autocomplete = "off", htmlAttributes = new { @class = "form-control Datepicker PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Date Acquired</label>
+                        @Html.EditorFor(model => model.DateAcquired, new { autocomplete = "off", htmlAttributes = new { @class = "form-control Datepicker PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Shot Count</label>
+                        <input type="text" id="TotalShots" autocomplete="off" name="TotalShots" class="form-control PropDis MoldInfoFocuOut" value="@string.Format("{0:n0}", Model.TotalShots)" />
+                    </div>
+                    <div class="width-100 inputs2">
+                        <label>Plastic Factor</label>
+                        @Html.DropDownListFor(model => model.PlasticFactor, ViewBag.PlasticFactorVal as SelectList, "--Plastic Factor--", new { @class = "form-control PropDis MoldInfoFocuOut" })
+                        @Html.EditorFor(model => model.PF, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100 inputs2">
+                        <label>Steel Factor</label>
+                        @Html.DropDownListFor(model => model.SteelFactor, ViewBag.SteelFactorVal as SelectList, "--Steel Factor--", new { @class = "form-control PropDis" } )
+                        @Html.EditorFor(model => model.SF, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100 inputs2">
+                        <label>Location Factor</label>
+                        @Html.DropDownListFor(model => model.LocationFactor, ViewBag.LocationFactorVal as SelectList, "--Location Factor--",  new { @class = "form-control MoldInfoFocuOut" })
+                        @Html.EditorFor(model => model.LF, new { autocomplete = "off", htmlAttributes = new { @class = "form-control" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Mold Cavity Configuration</h5>
+                </div>
+                <div class="card_body ">
+                    <div class="width-100">
+                        <label>Resin Type</label>
+                        @Html.DropDownListFor(model => model.MoldResinType, ViewBag.ResinType as SelectList, new { @class = "form-control PropDis MoldInfoFocuOut" })
+                    </div>
+                    <div class="width-100">
+                        <label>Runner Type</label>
+                        @Html.DropDownListFor(model => model.MoldCav, ViewBag.RunnerType as SelectList, "--Runner Type--", new { @class = "form-control PropDis MoldInfoFocuOut" })
+                    </div>
+                    <div class="width-100">
+                        <label>Total Cavity Count</label>
+                        <input type="hidden" id="CavityVal" value="@Model.CavityTotal" />
+                        @Html.EditorFor(model => model.CavityTotal, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis CavityTotalC MoldInfoFocuOut" } })
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Mold Contact Info</h5>
+                </div>
+                <div class="card_body ">
+                    <div class="width-100">
+                        <label>Manufacturer Name</label>
+                        @Html.EditorFor(model => model.MoldResinVendor, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Manufacturer Phone</label>
+                        @Html.EditorFor(model => model.MoldResinVendorPhone, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Engineer First Name</label>
+                        @Html.EditorFor(model => model.MoldProjEngFirstName, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Engineer Last Name</label>
+                        @Html.EditorFor(model => model.MoldProjEngLastName, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Engineer Phone</label>
+                        @Html.EditorFor(model => model.MoldProjEngPhone, new { autocomplete = "off", htmlAttributes = new { @class = "form-control PropDis MoldInfoFocuOut" } })
+                    </div>
+                    <div class="width-100">
+                        <label>Purchase Price</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">$</span>
+                            </div>
+                            <input type="text" class="form-control PropDis MoldInfoFocuOut" autocomplete="off" value="@string.Format("{0:n}", Model.PurchasePrice)" id="PurchasePrice" name="PurchasePrice" />
+                        </div>
+                    </div>
+                    <div class="width-100">
+                        <label>Date of Inactivity</label>
+                        @Html.EditorFor(model => model.DateRetired, new { autocomplete = "off", htmlAttributes = new { @class = "form-control Datepicker PropDis MoldInfoFocuOut" } })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Customer Client Information</h5>
+                </div>
+                <div class="card_body ">
+                    <div class="width-100">
+                        <label>Client Info</label>
+                        @Html.DropDownListFor(model => model.CustomerID, ViewBag.ClientInfo as SelectList, new { @class = "form-control PropDis MoldInfoFocuOut" })
+                    </div>
+                    <div class="width-100">
+                        <label>Comments</label>
+                        <textarea id="CustomerComments" spellcheck="true" autocomplete="off" name="CustomerComments" class="form-control PropDis MoldInfoFocuOut">@Model.CustomerComments</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Comments</h5>
+                </div>
+                <div class="card_body textarea_100">
+                    <div class="width-100 MoldInfoFocuOut" id="Editor0">
+                        <textarea id="Comments" spellcheck="false" rows="6" name="Comments" autocomplete="off" class="editable form-control PropDis mold_area MoldInfoFocuOut">@Html.Raw(Model.Comments)</textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="modal fade" id="UploadMolds">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload Molds</h4>
+            </div>
+            <div class="modal-body">
+                <form id="ImportMoldFile" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="form-group top_margin col-md-12">
+                            <lable class="update_label"><b>Excel File: </b></lable>
+                            <input type="file" id="MoldPostedFile" name="MoldPostedFile" />
+                        </div>
+                        <div class="btn_css col-md-12 text-right p_top">
+                            <button type="submit" class="add_btn" id="Submit" name="Submit"><i style="display:none;" id="Spinner" class="fa fa-spinner fa-spin"></i> Upload</button>
+                            <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+                            @*<input class="savebtns" type="submit" id="Submit" name="Submit" value="Submit" />*@
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function ()
+    {
+        $(function () {
+            $(".Datepicker").datepicker({
+                dateFormat: "mm/dd/yy",
+                changeMonth: true,
+                changeYear: true
+            });
+        });
+
+         if (@Permission == 2) {
+            $("#UploadMoldBtn, #DownloadTemplate").hide();
+            $(".delete_btn").hide();
+         }
+
+        else if (@Permission == 3)
+        {
+             //$(".delete_btn").hide();
+            $("#AddNewMOld, #DownloadTemplate, #UploadMoldBtn, #UploadMoldData").hide();
+
+             $("#MainDeleteBtn").hide();
+             $("#MoldCategoryID, #DepartmentID, #LF, #ProductLine, #ProductPart, #MoldResinType, #MoldCav, #SteelFactor, #PlasticFactor, #LocationFactor, #CustomerID, #CustomerComments").attr('disabled', 'disabled');
+             $(".PropDis").attr('disabled', 'disabled');
+             $(".editable, .note-editable").attr('contenteditable', false);
+             $("#MoldName, #MoldDesc").attr('disabled', 'disabled');
+        }
+
+         else if (@Permission == 5 || @Permission == 4 || @Permission == 6)
+         {
+            $(".editable").attr("contenteditable", false);
+            $(".delete_btn").hide();
+            $("#AddNewMOld, #DownloadTemplate, #btn_icon").hide();
+            $("#MoldCategoryID, #DepartmentID, #LF, #ProductLine, #ProductPart, #MoldResinType, #MoldCav, #SteelFactor, #PlasticFactor, #LocationFactor, #CustomerID, #CustomerComments").attr('disabled', 'disabled');
+            $(".PropDis").attr('disabled', 'disabled');
+            $("#MoldName, #MoldDesc").attr('disabled', 'disabled');
+
+         }
+    })
+
+
+    $("#UploadMoldData").click(function () {
+        $("#MainMoldUploadtemplate").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+
+        $(".modal-backdrop").hide();
+    })
+
+
+    $("#ImportMoldFile").submit(function (e) {
+        debugger;
+        $("#Spinner").show();
+        e.preventDefault();
+        //var MainMoldID = $("#MainMoldHidnID").val();
+
+        var fd = new FormData();
+        var files = $('#MoldPostedFile')[0].files[0];
+        fd.append('MoldPostedFile', files);
+        $(".loader__wrap").show();
+        $.ajax({
+            url: '/DetailMoldInfo/ExportMoldData',
+            type: 'Post',
+            data: fd,
+            dataType: 'html',
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                //$(".del_btn").click();
+                Swal.fire(
+                    'Success',
+                    'Data has been uploaded successfully.',
+                    'success'
+                ).then(function () {
+                    window.location.href = '/DetailMoldInfo/Index';
+                })
+            },
+            error: function () {
+            }
+        })
+    })
+
+
+    $("#PlasticFactor").change(function () {
+        $("#PF").val($("#PlasticFactor").val());
+    });
+
+    $("#SteelFactor").change(function () {
+        $("#SF").val($("#SteelFactor").val());
+    });
+
+    $("#LocationFactor").change(function () {
+        $("#LF").val($("#LocationFactor").val());
+    });
+
+
+    $("#TotalShots").focusout(function () {
+        var nsd = $("#TotalShots").val().replace(/\,/g, '');
+        var data = addCommas(nsd);
+        $("#TotalShots").val(data);
+    });
+
+    $("#PurchasePrice").focusout(function () {
+        var PrchsePric = $("#PurchasePrice").val().replace(/\,/g, '');
+        var Prchsedata = parseFloat(PrchsePric).toFixed(2);
+
+        $("#PurchasePrice").val(addCommas(Prchsedata));
+        var data = addCommas($("#PurchasePrice").val());
+        $("#PurchasePrice").val(data);
+    });
+
+    function addCommas(x) {
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '/DetailMoldInfo/GetTraciRiskFactor?MID=' + @Model.MoldDataID,
+            type: 'Post',
+            success: function (data) {
+                $("#TraciRiskFactor").html('Traci Risk Factor: ' + data);
+            },
+            error: function () {
+
+            }
+        })
+
+        if (@Model.MoldDataID != 0) {
+            var htmlstring = "Mold: @Model.MoldName  ( @Model.MoldDesc )";
+            $("#MainTitle").html(htmlstring);
+            $("#RightTitle").html("Mold ID: " +@Model.MoldDataID);
+
+            $("#MainMoldHidnID").val(@Model.MoldDataID);
+        }
+
+    });
+
+    function CreateMoldData() {
+        $.ajax({
+            url: '/DetailMoldInfo/MoldDetails?ID=-1',
+            type: 'Get',
+            success: function (data) {
+               var tb = $("#MoldTb").html(data);
+                    $("#MoldCategoryID, #DepartmentID, #ProductLine, #ProductPart, #MoldResinType, #MoldCav, #SteelFactor, #PlasticFactor, #LocationFactor, #CustomerID, #CustomerComments").attr('disabled', 'disabled');
+                    $(".PropDis").attr('disabled', 'disabled');
+                    $('.nav-link').not('.active').addClass('disabled');
+                    $("#MoldName").removeAttr("disabled");
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function EditMoldData()
+    {
+        $(".PropDis").attr('disabled', false);
+        $("#MoldCav, #MoldCategoryID, #DepartmentID, #ProductLine, #ProductPart, #MoldResinType, #CustomerID, #Comments, #CustomerComments").attr('disabled', false);
+    }
+
+    function SavePreviousMold()
+    {
+        var PrchsePric = $("#PurchasePrice").val().replace(/\,/g, '');
+        var Prchsedata = parseFloat(PrchsePric).toFixed(2);
+
+        $("#PurchasePrice").val(addCommas(Prchsedata));
+
+        var TotalShots = $("#TotalShots").val();
+        $("#TotalShots").val(addCommas(TotalShots));
+
+        var obj = new Object();
+        obj.MoldDataID = $("#MoldDataID").val();
+        obj.MoldName = $("#MoldName").val();
+        obj.MoldDesc = $("#MoldDesc").val();
+        $(".active").find("td").eq(1).html($("#MoldDesc").val());
+        obj.ModelNumber = $("#ModelNumber").val();
+        obj.SerialNumber = $("#SerialNumber").val();
+        obj.MoldCyclesPerMinute = $("#MoldCyclesPerMinute").val().replace(/\,/g, '');
+        obj.MoldCategoryID = $("#MoldCategoryID").val();
+        obj.DepartmentID = $("#DepartmentID").val();
+        obj.ProductLine = $("#ProductLine").val();
+        obj.ProductPart = $("#ProductPart").val();
+        obj.DoD = $("#DoD").val();
+        obj.TotalShots = $("#TotalShots").val().replace(/\,/g, '');
+        obj.MoldResinType = $("#MoldResinType").val();
+        obj.MoldCav = $("#MoldCav").val();
+        obj.CavityTotal = $("#CavityTotal").val();
+        obj.PlasticFactor = $("#PlasticFactor").val();
+        obj.SteelFactor = $("#SteelFactor").val();
+        obj.MoldNozzleSize = $("#MoldNozzleSize").val();
+        obj.MoldSprueSize = $("#MoldSprueSize").val();
+        obj.MoldRunnerSize = $("#MoldRunnerSize").val();
+        obj.MoldGateSize = $("#MoldGateSize").val();
+        obj.MoldResinVendor = $("#MoldResinVendor").val();
+        obj.MoldResinVendorPhone = $("#MoldResinVendorPhone").val();
+        obj.MoldProjEngFirstName = $("#MoldProjEngFirstName").val();
+        obj.MoldProjEngLastName = $("#MoldProjEngLastName").val();
+        obj.MoldProjEngPhone = $("#MoldProjEngPhone").val();
+        obj.MoldDateBuilt = $("#MoldDateBuilt").val();
+        obj.DateAcquired = $("#DateAcquired").val();
+        obj.PurchasePrice = $("#PurchasePrice").val().replace(/\,/g, '');
+        obj.DateRetired = $("#DateRetired").val();
+        obj.LocationFactor = $("#LocationFactor").val();
+        obj.PF = $("#PF").val();
+        obj.SF = $("#SF").val();
+        obj.LF = $("#LF").val();
+        obj.CustomerID = $("#CustomerID").val();
+        obj.CustomerComments = $("#CustomerComments").val();
+        obj.Comments = $("#Comments").val();
+
+        $.ajax({
+            url: '/DetailMoldInfo/SaveMoldFocusOut',
+            Type: 'Post',
+            data: obj,
+            success: function (data)
+            {
+
+            },
+
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+    $("#SaveBtnMoldDetails").click(function ()
+    {
+        var PrchsePric = $("#PurchasePrice").val().replace(/\,/g, '');
+        var Prchsedata = parseFloat(PrchsePric).toFixed(2);
+
+        $("#PurchasePrice").val(addCommas(Prchsedata));
+
+        var TotalShots = $("#TotalShots").val();
+        $("#TotalShots").val(addCommas(TotalShots));
+
+        var obj = new Object();
+        obj.MoldDataID = $("#MoldDataID").val();
+        obj.MoldName = $("#MoldName").val();
+        obj.CompanyID = $("#MainCompanyID").val();
+        obj.MoldDesc = $("#MoldDesc").val();
+
+        obj.ModelNumber = $("#ModelNumber").val();
+        obj.SerialNumber = $("#SerialNumber").val();
+        obj.MoldCyclesPerMinute = $("#MoldCyclesPerMinute").val().replace(/\,/g, '');
+        obj.MoldCategoryID = $("#MoldCategoryID").val();
+        obj.DepartmentID = $("#DepartmentID").val();
+        obj.ProductLine = $("#ProductLine").val();
+        obj.ProductPart = $("#ProductPart").val();
+        obj.DoD = $("#DoD").val();
+        obj.TotalShots = $("#TotalShots").val().replace(/\,/g, '');
+        obj.MoldResinType = $("#MoldResinType").val();
+        obj.MoldCav = $("#MoldCav").val();
+        obj.CavityTotal = $("#CavityTotal").val();
+        obj.PlasticFactor = $("#PlasticFactor").val();
+        obj.SteelFactor = $("#SteelFactor").val();
+        obj.MoldNozzleSize = $("#MoldNozzleSize").val();
+        obj.MoldSprueSize = $("#MoldSprueSize").val();
+        obj.MoldRunnerSize = $("#MoldRunnerSize").val();
+        obj.MoldGateSize = $("#MoldGateSize").val();
+        obj.MoldResinVendor = $("#MoldResinVendor").val();
+        obj.MoldResinVendorPhone = $("#MoldResinVendorPhone").val();
+        obj.MoldProjEngFirstName = $("#MoldProjEngFirstName").val();
+        obj.MoldProjEngLastName = $("#MoldProjEngLastName").val();
+        obj.MoldProjEngPhone = $("#MoldProjEngPhone").val();
+        obj.MoldDateBuilt = $("#MoldDateBuilt").val();
+        var MoldDateBuilt = $("#MoldDateBuilt").val();
+
+        obj.DateAcquired = $("#DateAcquired").val();
+        var DateAcquired = $("#DateAcquired").val();
+
+        obj.PurchasePrice = $("#PurchasePrice").val().replace(/\,/g, '');
+        obj.DateRetired = $("#DateRetired").val();
+        var DateRetired = $("#DateRetired").val();
+
+        obj.LocationFactor = $("#LocationFactor").val();
+        obj.PF = $("#PF").val();
+        obj.SF = $("#SF").val();
+        obj.LF = $("#LF").val();
+        obj.CustomerID = $("#CustomerID").val();
+        obj.CustomerComments = $("#CustomerComments").val();
+
+        obj.Comments = $(".editable").html();
+
+        jQuery.ajaxSettings.traditional = true;
+
+
+        $.ajax({
+            url: '/DetailMoldInfo/SaveMoldFocusOut?MoldDateBuilt=' + MoldDateBuilt + '&DateAcquired=' + DateAcquired + '&DateRetired=' + DateRetired,
+            Type: 'Post',
+            data: obj,
+            cache: false,
+            success: function (data) {
+            },
+
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    $("#MoldForm").submit(function (e)
+    {
+        var MoldNumber = $("#MoldName").val();
+        if (MoldNumber == "") {
+            Swal.fire("Please Insert Mold Number First.");
+            return false;
+        }
+
+        var obj = new Object();
+        obj.MoldDataID = $("#MoldDataID").val();
+        obj.CompanyID = $("#MainCompanyID").val();
+        obj.MoldName = $("#MoldName").val();
+        obj.MoldDesc = $("#MoldDesc").val();
+        obj.ModelNumber = $("#ModelNumber").val();
+        obj.SerialNumber = $("#SerialNumber").val();
+        obj.MoldCyclesPerMinute = $("#MoldCyclesPerMinute").val().replace(/\,/g, '');
+        obj.MoldCategoryID = $("#MoldCategoryID").val();
+        obj.DepartmentID = $("#DepartmentID").val();
+        obj.ProductLine = $("#ProductLine").val();
+        obj.ProductPart = $("#ProductPart").val();
+        obj.DoD = $("#DoD").val();
+        obj.TotalShots = $("#TotalShots").val().replace(/\,/g, '');
+        obj.MoldResinType = $("#MoldResinType").val();
+        obj.MoldCav = $("#MoldCav").val();
+        obj.CavityTotal = $("#CavityTotal").val();
+        obj.PlasticFactor = $("#PlasticFactor").val();
+        obj.SteelFactor = $("#SteelFactor").val();
+        obj.MoldNozzleSize = $("#MoldNozzleSize").val();
+        obj.MoldSprueSize = $("#MoldSprueSize").val();
+        obj.MoldRunnerSize = $("#MoldRunnerSize").val();
+        obj.MoldGateSize = $("#MoldGateSize").val();
+        obj.MoldResinVendor = $("#MoldResinVendor").val();
+        obj.MoldResinVendorPhone = $("#MoldResinVendorPhone").val();
+        obj.MoldProjEngFirstName = $("#MoldProjEngFirstName").val();
+        obj.MoldProjEngLastName = $("#MoldProjEngLastName").val();
+        obj.MoldProjEngPhone = $("#MoldProjEngPhone").val();
+        obj.MoldDateBuilt = $("#MoldDateBuilt").val();
+        obj.DateAcquired = $("#DateAcquired").val();
+        obj.PurchasePrice = $("#PurchasePrice").val().replace(/\,/g, '');
+        obj.DateRetired = $("#DateRetired").val();
+        obj.LocationFactor = $("#LocationFactor").val();
+        obj.LF = $("#LF").val();
+        obj.CustomerID = $("#CustomerID").val();
+        obj.CustomerComments = $("#CustomerComments").val();
+        obj.Comments = $("#Comments").val();
+
+
+        e.preventDefault();
+        $.ajax({
+            url: '/DetailMoldInfo/SaveMold',
+            Type: 'Post',
+            data: obj,
+            contentType: 'application/json',
+            success: function (data)
+            {
+               Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data.MoldDetails);
+                    $("#MainMoldDiv").html(data.MoldData);
+                    var ID = "#" + data.MoldID;
+
+                    $('.table-mold tr').each(function () {
+                        $(this).removeClass('active');
+                    });
+
+                    var index = $(ID).index();
+
+                    var $container = $(".MoldTble");
+                    var $scrollTo = $(ID);
+                    $(ID).addClass('active');
+
+                    $container.scrollTop(
+                        $scrollTo.offset().top - $container.offset().top + $container.scrollTop()
+                    );
+
+                    $container.animate({
+                        scrollTop: $scrollTop.offset().top = $container.offset().top + $container.scrollTop()
+                    });
+
+                })
+            },
+
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    function DeleteMold(ID)
+    {
+        if (ID == 0) {
+            Swal.fire('Please select Mold.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this. All related data will be deleted also.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/DetailMoldInfo/DeleteMold?ID=" + ID,
+                        type: "post",
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted',
+                                'Data has been deleted.',
+                                'success'
+                            ).then(function () {
+                                $("#MoldTb").html(data.MoldDetails);
+                                $("#MainMoldDiv").html(data.MoldData);
+                            })
+                        },
+                        error: function () {
+                        }
+                    });
+                }
+            })
+        }
+    }
+
+
+    //$("#MoldForm").on('focusin', '.Datepicker', function ()
+    //{
+    //    $(this).datepicker({
+    //        dateFormat: "mm/dd/yy",
+    //        changeMonth: true,
+    //        changeYear: true
+    //    });
+    //})
+
+    //$(".Datepicker").focusin(function () {
+    //    $(this).datepicker({
+    //        dateFormat: "mm/dd/yy",
+    //        changeMonth: true,
+    //        changeYear: true
+    //    });
+    //    $('#ui-datepicker-div').show();
+    //});
+
+    //$(".Datepicker").focusout(function () {
+    //    $('#ui-datepicker-div').hide();
+    //})
+
+    $("#CavityTotal").focusout(function () {
+        Swal.fire({
+            title: 'MoldTrax',
+            text: "This change will update the Mold Position field in the Layout Tab. Click OK to proceed or Cancel to undo.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.value) {
+                $(".loader__wrap").show();
+                var MoldID = $("#MoldDataID").val();
+                var CavityNo = $("#CavityTotal").val();
+                $.ajax({
+                    url: "/DetailMoldInfo/UpdateCavityLocation?MoldID=" + MoldID + "&CavityNo=" + CavityNo,
+                    type: "post",
+                    success: function (data) {
+                    },
+                    error: function () {
+                    }
+                });
+            }
+            else {
+                var dd = $("#CavityVal").val();
+                $("#CavityTotal").val(dd);
+            }
+        })
+    })
+
+    function CallsPopUp()
+    {
+        Swal.fire({
+            title: 'MoldTrax',
+            text: "This change will update the Mold Position field in the Layout Tab. Click OK to proceed or Cancel to undo.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+        })
+    }
+
+    $('.MoldInfoFocuOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+    $(function () {
+        $('.MoldInfoFocuOut').on('change', function () {
+
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblMoldData.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+            obj.OldColVal = $(this).data('val');
+            obj.DataKey = $("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.MoldDetails.ToString()';
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: { obj: obj },
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+
+    $("#MoldName, #MoldDesc").change(function ()
+    {
+        var mold = $("#MoldName").val();
+        var Desc = $("#MoldDesc").val();
+        $(".active").find("td").eq(0).html(mold);
+        $(".active").find("td").eq(1).html(Desc);
+
+        $("#MainTitle").html("Mold: " + mold + " " + "(" + Desc + ")");
+
+        var MoldID = $("#MoldDataID").val();
+
+        var obj = new Object();
+        obj.MoldDataID = MoldID;
+        obj.MoldName = $("#MoldName").val();
+        obj.MoldDesc = $("#MoldDesc").val();
+        obj.CompanyID =  $("#MainCompanyID").val();
+        obj.ModelNumber = $("#ModelNumber").val();
+        obj.SerialNumber = $("#SerialNumber").val();
+        obj.MoldCyclesPerMinute = $("#MoldCyclesPerMinute").val().replace(/\,/g, '');
+        obj.MoldCategoryID = $("#MoldCategoryID").val();
+        obj.DepartmentID = $("#DepartmentID").val();
+        obj.ProductLine = $("#ProductLine").val();
+        obj.ProductPart = $("#ProductPart").val();
+        obj.DoD = $("#DoD").val();
+        obj.TotalShots = $("#TotalShots").val().replace(/\,/g, '');
+        obj.MoldResinType = $("#MoldResinType").val();
+        obj.MoldCav = $("#MoldCav").val();
+        obj.CavityTotal = $("#CavityTotal").val();
+        obj.PlasticFactor = $("#PlasticFactor").val();
+        obj.SteelFactor = $("#SteelFactor").val();
+        obj.MoldNozzleSize = $("#MoldNozzleSize").val();
+        obj.MoldSprueSize = $("#MoldSprueSize").val();
+        obj.MoldRunnerSize = $("#MoldRunnerSize").val();
+        obj.MoldGateSize = $("#MoldGateSize").val();
+        obj.MoldResinVendor = $("#MoldResinVendor").val();
+        obj.MoldResinVendorPhone = $("#MoldResinVendorPhone").val();
+        obj.MoldProjEngFirstName = $("#MoldProjEngFirstName").val();
+        obj.MoldProjEngLastName = $("#MoldProjEngLastName").val();
+        obj.MoldProjEngPhone = $("#MoldProjEngPhone").val();
+        obj.MoldDateBuilt = $("#MoldDateBuilt").val();
+        obj.DateAcquired = $("#DateAcquired").val();
+        obj.PurchasePrice = $("#PurchasePrice").val().replace(/\,/g, '');
+        obj.DateRetired = $("#DateRetired").val();
+        obj.LocationFactor = $("#LocationFactor").val();
+        obj.LF = $("#LF").val();
+        obj.CustomerID = $("#CustomerID").val();
+        obj.CustomerComments = $("#CustomerComments").val();
+        obj.Comments = $("#Comments").val();
+        obj.PF = $("#PF").val();
+        obj.SF = $("#SF").val();
+        obj.LF = $("#LF").val();
+
+            if(mold != '')
+            {
+            $.ajax({
+                url: '/DetailMoldInfo/SaveMold',
+                Type: 'Post',
+                data: obj,
+                contentType: 'application/json',
+                success: function (data) {
+
+                    $("#MainMoldDiv").html(data.MoldData);
+                    $("#MoldTb").html(data.MoldDetails);
+                    var ID = "#" + data.MoldID;
+                    $('.table-mold tr').each(function () {
+                        $(this).removeClass('active');
+                    });
+
+                    $(ID).addClass('active')
+                    $('.nav-link').not('.active').removeClass('disabled');
+                },
+
+                error: function () {
+
+                }
+            })
+            }
+    })
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+
+    var editor = new MediumEditor('.editable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker'],
+            allowMultiParagraphSelection: 'true',
+            spellcheck: 'false'
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        },
+        keyboardCommands: false,
+    });
+
+</script>
+@*<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>*@

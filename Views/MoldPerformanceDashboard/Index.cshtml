@@ -1,0 +1,423 @@
+﻿
+@{
+    /**/
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    int RoleID = 2;
+
+    if (!string.IsNullOrWhiteSpace(Session["RoleID"].ToString()))
+    {
+        RoleID = Convert.ToInt32(Session["RoleID"]);
+    }
+}
+<style>
+    .pcoded-inner-content {
+        padding: 0;
+    }
+
+    .report_body .report_row {
+        margin: 0;
+    }
+
+    .report_body .report_col {
+        padding: 15px;
+    }
+
+    .card.box_design {
+        border-radius: 0;
+        background: #00000017;
+    }
+
+    fieldset {
+        border: 1px groove #ddd !important;
+        padding: 0 5px 0px 5px !important;
+        margin: 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    legend {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        width: auto;
+        padding: 0 10px;
+        border-bottom: none;
+        font-style: italic;
+        margin-bottom: 1px;
+    }
+
+    fieldset input {
+        line-height: 20px !important;
+        padding: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .report_header {
+        display: flex;
+    }
+
+    fieldset span {
+        font-size: 12px;
+        vertical-align: top;
+    }
+
+    .report_header h3 {
+        padding-top: 30px;
+    }
+
+    .btn_css button {
+        padding: 4px;
+        font-weight: 500;
+        margin-bottom: 0px;
+        font-size: 13px;
+        /*background: #404648;*/
+        border-radius: 0;
+        margin-top: 37px;
+    }
+    a.add_btn {
+        background: #087795;
+        background: #d71c33;
+        display: inline-flex;
+        margin-bottom: 6px;
+        border: none;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 2px;
+        letter-spacing: 1px;
+        font-weight: 500;
+        font-family: open sans,sans-serif;
+    }
+    .btn_css a {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+    .create_btn {
+        background: #03A9F4;
+        background: #231f20;
+    }
+   div#chart_div {
+    margin: 0;
+}
+    .btn_css input, .btn_css button, .btn_css a {
+        padding: 5px 11px;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    /*input[type="date"]::-webkit-clear-button {
+        display: none;
+    }*/
+
+    .date_icons::-webkit-calendar-picker-indicator {
+        color: rgba(0, 0, 0, 0);
+        opacity: 1;
+        display: block;
+        background: url(https://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+        width: 20px;
+        height: 20px;
+        border-width: thin;
+        margin-top: 10px;
+        margin-right: -5px;
+    }
+
+    /*input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+    }*/
+  
+
+</style>
+<div class="w-100 report_header">
+    <div class="w_40">
+        <h3 class="r_head">
+            Mold Performance Dashboard
+        </h3>
+    </div>
+    <div class="w_60">
+        <div class="w-100">
+            <div class="w_25 display_list">
+                <div id="MoldName" style="display:none">
+                    <label>Select a Mold</label>
+                    <select id="MoldID">
+                        <option value="0">--Show All--</option>
+                        @foreach (var x in ViewBag.MoldList)
+                        {
+                            <option value="@x.Value">@x.Text</option>
+                        }
+                    </select>
+                </div>
+            </div>
+            <div class="w_25">
+                <fieldset>
+                    <legend>Select a chart</legend>
+                    <div class="radio">
+                        <input type="radio" name="ChartType" id="ChartType" checked value="1" onchange="CallChartType(1)" /> <span>Stop Reason Charts</span>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="ChartType" id="ChartType" value="2" onchange="CallChartType(2)" /> <span>Defect & CA Charts</span>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" name="ChartType" id="ChartType" value="3" onchange="CallChartType(3)" /> <span>Tooling & Labor Charts</span>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w_45">
+                <fieldset>
+                    <legend>Date Criteria</legend>
+                    <div class="w-100">
+                        <div class="w_40">
+                            <label>Begin Date:</label>
+                        </div>
+                        <div class="w_60">
+                            <input id="StartDate" autocomplete="off" value="@Convert.ToDateTime(ViewBag.StDate).ToString("yyyy-MM-dd")" min="1979-12-31" type="date" class="form-control" />
+                            @*<input id="StartDate" value="@Convert.ToDateTime("04/01/2000").ToString("yyyy-MM-dd")" type="date" class="form-control" />*@
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <div class="w_40">
+                            <label>End Date:</label>
+                        </div>
+                        <div class="w_60">
+                            <input id="EndDate" autocomplete="off" value="@Convert.ToDateTime(ViewBag.EDate).ToString("yyyy-MM-dd")" min="1979-12-31" type="date" class="form-control" />
+                            @*<input id="EndDate" value="@Convert.ToDateTime("06/06/2018").ToString("yyyy-MM-dd")" type="date" class="form-control" />*@
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w_20 btn_css">
+                <button onclick="ShowChart()" class="del_btn">Refresh Chart</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrappers">
+    <div class="horizontal_scroll btn_css">
+        <div class="items_div" id="FirstDiv">
+            <a href="#" onclick="printDiv('LoadMainDiv')" target="_blank" class="add_btn">Print</a>
+            <a href="#" class="create_btn" onclick="CallViewDataFunc('ScheduleStopvsStop')">View Data</a>
+            <div id="LoadMainDiv"></div>
+        </div>
+        <div class="items_div" id="SecondDiv">
+            <a href="#" onclick="printDiv('MoldTopReason')" target="_blank" class="add_btn">Print</a>
+            <a href="#" class="create_btn" onclick="CallViewDataFunc('MoldStopReasonCosts')">View Data</a>
+            <div id="MoldTopReason"></div>
+        </div>
+        <div class="items_div" id="ThirdDiv">
+            <a href="#" onclick="printDiv('TopReason123')" target="_blank" class="add_btn">Print</a>
+            <a href="#" class="create_btn" onclick="CallViewDataFunc('XStopReason')">View Data</a>
+            <div id="TopReason123"></div>
+        </div>
+    </div>
+</div>
+<div class="card box_design">
+    <div class="card_body">
+    </div>
+</div>
+@*<div class="row">
+        <div class="col-md-3">
+            <select id="MoldName" style="display:none">
+                <option value="0"></option>
+                @foreach (var x in ViewBag.MoldList)
+                {
+                    <option value="@x.Value">@x.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-md-3">
+            <p>Select a chart</p>
+            <input type="radio" name="ChartType" id="ChartType" checked value="1" onchange="CallChartType(1)" /> 3 Stop Reason Charts<br>
+            <input type="radio" name="ChartType" id="ChartType" value="2" onchange="CallChartType(2)" /> Defect & CA Charts<br>
+            <input type="radio" name="ChartType" id="ChartType" value="3" onchange="CallChartType(3)" /> Tooling & Labor Charts<br>
+        </div>
+
+        <div class="col-md-3">
+            <p>Date Criteria</p>
+            <label>Begin Date:</label> <input id="StartDate" value="@Convert.ToDateTime("04/01/2000").ToString("yyyy-MM-dd")" type="date" class="form-control" /><br>
+            <label>End Date  :</label> <input id="EndDate" value="@Convert.ToDateTime("06/06/2018").ToString("yyyy-MM-dd")" type="date" class="form-control" />
+        </div>
+
+        <div class="col-md-3">
+            <button onclick="ShowChart()">Refresh Chart</button>
+        </div>
+    </div>*@
+
+
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $(".items_div").hide();
+    })
+
+
+    $("#StartDate").focusout(function ()
+    {
+        $("#StartDate").removeClass("date_icons");
+    })
+
+
+    $("#StartDate").focusin(function () {
+        $("#StartDate").addClass("date_icons");
+    })
+    
+
+    $("#EndDate").focusout(function () {
+        $("#EndDate").removeClass("date_icons");
+    })
+
+
+    $("#EndDate").focusin(function () {
+        $("#EndDate").addClass("date_icons");
+    })
+
+
+    function CallChartType(ID) {
+        debugger;
+
+        if (@RoleID == 1)
+        {
+            $("#MoldName").hide();
+        }
+        else
+        {
+            if (ID == 2 || ID == 3)
+            {
+            $("#MoldName").show();
+            }
+            else
+            {
+            $("#MoldName").hide();
+            }
+        }
+    }
+
+    function ShowChart() {
+        debugger;
+        var selectedMold = $("#MoldID").val();
+        var ChartType = $("#ChartType").val();
+        var StartDate = $("#StartDate").val();
+        var EndDate = $("#EndDate").val();
+        var MinimumDate = new Date("01/01/1900");
+
+        if (StartDate > EndDate) {
+            Swal.fire('Begin date cannot be greater than end date.');
+            return false;
+        }
+
+        if (StartDate == "" || EndDate == "")
+        {
+            Swal.fire('Enter begin and end date.')
+            return false;
+        }
+
+        if (Date.parse(StartDate) < Date.parse(MinimumDate))
+        {
+            Swal.fire('Please enter valid date.')
+            return false;
+        }
+
+        var Type = $('input[name=ChartType]:checked').val();
+        $(".items_div").hide();
+
+        $("#LoadMainDiv").html('');
+        $("#MoldTopReason").html('');
+        $("#TopReason123").html('');
+
+        $.ajax({
+            url: '/MoldPerformanceDashboard/ShowChart?MoldID=' + selectedMold + '&ChartType=' + Type + '&StartDate=' + StartDate + '&EndDate=' + EndDate,
+            type: 'Post',
+            success: function (data) {
+                debugger;
+                $("#LoadMainDiv").html(data.StopvsXStop);
+                $("#MoldTopReason").html(data.MoldStopReason);
+                $("#TopReason123").html(data.XStopReason);
+                $(".items_div").show();
+                if (Type == 1) {
+                    $("#ThirdDiv").show();
+                }
+                else {
+                    $("#ThirdDiv").hide();
+                }
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+
+        document.body.innerHTML = originalContents;
+    }
+
+
+    function CallViewDataFunc(str)
+    {
+        debugger;
+        var selectedMold = $("#MoldID").val();
+        var Type = $('input[name=ChartType]:checked').val();
+        var StartDate = $("#StartDate").val();
+        var EndDate = $("#EndDate").val();
+
+        if (Type == 1) {
+            //switch (str) {
+            //    case 'ScheduleStopvsStop':
+            //        window.location.href = "/MoldPerformanceDashboard/GetScheduledStopsXStops?StartDate=" + StartDate + "&EndDate=" + EndDate;
+
+            //    case 'MoldStopReasonCosts':
+            //        window.location.href = "/MoldPerformanceDashboard/GetStopReasonCosts?StartDate=" + StartDate + "&EndDate=" + EndDate;
+            //    case 'XStopReason':
+            //        window.location.href = "/MoldPerformanceDashboard/GetStopReasonCosts2?StartDate=" + StartDate + "&EndDate=" + EndDate;
+            //}
+            if (str == 'ScheduleStopvsStop') {
+                window.open("/MoldPerformanceDashboard/GetScheduledStopsXStops?StartDate=" + StartDate + "&EndDate=" + EndDate);
+            }
+            else if (str == 'MoldStopReasonCosts') {
+                window.open("/MoldPerformanceDashboard/GetStopReasonCosts?StartDate=" + StartDate + "&EndDate=" + EndDate);
+            }
+            else if(str == 'XStopReason')
+            {
+                window.open("/MoldPerformanceDashboard/GetStopReasonCosts2?StartDate=" + StartDate + "&EndDate=" + EndDate);
+            }
+        }
+        else if (Type == 2) {
+            if (str == 'ScheduleStopvsStop') {
+                window.open("/MoldPerformanceDashboard/CorrectiveActionReportData?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+            else {
+                window.open("/MoldPerformanceDashboard/MoldBLockandQuality?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+        }
+        else
+        {
+            if (str == 'ScheduleStopvsStop') {
+                window.open("/MoldPerformanceDashboard/CorrectiveActionReportData?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+                //window.open("/MoldPerformanceDashboard/LaborCostsFunc?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+            else {
+
+                window.open("/MoldPerformanceDashboard/CorrectiveActionReportData?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+                //window.open("/MoldPerformanceDashboard/ToolingCostFunc?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+        }
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        $('#navPerform').addClass('actives');
+        $("#HeaderTop").hide();
+    });
+</script>

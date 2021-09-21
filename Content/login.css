@@ -1,0 +1,204 @@
+body {
+  font-family: 'Quicksand', sans-serif;
+  /* font-family: 'Open Sans', sans-serif; */
+}
+label {
+    font-size: 14px;
+    color: #898989;
+    letter-spacing: 1px;
+}
+.bg_body{
+    background-color: #172b4d;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #525f7f;
+    text-align: left;
+}
+.login_main {
+    position: relative;
+}
+.upper_bg {
+    position: relative;
+    background: linear-gradient(87deg, #5e72e4 0, #825ee4 100%);
+    background: linear-gradient(87deg, #d81b32 0, #b7707c 100%);
+    padding-bottom: 10rem;
+    padding-top: 5rem;
+    padding-bottom: 13rem;
+    padding-top: 6rem;
+}
+.white_text {
+    color: #fff;
+    font-size: 27px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: 'Poppins', sans-serif;
+}
+.separator_div {
+    height: 60px;
+    bottom: 0;
+    position: absolute;
+    top: auto;
+    left: 0;
+    right: 0;
+    width: 100%;
+    transform: translateZ(0);
+    overflow: hidden;
+    pointer-events: none;
+}
+.separator_div svg {
+    bottom: 0;
+}
+.separator_div svg {
+    position: absolute;
+    pointer-events: none;
+}
+svg {
+    overflow: hidden;
+    vertical-align: middle;
+}
+.fill-default {
+    fill: #172b4d;
+}
+.login_box {
+    padding-bottom: 3rem;
+    margin-top: -8rem;
+    padding-bottom: 3rem;
+    margin-top: -16rem;
+}
+.justify-center {
+    justify-content: center;
+}
+[class*="shadow"] {
+    transition: all 0.15s ease;
+}
+.card_box{
+    box-shadow: 0 0 2rem 0 rgba(136, 152, 170, 0.15);
+    border: 0;
+    background-color: #f7fafc;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
+    border-radius: 0.375rem;
+}
+.card_body {
+    flex: 1 1 auto;
+    padding: 1.5rem;
+}
+.input-group {
+    box-shadow: 0 1px 3px rgba(50, 50, 93, 0.15), 0 1px 0 rgba(0, 0, 0, 0.02);
+    border: 0;
+    transition: box-shadow .15s ease;
+    border-radius: 0.375rem;
+}
+.input-group-text {
+    border: 0;
+    box-shadow: none;
+    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    display: flex;
+    padding: 0.625rem 0.75rem;
+    color: #adb5bd;
+    background-color: #fff;
+    border-radius: 0.375rem;
+}
+.form-control {
+    border-left: 0;
+    padding-left: 0;
+    border: 0;
+    box-shadow: none;
+    display: block;
+    height: calc(2.75rem + 2px);
+    padding: 0.625rem 0.75rem;
+    line-height: 1.5;
+    color: #8898aa;
+    font-size: 14px;
+    background-color: #fff;
+    background-clip: padding-box;
+    border-radius: 0.375rem;
+    transition: all 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.login_btn {
+    color: #fff;
+    background-color: #5e72e4;
+    border-color: #5e72e4;
+    background-color: #d61b32;
+    border-color: #d71b31;
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    white-space: nowrap;
+    border: 1px solid transparent;
+    font-size: 15px;
+    line-height: 1.5;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    padding: 10px 20px;
+    margin: 20px 0;
+    border-radius: 4px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+.forget_div {
+  margin-top: 10px;
+}
+.text-light {
+    color: #ced4da;
+}
+a.text-light:hover, a.text-light:focus {
+    color: #b1bbc4 !important;
+    text-decoration: none;
+}
+.input-group .form-control:focus {
+    box-shadow: none;
+}
+small {
+    font-size: 80%;
+    font-weight: 400;
+}
+.card_header {
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+.card_header img {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    border-radius: calc(0.375rem - 1px) calc(0.375rem - 1px) 0 0;
+}
+p.errormsg {
+    text-align: center;
+    color: red;
+    padding-bottom: 5px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-transform: capitalize;
+}
+svg.feather {
+    width: 16px;
+    font-weight: 400;
+}
+@media (min-width: 992px){
+.card_body {
+    padding-left: 3rem !important;
+    padding-bottom: 3rem !important;
+    padding-right: 3rem !important;
+    padding-top: 3rem !important;
+}
+}
+@media (min-width: 992px){
+.pb-lg-8, .py-lg-8 {
+    padding-bottom: 6rem !important;
+  }
+.pt-lg-8, .py-lg-8 {
+    padding-top: 6rem !important;
+}
+}
+@media (min-width: 1200px){
+.separator_div {
+    height: 70px;
+}
+}

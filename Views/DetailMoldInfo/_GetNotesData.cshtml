@@ -1,0 +1,632 @@
+﻿@model IEnumerable<Moldtrax.Models.tblMoldDataNotes>
+@{
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    int TotalCount = 0;
+    foreach (var x in Model)
+    {
+        TotalCount += 1;
+    }
+
+    Layout = null;
+
+}
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        color: rgba(0, 0, 0, 0);
+        opacity: 1;
+        display: block;
+        background: url(http://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+        width: 20px;
+        height: 20px;
+        border-width: thin;
+        margin-top: 10px;
+        margin-right: -5px;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    input#MoldDataNotesDate {
+        height: 31px;
+    }
+
+    .w-15 {
+        width: 20%;
+        float: left;
+    }
+
+    .note-editor.note-frame {
+        margin-top: 3em;
+    }
+
+    .note-editor button {
+        width: auto !important;
+    }
+
+    .note-color-row .note-color-btn {
+        width: 20px !important;
+    }
+
+    #table_Notes button {
+        color: black;
+    }
+
+    .medium-editor-element {
+        display: block;
+        width: 100%;
+        padding: 4px;
+        /* font-size: 13px; */
+        line-height: 1.42857143;
+        color: #000;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out.15s,box-shadow ease-in-out .15s;
+        /* margin-bottom: 5px; */
+        overflow-y: auto;
+        height: 173px;
+        text-align: left;
+        word-break: break-word;
+    }
+    /* width */
+    .editablett::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .editablett::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .editablett::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        .editablett::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    .medium-editor-element ul {
+        padding-left: 16px;
+    }
+</style>
+
+@*<br>*@
+<div class="row">
+    <div id="BtnDiv" class="col-md-12 text-right btn_css">
+        <input type="button" id="AddNotesBtn" value="Add" class="add_btn" />
+        <input type="hidden" class="add_btn" value="Add" id="HidAddBtn" data-toggle="modal" data-target="#addNotesDM" />
+        <input type="hidden" class="SaveNotesBtn" onclick="SaveNotesData()" id="SaveNotesBtn" />
+        <input type="button" id="DeleteNotes" onclick="DeleteSelectedNotes()" class="delete_btn" value="Delete" />
+    </div>
+</div>
+
+@*<br>*@
+<div id="NotesHtml">
+    <div class="table-con" id="table">
+        <table class="table table-responsive table-bordered table-condensed table-striped" id="table_Notes">
+            <thead>
+                <tr>
+                    <th><input type='checkbox' class='SelectAll' id='Notescheckall' value="0" name='checkname' /></th>
+                    <th class="date_memo">&nbsp; Date &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;  &nbsp;<span class="bwt_width"></span> Memo</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                    <tr>
+                        <td class="td_check">
+                            <input type="checkbox" value='@x.MoldDataNotesAutoID' class="Subcheckbox" id="MoldTLID" name="checknameNote" />
+                        </td>
+                        <td>
+                            <div class="w-15">
+                                <input type="hidden" id="MoldDataID" name="MoldDataID" value="@x.MoldDataID" />
+                                <input type="hidden" id="MoldDataNotesAutoID" name="MoldDataNotesAutoID" value="@x.MoldDataNotesAutoID" />
+                                <input type="date" value="@(Convert.ToDateTime(x.MoldDataNotesDate).ToString("yyyy-MM-dd"))" class="SavesNotesFocus" id="MoldDataNotesDate" name="MoldDataNotesDate" />
+                            </div>
+                            <div class="w-100 SavesNotesFocus" id="Editor0">
+                                <textarea rows="6" autocomplete="off" id="MoldToolDescrip" name="MoldToolDescrip" class="MoldToolDescrip editablett SavesNotesFocus">@x.MoldDataNotesMemo</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <label class="red_total">Total Count: @TotalCount</label>
+</div>
+<button style="display:none;" id="Showtxtbtn" data-target="#MoldNotesPopup" data-toggle="modal"></button>
+
+<div class="modal fade" id="addNotesDM">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Notes</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-responsive table-bordered table-condensed table-striped" id="table_Notes">
+                    <thead>
+                        <tr>
+                            <th class="date_memo">&nbsp; Date &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;  &nbsp;<span class="bwt_width"></span> Memo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="w-15">
+                                    <input type="date" value="" class="form-control" id="AddMoldDataNotesDate" name="MoldDataNotesDate" />
+                                </div>
+                                <div class="w-100">
+                                    <textarea rows="6" autocomplete="off" id="AddMoldToolDescrip" name="MoldToolDescrip" class="editable12"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="SaveNotesData" class="add_btn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="MoldNotesPopup">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="MainEditor" autocomplete="off" class="textarea-editor"></textarea>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <input type="button" id="SaveTxtbtn" class="add_btn" value="Save" />
+                        <input type="button" class="del_btn" value="Cancel" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+
+    
+    $('#MainEditor').summernote(
+        {
+            toolbar: [
+                ['style', ['style']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 450,                 // set editor height
+            minHeight: null,
+            popover: {
+                link: []
+            },// set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+    $('.note-editable').css('font-size', '12px');
+
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script>
+
+</script>
+<script>
+
+      if (@Permission == 2 || @Permission == 3) {
+        $("#DeleteNotes").hide();
+    }
+    else if (@Permission == 4 || @Permission == 5)
+    {
+        $("#DeleteNotes").hide();
+        $("#AddNotesBtn").hide();
+        $("#MoldDataNotesDate, #MoldToolDescrip").prop('disabled', true);
+        $('.SavesNotesFocus').css('pointer-events', 'none');
+    }
+
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+
+
+    $(function () {
+
+        $("#AddNotes").on('click', function () {
+            var MoldID = $("#MainMoldHidnID").val();
+
+            var d = new Date();
+            var n = d.toLocaleString([], { hour12: true });
+
+            var htmlstring = "<tr><td class='td_check'><input type='checkbox' value='-1' class='Subcheckbox' id='MoldTLID' name='checknameNote' /></td>";
+            htmlstring += "<td><div class='w-15'><input type='hidden' id='MoldDataID' name='MoldDataID' value='" + MoldID + "' />";
+            htmlstring += "<input type='hidden' id='MoldDataNotesAutoID' name='MoldDataNotesAutoID' value='0' />";
+            htmlstring += "<input type = 'date' value = '" + n + "' id = 'MoldDataNotesDate' name = 'MoldDataNotesDate' /></div>";
+            htmlstring += "<div class='w-100' ><textarea rows='6' id='MoldToolDescrip' name='MoldToolDescrip' class='editable12'></textarea></div></td></tr>";
+            $("#NotesHtml tbody").append(htmlstring);
+        })
+    });
+
+    $("#AddNotesBtn").click(function () {
+        $.ajax({
+            url: '/DetailMoldInfo/AddNotes',
+            type: 'Post',
+            success: function (data)
+            {
+                $("#MoldTb").html(data);
+                $(".editablett").attr('data-placeholder', '');
+            },
+            error: function () { }
+        })
+    })
+
+
+
+    $(document).ready(function () {
+        debugger;
+        $('#Notescheckall').click(function () {
+            debugger;
+            if ($(this).is(':checked'))
+                $('input[name="checknameNote"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="checknameNote"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="checknameNote"].Subcheckbox').click(function () {
+            debugger;
+            if ($('input:checkbox[name="checknameNote"].Subcheckbox').length == $('input:checkbox[name="checknameNote"].Subcheckbox:checked').length) {
+                $('input[name="checknameNote"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="checknameNote"].SelectAll').prop("checked", false);
+            }
+        })
+    })
+
+    $(".SavesNotesFocus").dblclick(function () {
+        debugger
+        $(this).closest("tr").attr('name', '1');
+        $(".editable").attr('data-placeholder', '');
+        var row = $(this);
+        var dd = $(this).closest("tr").find("td:eq(1)").find("#Editor0").html();
+        var newdata = $.parseHTML(dd);
+        $("#Showtxtbtn").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $(this).closest("tr").find("td:eq(1)").find("#MoldToolDescrip").attr('name', 'NewDDID');
+        $(this).closest("tr").find("td:eq(1)").find(".MoldToolDescrip").attr('name', 'NewDDID2');
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+
+    })
+
+    $("#SaveTxtbtn").click(function () {
+        debugger;
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+
+        $(".modal-backdrop").hide();
+        $(".popover-content").hide();
+    });
+
+
+    $(".del_btn").click(function () {
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+
+        $(".modal-backdrop").hide();
+    });
+
+
+    $("#table_Notes").on('focusout', '.SavesNotesFocus', function () {
+        $(this).closest("tr").attr('name', '1');
+    })
+
+    function SaveNotesData()
+    {
+        var model = new Array();
+
+        $("#table_Notes tbody tr").each(function () {
+            var row = $(this);
+
+            if ($(this).attr('name') == 1) {
+                var obj = new Object();
+
+                obj.MoldDataNotesAutoID = $(this).closest("tr").find('td:eq(1)').find("#MoldDataNotesAutoID").val();
+                obj.MoldDataID = $(this).closest("tr").find('td:eq(1)').find("#MainMoldHidnID").val();
+                obj.MoldDataNotesDate = $(this).closest("tr").find('td:eq(1)').find("#MoldDataNotesDate").val();
+
+                var Desc = $(this).closest("tr").find('td:eq(1)').find("#Editor0").html();
+                var NewDesc = $.parseHTML(Desc);
+                obj.MoldDataNotesMemo = NewDesc[1].innerHTML;
+                model.push(obj);
+            }
+        })
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/SaveSelectedNotesList',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+
+    function EditNotes() {
+        debugger;
+        var model = new Array();
+
+        $("#table_Notes tbody tr").each(function () {
+            var row = $(this);
+
+            var Tooling = {};
+
+            Tooling.MoldDataNotesAutoID = row.find("TD").eq(1).find("#MoldDataNotesAutoID").val();
+            Tooling.MoldDataID = row.find("TD").eq(1).find("#MoldDataID").val();
+            Tooling.MoldDataNotesDate = row.find("TD").eq(1).find("#MoldDataNotesDate").val();
+            Tooling.MoldDataNotesMemo = row.find("TD").eq(1).find("#MoldToolDescrip").val();
+
+            model.push(Tooling);
+        })
+
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/SaveNotes',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    }
+
+    function DeleteSelectedNotes() {
+        debugger;
+
+        //$(".loader__wrap").show();
+        var MoldID = $("#MainMoldHidnID").val();
+
+        var selID = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checknameNote].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+            if (selID == 0) {
+                $(this).closest("tr").remove();
+            }
+        });
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+        //else if (str == 0)
+        //{
+
+        //}
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    //$('input:checkbox[name=checknameNote].Subcheckbox:checked').each(function () {
+                    //    if (selID == -1)
+                    //    {
+                    //        $(this).closest("tr").remove();
+                    //    }
+                    //});
+                    $.ajax({
+                        url: "/DetailMoldInfo/DeleteNotes",
+                        type: "post",
+                        data: { str: str, MoldID: MoldID },
+                        success: function (data) {
+                            debugger;
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#MoldTb").html(data);
+                            })
+
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        debugger;
+    }
+
+    $(function () {
+        $("#table_Notes tbody tr").each(function () {
+            debugger;
+            var row = $(this);
+            var Date;
+            Date = row.find("TD").eq(1).find("#MoldDataNotesDate").val();
+            if (Date == '0001-01-01') {
+                row.find("TD").eq(1).find("#MoldDataNotesDate").val('');
+            }
+            //var newdate = Date.split(' ')[0].split("/").reverse().join("-");
+            //row.find("TD").eq(10).find("#MoldToolingDateOrdered").val(newdate);
+        })
+    })
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+
+    var editor = new MediumEditor('.editablett', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+</script>
+<script>
+    document.getElementById('table').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+    document.getElementById('table').style.height = window.innerHeight - 195 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

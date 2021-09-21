@@ -1,0 +1,412 @@
+﻿@model IEnumerable<Moldtrax.Models.tblDDMoldConfig>
+    @using Moldtrax.Models
+    @{ 
+        int Total = 0;
+        foreach (var x in Model)
+        {
+            Total += 1;
+        }
+    }
+<style>
+    .table-con {
+        height: 540px;
+    }
+</style>
+@*<br>*@
+<div class="row">
+
+    <div class="col-md-6 btn_css">
+        <input type="button" class="add_btn" value="A-Z" id="MoldAscOrder" />
+        <input type="button" class="del_btn" value="Z-A" id="MoldDescOrder" />
+    </div>
+
+        <div class="col-md-6 text-right btn_css">
+            <input type="button" class="back_btn" value="Back" onclick="doUndo()" />
+            <input type="button" class="add_btn" value="Add" id="NewMoldConfig" />
+            <input type="hidden" class="add_btn" id="OldMoldConfig" value="Add" data-toggle="modal" data-target="#MTMoldConfig" />
+
+            @*<input type="button" onclick="AddMoldConfig()" class="create_btn" value="Add" data-toggle="modal" data-target="#MTMoldConfig" />*@
+            @*<input type="button" onclick="SaveMoldConfig()" class="edit_btn" value="Save" />*@
+            <input type="button" onclick="DeleteMoldConfig()" class="delete_btn" value="Delete" />
+        </div>
+    </div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_body table-con" id="table3">
+                <table class="table table-bordered table-responsive" id="mold_config">
+                    <thead>
+                        <tr>
+                            <th class="th_detail1"><input type="checkbox" value="" id="MainMoldConfig" ></th>
+                            <th class="th_detail2">Mold Configuration</th>
+                            <th class="th_detail3">Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model)
+                        {
+                            <tr>
+                                <td><input type="checkbox" value="@x.ID" name="SubMoldConfig" class="Subcheckbox" ></td>
+                                <td>
+                                    <input type="hidden" id="ID" value="@x.ID" />
+                                    <input type="text" autocomplete="off" value="@x.MoldConfig" id="MoldConfig" class="form-control SaveMoldConfigFocusOut">
+                                </td>
+                                <td>
+                                    <input type="text" autocomplete="off" value="@x.MoldConfigDesc" id="MoldConfigDesc" class="form-control SaveMoldConfigFocusOut">
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <label class="red_total">Total: @Total</label>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="MTMoldConfig">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Mold Configuration</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="mold_config">
+                    <thead>
+                        <tr>
+                            <th class="th_detail2">Mold Configuration</th>
+                            <th class="th_detail3">Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" autocomplete="off" value="" id="AddMoldConfig" class="form-control">
+                                </td>
+                                <td>
+                                    <input type="text" value="" autocomplete="off" id="AddMoldConfigDesc" class="form-control">
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>            
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" class="add_btn" id="SaveMoldConfig" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*<div class="modal fade" id="MTMoldConfig">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Mold Configuration</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Mold Configuration</label>
+                        <input type="text" value="" id="AddMoldConfig" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label>Explanation</label>
+                        <input type="text" value="" id="AddMoldConfigDesc" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" class="add_btn" id="SaveMoldConfig" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+
+        </div>
+    </div>
+</div>*@
+<script>
+    document.getElementById('table3').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+    //$(document).ready(function () {
+    //    $('#mold_config').DataTable();
+    //});
+    $("#MoldAscOrder").click(function ()
+    {
+        $.ajax({
+            url: '/Administration/MoldAscedingOrder',
+            type: 'Post',
+            success: function (data)
+            {
+                $("#home").html(data);
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+    })
+
+
+    $("#MoldDescOrder").click(function () {
+        $.ajax({
+            url: '/Administration/MoldDescndingOrder',
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+            },
+            error: function () {
+
+            }
+
+        })
+    })
+    
+
+
+
+    $("#NewMoldConfig").click(function ()
+    {
+        $("#OldMoldConfig").click();
+
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+
+        $(".modal-backdrop").hide();
+
+    })
+
+    function AddMoldConfig() {
+        var htmlstring = "<tr><td><input type='checkbox' value='0'></td>";
+        htmlstring += "<td><input type = 'text' value='' id='MoldConfig' name = 'MoldConfig' class='form-control' ></td>";
+        htmlstring += "<td><input type='text' value='' id='MoldConfigDesc' name='MoldConfigDesc' class='form-control'></td></tr>";
+        $("#mold_config tbody").append(htmlstring);
+    }
+
+    $(".SaveMoldConfigFocusOut").focusout(function ()
+    {
+        var obj = new Object();
+        obj.ID = $(this).closest("tr").find('td:eq(1)').find("#ID").val();
+        obj.MoldConfig = $(this).closest("tr").find('td:eq(1)').find("#MoldConfig").val();
+        obj.MoldConfigDesc = $(this).closest("tr").find('td:eq(2)').find("#MoldConfigDesc").val();
+        $.ajax({
+
+            url: '/Administration/SaveMoldConfigFocusOut',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+              
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    $("#SaveMoldConfig").click(function ()
+    {
+        var obj = new Object();
+        obj.MoldConfig = $("#AddMoldConfig").val();
+        obj.MoldConfigDesc = $("#AddMoldConfigDesc").val();
+
+        $.ajax({
+
+            url: '/Administration/SaveMoldConfig',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                    $(".modal-backdrop").hide();
+
+                })
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    function SaveMoldConfig() {
+        var model = new Array();
+
+        $("#mold_config tbody tr").each(function () {
+            var row = $(this);
+
+            var db = {};
+
+            db.ID = row.find("TD").eq(1).find("#ID").val();
+            db.MoldConfig = row.find("TD").eq(1).find("#MoldConfig").val();
+            db.MoldConfigDesc = row.find("TD").eq(2).find("#MoldConfigDesc").val();
+            model.push(db);
+        })
+
+        $.ajax({
+
+            url: '/Administration/SaveMoldConfig',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    }
+
+
+
+    $(document).ready(function () {
+        debugger;
+        $('#MainMoldConfig').click(function () {
+            debugger;
+            if ($(this).is(':checked'))
+                $('input[name="SubMoldConfig"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="SubMoldConfig"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="SubMoldConfig"].Subcheckbox').click(function () {
+            debugger;
+            if ($('input:checkbox[name="SubMoldConfig"].Subcheckbox').length == $('input:checkbox[name="SubMoldConfig"].Subcheckbox:checked').length) {
+                $('input[name="SubMoldConfig"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="SubMoldConfig"].SelectAll').prop("checked", false);
+            }
+        })
+    })
+
+
+    function DeleteMoldConfig() {
+        debugger;
+        //var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        //var MoldID = $("#MainMoldHidnID").val();
+        var selID = new Array();
+        var str = '';
+        $('input:checkbox[name=SubMoldConfig].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+            //if (selID == 0) {
+            //    $(this).closest("tr").remove();
+            //}
+        });
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+
+                    $.ajax({
+                        url: "/Administration/DeleteMoldConfig",
+                        type: "post",
+                        data: { str: str },
+                        success: function (data) {
+                            debugger;
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#home").html(data);
+                            })
+
+                            //window.location.href = '/DetailMoldInfo/Index';
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        debugger;
+    }
+
+
+    
+    $('.SaveMoldConfigFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.SaveMoldConfigFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblDDMoldConfig.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.MoldConfiguration.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    document.getElementById('table3').style.height = window.innerHeight - 211 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

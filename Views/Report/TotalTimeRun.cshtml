@@ -1,0 +1,117 @@
+﻿
+@using ReportViewerForMvc;
+
+@{
+    ViewBag.Title = "TotalTimeRun";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-right">
+    <button onclick="window.close()" class="back_btn">Back</button>
+</div>
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)
+
+@*<section class="main_sec">
+        <div class="width_100">
+            <div class="width_50">
+                <h3>Total Time Run</h3>
+            </div>
+            <div class="width_50 text-right">
+                <h6>MoldTrax</h6>
+                <small>ISO-9011</small>
+            </div>
+        </div>
+        <div class="width_100">
+            <div class="width_60">
+                <p>Mold Name: *5912</p>
+                <p>Mold Desc: Ress-Nibble Rhq "A"</p>
+            </div>
+            <div class="width_40">
+                <p>Product Line: Ress</p>
+                <p>Product Part: 76-501 10</p>
+            </div>
+        </div>
+        <div class="width_100">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Start Date</th>
+                        <th>Start Time</th>
+                        <th>Stop Date</th>
+                        <th>Stop Time</th>
+                        <th>Press No.</th>
+                        <th>Config #1</th>
+                        <th>Config #2</th>
+                        <th>Total Time Run</th>
+                        <th>Cycles Run</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="td_left">4/9/2002</td>
+                        <td class="td_right">6:00</td>
+                        <td class="td_left">4/29/2002</td>
+                        <td class="td_right">1:00</td>
+                        <td class="td_right">17</td>
+                        <td class="td_left">Standard</td>
+                        <td class="td_left">&nbsp;</td>
+                        <td class="td_left">19 Days 19 Hours</td>
+                        <td class="td_right">140,190</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left">4/9/2002</td>
+                        <td class="td_right">6:00</td>
+                        <td class="td_left">4/29/2002</td>
+                        <td class="td_right">1:00</td>
+                        <td class="td_right">17</td>
+                        <td class="td_left">Standard</td>
+                        <td class="td_left">&nbsp;</td>
+                        <td class="td_left">19 Days 19 Hours</td>
+                        <td class="td_right">140,190</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left">4/9/2002</td>
+                        <td class="td_right">6:00</td>
+                        <td class="td_left">4/29/2002</td>
+                        <td class="td_right">1:00</td>
+                        <td class="td_right">17</td>
+                        <td class="td_left">Standard</td>
+                        <td class="td_left">&nbsp;</td>
+                        <td class="td_left">19 Days 19 Hours</td>
+                        <td class="td_right">140,190</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left">4/9/2002</td>
+                        <td class="td_right">6:00</td>
+                        <td class="td_left">4/29/2002</td>
+                        <td class="td_right">1:00</td>
+                        <td class="td_right">17</td>
+                        <td class="td_left">Standard</td>
+                        <td class="td_left">&nbsp;</td>
+                        <td class="td_left">19 Days 19 Hours</td>
+                        <td class="td_right">140,190</td>
+                    </tr>
+                    <tr>
+                        <td class="td_left">4/9/2002</td>
+                        <td class="td_right">6:00</td>
+                        <td class="td_left">4/29/2002</td>
+                        <td class="td_right">1:00</td>
+                        <td class="td_right">17</td>
+                        <td class="td_left">Standard</td>
+                        <td class="td_left">&nbsp;</td>
+                        <td class="td_left">19 Days 19 Hours</td>
+                        <td class="td_right">140,190</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="7">Don't know what it is: 5</th>
+                        <th>I ct wl: 57 Days, 13 Hours</th>
+                        <th>821,450</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>*@
+

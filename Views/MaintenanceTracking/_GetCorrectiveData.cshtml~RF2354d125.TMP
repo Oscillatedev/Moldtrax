@@ -1,0 +1,1155 @@
+﻿@model Moldtrax.Models.MainMaintenanceInstruction
+@{
+    int TotalCount = 0;
+    foreach (var x in Model.MainList)
+    {
+        TotalCount += 1;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+}
+
+<style>
+    .highlight12 {
+        background-color: #aaa;
+    }
+
+    .table-con {
+        height: 270px;
+    }
+
+    select option, select optgroup {
+        font-family: 'Roboto Mono', monospace !important;
+        font-size: 13px !important;
+    }
+
+    /*#getCorrectDataMT {
+        position: relative;
+    }
+
+    .modal-dialog {
+        position: fixed;
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+    }*/
+    #MaintenanceMain .btn_css {
+        margin: 5px 0;
+    }
+    button#addDefectRow {
+        float: right;
+        border: none;
+        color: white;
+        padding: 3px 12px;
+        border-radius: 2px;
+        letter-spacing: 1px;
+        font-family: 'Quicksand', sans-serif;
+        font-family: open sans,sans-serif;
+        margin-bottom: 3px;
+        font-size: 13px;
+        font-weight: 500;
+    }
+    td.CloseDefectRow {
+        font-size: 14px;
+        font-weight: bold;
+        color: #d71c33;
+    }
+</style>
+
+@*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />*@
+
+@*<br>*@
+<div class="row">
+    <div class="col-md-12 btn_css">
+        @*<input type="button" value="Add" class="create_btn" id="CreateCorrectiveData" />*@
+        <input type="hidden" value="Add" id="OldCorrectiveBtn" class="add_btn" data-toggle="modal" data-target="#getCorrectDataMT" />
+        <input type="button" value="Add" class="add_btn" id="NewCorrectiveBtn" />
+        <input type="hidden" id="SaveCorrectiveActionbtn" onclick="SaveCorrective()" />
+        @*<input type="button" value="Save" class="edit_btn" onclick="SaveCorrective()" />*@
+        <button type="button" onclick="CopyData()" id="CopyCorrecitveBtn" class="create_btn">Copy</button>
+        <button type="button" onclick="PasteData()" id="PasteCorrectiveBtn" class="add_btn">Paste</button>
+        <input type="button" class="delete_btn" id="DeleteCorrectivebtn" onclick="DeleteCorrective()" value="Delete Corrective Action" />
+    </div>
+    @*<div class="col-md-2 btn_css btn_css">
+        @*<button id="addDefectRow" class="add_btn">Add Defects</button>
+    </div>*@
+</div>
+<script>
+
+    $("#inner_table_corrective tbody tr:first").addClass('highlight12');
+    var RPID = $(".highlight12").find("td").eq(1).find("#DfctID").val();
+    $("#DefectRepaired").val('@ViewBag.RepairFixID');
+
+    $("#inner_table_corrective tbody tr").click(function () {
+        debugger
+        var selected = $(this).hasClass("highlight12");
+        if (!selected)
+            $("#inner_table_corrective tbody tr").removeClass("highlight12");
+        $(this).addClass("highlight12");
+
+        var RPID = $(this).find("td").eq(1).find("#correctiveid").val();
+
+        $.ajax({
+            url: '/MaintenanceTracking/GetDefectRepaired?TIRepID=' + RPID,
+            type: 'Get',
+            success: function (data)
+            {
+                $("#DefectRepaired").val(data);
+                @*$("#DeFectTable").empty();
+
+                for (var i = 0; i < data.length; i++) {
+                      var htmlstring = "<tr><td class='CloseDefectRow'>X</td>";
+                    htmlstring += "<td><input type='hidden' id='DefectID' value='" + data[i].DfctID + "' />";
+                    htmlstring += "<input type='hidden' id='TBLRepairID' value='" + data[i].RPRepairFixID + "' />";
+                    htmlstring += "<select class='form-control DefectRepaired' id='DefectRepaired'><optgroup label='Defects Repaired'><option value='0'></option>@foreach (var x in Model.DefctRep){<option value='@x.Value'>@x.Text</option>}</optgroup></select></td></tr>";
+                    $("#DeFectTable").append(htmlstring);
+                };
+
+                $("#DeFectTable tr").each(function () {
+                    var DefectID = $(this).closest("tr").find('td:eq(1)').find("#DefectID").val();
+                    $(this).closest("tr").find('td:eq(1)').find("#DefectRepaired").val(DefectID);
+                })*@
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+
+    //$("#DeFectTable").on('change', '.DefectRepaired', function () {
+
+    //    var DfctID = $(this).closest("tr").find("td:eq(1)").find("#DefectRepaired").val();
+    //    var TIRepID = $(".highlight12").find("td").eq(1).find("#correctiveid").val();
+    //    var tblID = $(this).closest("tr").find("td:eq(1)").find("#TBLRepairID").val();
+
+    //    $.ajax({
+    //        url: '/MaintenanceTracking/SaveDefectsRepaired?DfctID=' + DfctID + '&TIRepID=' + TIRepID + '&tblID=' + tblID,
+    //        type: 'Post',
+    //        success: function () {
+
+    //        },
+    //        error: function () {
+
+    //        }
+    //    })
+    //})
+
+    $("#DefectRepaired").change(function () {
+
+        var DfctID = $("#DefectRepaired").val();
+        //var DfctID = $(this).closest("tr").find("td:eq(1)").find("#DefectRepaired").val();
+        var TIRepID = $(".highlight12").find("td").eq(1).find("#correctiveid").val();
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveDefectsRepaired?DfctID=' + DfctID + '&TIRepID=' + TIRepID,
+            type: 'Post',
+            success: function () {
+
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+</script>
+<div class="row">
+    <div class="col-md-9">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Corrective Actions</h5>
+            </div>
+            <div class="card_body" id="corrective_action_mode">
+                <div class="table-con" id="table2">
+                    <table class="table table-bordered table-responsive" id="inner_table_corrective">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="SbChckAll" value=""></th>
+                                <th class="th_ca1">Date</th>
+                                <th class="th_ca2">Type</th>
+                                <th class="th_ca3">Tooling</th>
+                                <th class="th_ca4">Qty</th>
+                                <th class="th_ca5">Corrective Action</th>
+                                <th class="th_ca6">Repr Hrs</th>
+                                <th class="th_ca7">Technician</th>
+                                <th class="th_ca8">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model.MainList)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" name="chcknameCorrective" class="Subcheckbox" value="@x.TlReplID"></td>
+                                    <td>
+                                        <input type="hidden" id="correctiveid" value="@x.TlReplID" />
+                                        <input type="hidden" id="DfctID" value="@x.DfctID" />
+                                        @if (x.TSDate != null && x.TSDate != DateTime.MinValue)
+                                        {
+                                            <input type="text" autocomplete="off" value="@Convert.ToDateTime(x.TSDate).ToString("MM/dd/yyyy")" id="" name="TSDate" class="form-control TSDate CorrectiveActionFocusOut">
+                                        }
+                                        else
+                                        {
+                                            <input type="text" value="" id="" autocomplete="off" name="TSDate" class="form-control TSDate CorrectiveActionFocusOut">
+                                        }
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.TIType" id="TlType" />
+                                        <select id="Type" class="form-control CorrectiveActionFocusOut OnChangeFunc">
+                                            <option disabled>Corrective Action Type</option>
+                                            <option value="0"></option>
+                                            @foreach (var s in ViewBag.CorrectiveType)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.TlReplTooling" id="TlReplTooling" />
+                                        <select class="form-control CorrectiveActionFocusOut OnChangeFunc ReplacingTool" name="ReplacingTool" id="ReplacingTool">
+                                            <option disabled>MoldToolDescrip | POH</option>
+                                            <option value="0" style="display:none"></option>
+                                            @foreach (var s in ViewBag.NewTooling)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" autocomplete="off" value="@x.TlQuantity" id="TlQuantity" class="form-control CorrectiveActionFocusOut TlQuantity">
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.TlCorrectiveAction" id="TlCorrectiveAction" />
+                                        <select id="CorrectiveAction" class="form-control CorrectiveActionFocusOut OnChangeFunc">
+                                            <option disabled>Corrective Action</option>
+                                            <option value="0"></option>
+                                            @foreach (var s in ViewBag.CorrectiveAct)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input type="text" autocomplete="off" value="@x.TIRepairTime" id="TIRepairTime" class="form-control CorrectiveActionFocusOut TIRepairTime">
+
+                                        <input type="hidden" id="HTLSTime" value="@x.TlSTime" />
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.TlTechnician" id="TlTechnician" />
+                                        <select class="form-control CorrectiveActionFocusOut OnChangeFunc" id="Technician">
+                                            <option disabled>Technician</option>
+                                            @foreach (var s in ViewBag.Technician)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="CorrectiveActionFocusOut">
+                                        <button style="display:none;" id="ShowMaintxtbtn" data-target="#ModalCorrective_textarea" data-toggle="modal"></button>
+                                        <div id="Editor1">
+                                            <textarea id="TINotes" autocomplete="off" name="TINotes" class="TrblInseditable CorrectiveNotes CorrectiveActionFocusOut">@x.TINotes</textarea>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <label class="red_total">Total Count: @TotalCount</label>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Defects Repaired</h5>
+            </div>
+            <div class="card_body">
+                <select class="form-control" id="DefectRepaired">
+                    <optgroup label="Defects Repaired">
+                        <option value="0"></option>
+                        @foreach (var x in Model.DefctRep)
+                        {
+                            <option value="@x.Value">@x.Text</option>
+                        }
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="getCorrectDataMT">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Corrective Action Mode</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="inner_table_corrective1">
+                    <thead>
+                        <tr>
+                            <th class="th_ca1">Date</th>
+                            <th class="th_ca2">Type</th>
+                            <th class="th_ca3">Tooling</th>
+                            <th class="th_ca4">Qty</th>
+                            <th class="th_ca5">Corrective Action</th>
+                            <th class="th_ca6">Repr Hrs</th>
+                            <th class="th_ca7">Technician</th>
+                            <th class="th_ca8">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" autocomplete="off" value="" id="AddTSDate" class="form-control">
+                            </td>
+                            <td>
+                                <select id="AddType" class="form-control">
+                                    <option disabled>Corrective Action Type</option>
+                                    <option value="0"></option>
+                                    @foreach (var s in ViewBag.CorrectiveType)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" id="AddReplacingTool" name="AddReplacingTool">
+                                    <option value="0" style="display:none"></option>
+                                    <option disabled>MoldToolDescrip | POH</option>
+                                    @foreach (var s in ViewBag.NewTooling)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" autocomplete="off" value="" id="AddTlQuantity" class="form-control">
+                            </td>
+                            <td>
+                                <select id="AddCorrectiveAction" name="AddCorrectiveAction" class="form-control">
+                                    <option disabled>Corrective Action</option>
+                                    <option value="0"></option>
+                                    @foreach (var s in ViewBag.CorrectiveAct)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" autocomplete="off" value="" id="AddTlSTime" class="form-control">
+                            </td>
+                            <td>
+                                <select class="form-control" id="AddTechnician">
+                                    <option disabled>Technician</option>
+                                    <option value="0"></option>
+                                    @foreach (var s in ViewBag.Technician)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <input type="text" autocomplete="off" value="" id="AddTINotes" class="form-control">
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="SaveCorrectiveDataPop" class="add_btn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="ModalCorrective_textarea">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea class="textarea-editor" autocomplete="off" id="ShowTxtVal"></textarea>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveTxtbtn" class="add_btn">Save</button>
+                        <button class="del_btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+
+    @*$("#addDefectRow").click(function ()
+    {
+        var HtmlString = "<tr><td class='CloseDefectRow'>X</td>";
+        HtmlString += "<td><input type='hidden' id='DefectID' value='0' /><input type='hidden' id='TBLRepairID' value='0' /><select class='form-control DefectRepaired' id='DefectRepaired'><optgroup label='Defects Repaired'><option value='0'></option>@foreach (var x in Model.DefctRep){<option value='@x.Value'>@x.Text</option>}</optgroup></select></td></tr>";
+        $("#DeFectTable").append(HtmlString);
+    })*@
+
+    //$("#DeFectTable").on('click', '.CloseDefectRow', function () {
+    //    $(this).parent().remove();
+    //    var tblrepairID = $(this).closest("tr").find("td:eq(1)").find("#TBLRepairID").val();
+    //    $.ajax({
+    //        url: '/MaintenanceTracking/DeleteDefect?TBLID=' + tblrepairID,
+    //        type: 'Post',
+    //        success: function ()
+    //        {
+
+    //        },
+    //        error: function ()
+    //        {
+
+    //        }
+    //    })
+    //})
+
+    //$("#DeFectTable tbody tr").each(function ()
+    //{
+    //    var DefectID = $(this).closest("tr").find('td:eq(1)').find("#DefectID").val();
+    //    $(this).closest("tr").find('td:eq(1)').find("#DefectRepaired").val(DefectID);
+    //})
+
+    $('.textarea-editor').summernote(
+        {
+            toolbar: [
+                ['style', ['style']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 500,                 // set editor height
+            minHeight: null,
+            popover: {
+                link: []
+            },// set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+    $('.note-editable').css('font-size', '12px');
+    $(".medium-editor-placeholder").attr("data-placeholder", "");
+
+
+    document.getElementById('table2').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script>
+
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+
+    $("#AddTSDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+    if (@Permission == 2) {
+        $(".DeleteCorrectivebtn").hide();
+    }
+
+    else if (@Permission == 3)
+    {
+        $("#DeleteCorrectivebtn").hide();
+        $("#Type, #ReplacingTool, #TlQuantity, #CorrectiveAction, #TIRepairTime, #Technician, #TINotes, #DefectRepaired").attr("disabled", "disabled");
+        $(".TSDate").attr("disabled", "disabled");
+        $("#PasteCorrectiveBtn, #NewCorrectiveBtn, #CopyCorrecitveBtn").hide();
+    }
+
+    $(".TSDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+    $(".TIRepairTime").focusout(function ()
+    {
+        SaveCorrective();
+    })
+
+    var spacesToAdd = 2;
+    var biggestLength = 0;
+    $(".ReplacingTool option").each(function ()
+    {
+        //var Spl = $(this).text().split('|');
+        //var len = Spl[0].length;
+        if ($(this).text() != "") {
+            var len = $(this).text().length;
+            if (len > biggestLength) {
+                biggestLength = len;
+            }
+        }
+    });
+
+    $("#AddReplacingTool option").each(function () {
+        //var Spl = $(this).text().split('|');
+        //var len = Spl[0].length;
+        if ($(this).text() != "") {
+
+            var len = $(this).text().length;
+            if (len > biggestLength) {
+                biggestLength = len;
+            }
+        }
+    });
+
+    var padLength = biggestLength + spacesToAdd;
+
+    $(".ReplacingTool option").each(function () {
+        var parts = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var strLength = parts[0].length;
+            for (var x = 0; x < (padLength - strLength); x++) {
+                parts[0] = parts[0] + ' ';
+            }
+            $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+        }
+    });
+
+    $("#AddReplacingTool option").each(function () {
+        var parts = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var strLength = parts[0].length;
+            for (var x = 0; x < (padLength - strLength); x++) {
+                parts[0] = parts[0] + ' ';
+            }
+            $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+        }
+    });
+
+    $("#AddTlQuantity").focusout(function () {
+
+        debugger
+        var Qty = $("#AddTlQuantity").val();
+
+        if (Qty != "") {
+            var Tool = $("#AddReplacingTool option:selected").text();
+            var sd = Tool.split("|");
+            var NewPOH = parseInt(sd[1]) - parseInt(Qty);
+
+            $("#AddReplacingTool option:selected").text(sd[0] + "| " + NewPOH);
+        }
+    })
+
+    $(document).ready(function () {
+        debugger;
+        $("#inner_table_corrective tbody tr").each(function () {
+
+            var Val = $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option:selected").text();
+            var RealVal = $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option:selected").val();
+
+            var Num = Val.split("|");
+            var Qty = $(this).closest("tr").find('td:eq(4)').find("#TlQuantity").val();
+
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option")[0].value = RealVal;
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option")[0].innerHTML = Num[0];
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool").val(RealVal);
+
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option").css({ "background-color": "", "color": "" });
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option[value=" + RealVal + "]").css({ "font-style": "Arial" });
+        })
+
+        $('.ReplacingTool').change(function () {
+            debugger;
+
+            var Val = $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option:selected").text();
+            var RealVal = $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option:selected").val();
+            var Num = Val.split("|");
+
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option")[0].value = RealVal;
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option")[0].innerHTML = Num[0];
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool").val(RealVal);
+
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option").css({ "background-color": "", "color": "" });
+            $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+
+            $(this).closest("tr").find('td:eq(3)').find("#TlReplTooling").val(RealVal);
+            //$(this).closest("tr").find('td:eq(3)').find("#ReplacingTool").val(CN);
+        });
+
+    });
+
+    $(".TlQuantity").change(function ()
+    {
+        debugger;
+        var Qty = $(this).closest("tr").find('td:eq(4)').find("#TlQuantity").val();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        var ToolingID = $(this).closest("tr").find("td:eq(3)").find("#ReplacingTool").find('option:selected').val();
+        var Tool = $(this).closest("tr").find("td:eq(3)").find("#ReplacingTool").find('option:selected').text();
+
+        if (Qty != "") {
+
+            var CorrectiveID = $(this).closest("tr").find('td:eq(1)').find("#correctiveid").val();
+            var MoldID = $("#MoldResinType").val();
+
+            var Tooling = {};
+
+            Tooling.SetID = SetID;
+            Tooling.TSDate = $(this).closest("tr").find("TD:eq(1)").find("input[name='TSDate']").val();
+            Tooling.TIType = $(this).closest("tr").find("TD:eq(2)").find("#Type").val();
+            Tooling.TlReplTooling = $(this).closest("tr").find("td:eq(3)").find("#ReplacingTool").val();
+            Tooling.TlQuantity = $(this).closest("tr").find("td:eq(4)").find("#TlQuantity").val();
+            Tooling.TlCorrectiveAction = $(this).closest("tr").find("td:eq(5)").find("#CorrectiveAction").val();
+            Tooling.TlSTime = $(this).closest("tr").find("td:eq(6)").find("#TlSTime").val();
+            Tooling.TlTechnician = $(this).closest("tr").find("td:eq(7)").find("#Technician").val();
+            Tooling.TIRepairTime = $(this).closest("tr").find("td:eq(6)").find("#TIRepairTime").val();
+            Tooling.TINotes = $(this).closest("tr").find("td:eq(8)").find("#TINotes").val();
+            Tooling.TlReplID = $(this).closest("tr").find("td:eq(1)").find("#correctiveid").val();
+
+
+
+            $.ajax({
+                url: '/MaintenanceTracking/UpdatePoH?CID=' + CorrectiveID + '&MoldID=' + MoldID,
+                type: 'Post',
+                data: Tooling,
+                success: function (data) {
+                    debugger
+                    var result = "<select class='form-control CorrectiveActionFocusOut OnChangeFunc ReplacingTool' name='ReplacingTool' id='ReplacingTool'>";
+                    result += "<option value='0' style='display: none'></option>";
+                    result += "<option disabled>MoldToolDescrip | POH</option>"
+                    $(data).each(function (index, value) {
+                        result += "<option value='" + value.Value + "'>" + value.Text + "</option>"
+                    });
+                    result += "</select>";
+
+                   
+
+                    $(".ReplacingTool").html(result);
+
+                    var spacesToAdd = 2;
+                    var biggestLength = 0;
+                    $(".ReplacingTool option").each(function () {
+
+                        var len = $(this).text().length;
+                        if (len > biggestLength) {
+                            biggestLength = len;
+                        }
+                    });
+
+
+                    var padLength = biggestLength + spacesToAdd;
+                    $(".ReplacingTool option").each(function () {
+                        var parts = $(this).text().split('|');
+                        var strLength = parts[0].length;
+                        for (var x = 0; x < (padLength - strLength); x++) {
+                            parts[0] = parts[0] + ' ';
+                        }
+                        $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+                    });
+
+                 
+
+                    $("#inner_table_corrective tbody tr").each(function () {
+
+
+                        var CN = $(this).closest("tr").find('td:eq(3)').find("#TlReplTooling").val();
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool").val(CN);
+
+
+                        var Val = $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option:selected").text();
+                        var RealVal = $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option:selected").val();
+
+                        var Num = Val.split("|");
+                        var Qty = $(this).closest("tr").find('td:eq(4)').find("#TlQuantity").val();
+
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option")[0].value = RealVal;
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option")[0].innerHTML = Num[0];
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool").val(RealVal);
+
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option").css({ "background-color": "", "color": "" });
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+                        $(this).closest("tr").find('td:eq(3)').find("#ReplacingTool option[value=" + RealVal + "]").css({ "font-style": "Arial" });
+                    })
+
+                    //$(".highlight12").find("td").eq(3).find("#ReplacingTool").val(ToolingID);
+                },
+                error: function () {
+
+                }
+            })
+
+
+        }
+    })
+
+    $("#inner_table_corrective tbody tr").each(function () {
+        var row = $(this);
+
+        var Date = row.find("TD").eq(1).find("#TSDate").val();
+        if (Date == '0001-01-01') {
+            row.find("TD").eq(1).find("#TSDate").val('');
+        }
+
+        var df = row.find("TD").eq(2).find("#TlType").val();
+        row.find("TD").eq(2).find("#Type").val(df);
+
+        var CN = row.find("TD").eq(3).find("#TlReplTooling").val();
+        row.find("TD").eq(3).find("#ReplacingTool").val(CN);
+
+        var sd = row.find("TD").eq(5).find("#TlCorrectiveAction").val();
+        row.find("TD").eq(5).find("#CorrectiveAction").val(sd);
+
+        var sdd = row.find("TD").eq(7).find("#TlTechnician").val();
+        row.find("TD").eq(7).find("#Technician").val(sdd);
+
+        //var Time = row.find("TD").eq(6).find("#HTLSTime").val();
+        //if (Time == null) {
+        //    row.find("TD").eq(6).find("#TlSTime").val('');
+        //}
+    })
+
+    $("#NewCorrectiveBtn").click(function ()
+    {
+        $("#OldCorrectiveBtn").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+        $(".modal-backdrop").hide();
+        $(".medium-editor-placeholder").attr("data-placeholder", "");
+
+    })
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+
+    var editor = new MediumEditor('.TrblInseditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+    $(document).ready(function () {
+        $('#SbChckAll').click(function () {
+            if ($(this).is(':checked'))
+                $('input[name="chcknameCorrective"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="chcknameCorrective"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="chcknameCorrective"].Subcheckbox').click(function () {
+            if ($('input:checkbox[name="chcknameCorrective"].Subcheckbox').length == $('input:checkbox[name="chcknameCorrective"].Subcheckbox:checked').length) {
+                $('input[name="chcknameCorrective"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="chcknameCorrective"].SelectAll').prop("checked", false);
+            }
+
+        })
+
+    })
+
+    $(".CorrectiveActionFocusOut").focusout(function () {
+        $(this).closest("tr").attr('name', '1');
+    })
+
+    $("#SaveCorrectiveDataPop").click(function ()
+    {
+        var obj = new Object();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        var MoldID = $("#MoldResinType").val();
+        obj.SetID = SetID;
+        obj.TSDate = $("#AddTSDate").val();
+        obj.TIType = $("#AddType").val();
+        obj.TlReplTooling = $("#AddReplacingTool").val();
+        obj.TlQuantity = $("#AddTlQuantity").val();
+        obj.TlCorrectiveAction = $("#AddCorrectiveAction").val();
+        obj.TIRepairTime = $("#AddTlSTime").val();
+        obj.TlTechnician = $("#AddTechnician").val();
+        obj.TINotes = $("#AddTINotes").val();
+        obj.TlReplID = $("#Addcorrectiveid").val();
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveCorrective?MoldID=' + MoldID,
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MaintenanceMain").html(data);
+                    $(".modal-backdrop").hide();
+                    $(".medium-editor-placeholder").attr("data-placeholder", "");
+
+                    var LatestID = 0;
+                    $("#inner_table_corrective tbody tr").each(function () {
+                        var LatestmOLDid = parseInt($(this).closest("tr").find('td:eq(1)').find("#correctiveid").val());
+                        var NewLastestMoldID = LatestmOLDid;
+                        var NewLatestID = LatestID;
+
+                        if (NewLastestMoldID > NewLatestID) {
+                            LatestID = LatestmOLDid;
+                        }
+                    })
+
+                    $("#inner_table_corrective tbody tr").each(function () {
+                        if (LatestID == $(this).closest("tr").find('td:eq(1)').find("#correctiveid").val()) {
+
+                            $(this).click();
+                        }
+
+                    })
+
+                })
+            },
+            error: function () {
+            }
+        })
+    })
+
+    function SaveCorrective() {
+        var model = new Array();
+
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        if (SetID == null) {
+            //Swal.fire('You need to create Record first.')
+            return false;
+        }
+
+        $("#inner_table_corrective tbody tr").each(function () {
+            var row = $(this);
+            if ($(this).attr('name') == 1) {
+                var Tooling = {};
+
+                Tooling.SetID = SetID;
+                Tooling.TSDate = row.find("TD").eq(1).find("input[name='TSDate']").val();
+                Tooling.TIType = row.find("TD").eq(2).find("#Type").val();
+                Tooling.TlReplTooling = row.find("TD").eq(3).find("#ReplacingTool").val();
+                Tooling.TlQuantity = row.find("TD").eq(4).find("#TlQuantity").val();
+                Tooling.TlCorrectiveAction = row.find("TD").eq(5).find("#CorrectiveAction").val();
+                Tooling.TlSTime = row.find("TD").eq(6).find("#TlSTime").val();
+                Tooling.TlTechnician = row.find("TD").eq(7).find("#Technician").val();
+                Tooling.TIRepairTime = row.find("TD").eq(6).find("#TIRepairTime").val();
+                Tooling.TINotes = row.find("TD").eq(8).find("#TINotes").val();
+                Tooling.TlReplID = row.find("TD").eq(1).find("#correctiveid").val();
+
+                model.push(Tooling);
+            }
+        })
+
+        var MoldID = $("#MoldResinType").val();
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/SaveCorrectiveActionList',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+            },
+            error: function () {
+            }
+        })
+    }
+
+    function DeleteCorrective() {
+        var MoldID = $("#MoldResinType").val();
+        var selID = new Array();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        var str = '';
+        $('input:checkbox[name=chcknameCorrective].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+            }
+            if (selID == 0) {
+                $(this).closest("tr").remove();
+            }
+        });
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+
+                    $.ajax({
+                        url: "/MaintenanceTracking/DeleteCorrective",
+                        type: "post",
+                        data: { str: str, SetID: SetID, MoldID: MoldID },
+                        success: function (data) {
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#MaintenanceMain").html(data);
+                                $(".medium-editor-placeholder").attr("data-placeholder", "");
+                            })
+                            //window.location.href = '/DetailMoldInfo/Index';
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        debugger;
+    }
+
+    function CopyData() {
+        SaveCorrective();
+
+        var MoldID = $("#CopyMold").val();
+        var MainMoldID = $("#MoldResinType").val();
+
+        var model = new Array();
+        var str = '';
+        $('input:checkbox[name=chcknameCorrective].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var row = $(this).closest('tr');
+
+                var Tooling = {};
+                //Tooling.SetID = SetID;
+                Tooling.TSDate = row.find("TD").eq(1).find("input[name='TSDate']").val();
+                Tooling.TIType = row.find("TD").eq(2).find("#Type").val();
+                Tooling.TlReplTooling = row.find("TD").eq(3).find("#ReplacingTool").val();
+                Tooling.TlQuantity = row.find("TD").eq(4).find("#TlQuantity").val();
+                Tooling.TlCorrectiveAction = row.find("TD").eq(5).find("#CorrectiveAction").val();
+                Tooling.TIRepairTime = row.find("TD").eq(6).find("#TIRepairTime").val();
+                Tooling.TlTechnician = row.find("TD").eq(7).find("#Technician").val();
+                Tooling.TINotes = row.find("TD").eq(8).find("#TINotes").val();
+                Tooling.TlReplID = 0;
+
+                model.push(Tooling);
+            }
+        });
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/CopyCorrectiveData',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+            },
+            error: function () {
+            }
+        })
+    }
+
+    function PasteData() {
+
+        SaveCorrective();
+        var MainMoldID = $("#MoldResinType").val();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        if (SetID == null) {
+            //Swal.fire('You need to create Record first.')
+            return false;
+        }
+        $.ajax({
+            url: '/MaintenanceTracking/PasteCorrectiveDate?SetID=' + SetID + '&MoldID=' + MainMoldID,
+            type: 'Post',
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                $("#MaintenanceMain").html(data);
+                $(".medium-editor-placeholder").attr("data-placeholder", "");
+
+                var LatestID = 0;
+                $("#inner_table_corrective tbody tr").each(function () {
+                    var LatestmOLDid = parseInt($(this).closest("tr").find('td:eq(1)').find("#correctiveid").val());
+                    var NewLastestMoldID = LatestmOLDid;
+                    var NewLatestID = LatestID;
+
+                    if (NewLastestMoldID > NewLatestID) {
+                        LatestID = LatestmOLDid;
+                    }
+                })
+
+                $("#inner_table_corrective tbody tr").each(function () {
+                    if (LatestID == $(this).closest("tr").find('td:eq(1)').find("#correctiveid").val()) {
+
+                        $(this).click();
+                    }
+
+                })
+
+            },
+            error: function ()
+            {
+            }
+        })
+    }
+
+    $(".CorrectiveNotes").dblclick(function ()
+    {
+        debugger
+        $(".editable").attr('data-placeholder', '');
+        var row = $(this);
+        var dd = $(this).closest("tr").find("td:eq(8)").find("#Editor1").html();
+
+        var newdata = $.parseHTML(dd);
+        //$("#Showtxtbtn").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+
+        $("#ShowMaintxtbtn").click();
+
+        //$(".note-editable").html(dd);
+
+        $(this).closest("tr").find("td:eq(8)").find(".TrblInseditable").attr('name', 'NewDDID');
+        $(this).closest("tr").find("td:eq(8)").find("#TINotes").attr('name', 'NewDDID');
+
+        if (dd == "")
+        {
+            $('.note-editable').trigger('focus');
+        }
+        else
+        {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+
+    $("#SaveTxtbtn").click(function () {
+        debugger;
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+        $(".popover-content").hide();
+    });
+
+    $(".del_btn").click(function () {
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+    });
+
+</script>
+<script>
+    document.getElementById('table2').style.height = window.innerHeight - 496 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('table2a').style.height = window.innerHeight - 476 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

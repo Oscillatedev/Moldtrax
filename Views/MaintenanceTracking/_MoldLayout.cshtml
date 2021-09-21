@@ -1,0 +1,381 @@
+﻿@model Moldtrax.Models.LayoutData
+@{ 
+
+    int LocatioNo = 0;
+    int LocationID = 0;
+    int MoldID = ViewBag.MoldDataID;
+    foreach (var x in Model.tblCavityLocations)
+    {
+        LocatioNo = Convert.ToInt32(x.CavityLocationNumber);
+        LocationID = x.CavityLocationID;
+        break;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+}
+<style>
+    .table-con {
+        height: 210px;
+    }
+    .table_layout_left .table-con {
+        height: 287px;
+    }
+    #cavity_left {
+        overflow-y: auto;
+    }
+     /* width */
+    #cavity_left::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    #cavity_left::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    #cavity_left::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        #cavity_left::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+</style>
+@*<br />*@
+<div class="row">
+    <div class="col-md-2">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Mold Position</h5>
+            </div>
+            <div class="card_body table_layout_left" id="cavity_left">
+                @*<div class="table-con" id="table">*@
+                <table id="MainLayoutData" class="table table-mold MaintbleLayout table table-responsive">
+                    <tbody>
+                        @foreach (var x in Model.tblCavityLocations)
+                        {
+                            <tr onclick="CallCavityNum(@x.CavityLocationID,'@x.CavityLocationNumber', this)">
+                                <td>
+                                    <label  id="CavMoldHidVal">@x.CavityLocationNumber</label>
+                                    <input type="hidden" id="CavityLoc" value="@x.CavityLocationID" />
+                                </td>
+                                @*<td style="display:none">@x.CavityLocationID</td>*@
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @*</div>*@
+            </div>
+        </div>
+        @*<button type="button" id="DeletedSelectedMoldPosition" class="del_btn">Deleted Mold <br> Position Number</button>*@
+
+    </div>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-inline ip_small btn_css">
+                    <label>Mold Position Number</label>
+                    <input type="text" autocomplete="off" id="MoldPositionNum" value="@LocatioNo" class="form-control">
+                    <input type="hidden" id="MoldPositionID" value="@LocationID" />
+                    <input type="button" id="AddMoldPosition" value="Add" class="del_btn" />
+                    <input type="button" id="DeletedSelectedMoldPosition" value="Deleted Selected Mold Position" class="add_btn" />
+                    @*<button type="button" id="DeletedSelectedMoldPosition" class="del_btn">Delete Selected Cavity ID's</button>*@
+                    <input type="button" id="DeletedAllMoldPosition" value="Delete All Mold Positions" class="create_btn" />
+                </div>
+                @*<input type="button" id="DeletedSelectedMoldPosition" value="Deleted Selected Mold Position" class="add_btn" />*@
+            </div>
+        </div>
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>History of Active Cavity ID Numbers</h5>
+            </div>
+            <div class="card_body" id="CavityNum">
+                @Html.Partial("_tblCavityNumberData", Model.tblCavityNumber)
+            </div>
+        </div>
+    </div>
+        </div>
+
+<script>
+
+
+
+
+    $('.MaintbleLayout tbody tr:first').addClass('active');
+
+     if (@Permission == 3) {
+        $("#DeletedAllMoldPosition").hide();
+        $("#DeletedSelectedMoldPosition").hide();
+        //$("#AddMoldPosition").hide();
+        //$("#CreateActiveCavity").hide();
+    }
+    else if (@Permission == 6)
+    {
+        $(".del_btn, .add_btn, .create_btn").hide();
+        $(".CallingFocusOut, .CavityDateInstalled, .CavityDateRemoved").attr("disabled", "disabled");
+
+    }
+
+
+
+    function CallCavityNum(ID,CID,e)
+    {
+
+        $('.table-mold tr').each(function () {
+            $(this).removeClass('active');
+        });
+
+        $(e).addClass('active');
+
+        $("#MoldPositionNum").val(CID);
+        $("#MoldPositionID").val(ID);
+
+        $.ajax({
+            url: '/MaintenanceTracking/GetCavityNumberList?CavityID=' + ID,
+            type: 'Get',
+            success: function (data)
+            {
+                $("#CavityNum").html(data);
+
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+    }
+
+
+    $("#AddMoldPosition").click(function ()
+    {
+        var MoldID = $("#MoldResinType").val();
+        var MoldposNum = $("#MoldPositionNum").val();
+        var NewCav = true;
+        $("#MainLayoutData tbody tr").each(function () {
+            var row = $(this);
+            var Trouble;
+            Trouble = row.find("TD").eq(0).find("#CavMoldHidVal").text();
+            if (Trouble == MoldposNum) {
+                $(this).click();
+                NewCav = false;
+            }
+        });
+
+        if(NewCav == true) {
+
+            $.ajax({
+                url: '/MaintenanceTracking/CreateNewCavityLocation?MoldID=' + MoldID + '&CavityNum=' + encodeURIComponent(MoldposNum),
+                type: 'Post',
+                success: function (data)
+                {
+                    $("#MaintenanceMain").html(data);
+                    $(".modal-backdrop").hide();
+                    $("#MainLayoutData tbody tr").each(function () {
+                        var row = $(this);
+                        var Trouble;
+                        Trouble = row.find("TD").eq(0).find("#CavMoldHidVal").text();
+                        if (Trouble == MoldposNum) {
+                            $(this).click();
+                            NewCav = false;
+                        }
+                    });
+                },
+                error: function () {
+
+                }
+            })
+        }
+
+    })
+
+
+
+    $("#MoldPositionNum").focusout(function ()
+    {
+        //    var data = $("#MoldPositionNum").val();
+        //   $("#MainLayoutData tbody tr").each(function () {
+        //        var row = $(this);
+        //        var Trouble;
+        //       Trouble = row.find("TD").eq(0).find("#CavMoldHidVal").text();
+        //        if (Trouble == data) {
+        //            $(this).click();
+        //        }
+        //});
+
+
+        var MoldID = $("#MoldResinType").val();
+        var MoldposNum = $("#MoldPositionNum").val();
+        var NewCav = true;
+        $("#MainLayoutData tbody tr").each(function () {
+            var row = $(this);
+            var Trouble;
+            Trouble = row.find("TD").eq(0).find("#CavMoldHidVal").text();
+            if (Trouble == MoldposNum) {
+                $(this).click();
+                NewCav = false;
+            }
+        });
+
+        //if(NewCav == true) {
+
+        //    $.ajax({
+        //        url: '/MaintenanceTracking/CreateNewCavityLocation?MoldID=' + MoldID + '&CavityNum=' + encodeURIComponent(MoldposNum),
+        //        type: 'Post',
+        //        success: function (data)
+        //        {
+        //            $("#MaintenanceMain").html(data);
+        //            $(".modal-backdrop").hide();
+        //            $("#MainLayoutData tbody tr").each(function () {
+        //                var row = $(this);
+        //                var Trouble;
+        //                Trouble = row.find("TD").eq(0).find("#CavMoldHidVal").text();
+        //                if (Trouble == MoldposNum) {
+        //                    $(this).click();
+        //                    NewCav = false;
+        //                }
+        //            });
+        //        },
+        //        error: function () {
+
+        //        }
+        //    })
+        //}
+
+    })
+
+
+    @*$("#AddMoldPosition").click(function ()
+    {
+        var data = $("#MoldPositionNum").val();
+        var MoldID = @MoldID;
+
+        $.ajax({
+            url: '/MaintenanceTracking/CreateMoldPosition?Data=' + data + '&MoldID=' + MoldID,
+            type: 'POST',
+            success: function (data)
+            {
+                $("#MaintenanceMain").html(data);
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+
+
+    })*@
+
+    $("#DeletedSelectedMoldPosition").click(function () {
+        var CavityID = $("#MoldPositionID").val();
+        var MoldID = $("#MoldResinType").val();
+
+        if (CavityID == 0) {
+            Swal.fire('Please select Mold')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/MaintenanceTracking/DeleteSelectedMoldPosition?ID=" + CavityID + "&MoldID=" + MoldID,
+                        type: "post",
+                        success: function (data) {
+                            //$("#PaymentDiv").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire(
+                                'Deleted',
+                                'Data has been deleted.',
+                                'success'
+                            ).then()
+                            {
+                                $("#MaintenanceMain").html(data);
+                            }
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+    })
+  
+
+     $("#DeletedAllMoldPosition").click(function ()
+    {
+       var CavityID = $("#MoldPositionID").val();
+
+        if (CavityID == 0) {
+            Swal.fire('Please select Mold.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/MaintenanceTracking/DeleteAllMoldPosition?MoldID="+@MoldID,
+                        type: "post",
+                        success: function (data) {
+                            //$("#PaymentDiv").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire(
+                                'Deleted',
+                                'Data has been deleted.',
+                                'success'
+                            ).then()
+                            {
+                                $("#MaintenanceMain").html(data);
+                            }
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+    })
+
+    $('.table-mold tr').each(function () {
+        var row = $(this);
+
+
+    });
+
+</script>
+<script> 
+    document.getElementById('cavity_left').style.height = window.innerHeight - 427 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

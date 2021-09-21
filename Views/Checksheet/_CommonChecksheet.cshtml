@@ -1,0 +1,20 @@
+﻿@model IEnumerable<Moldtrax.ViewMoldel.tblCategoryViewModel>
+
+
+@foreach (var x in Model)
+{
+<div class="row" style="margin-top: 10px;">
+    <div class="col-md-12">
+        <div class="card_header">
+            <h5 class="main_top_head">@x.CategoryName</h5>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="table-con check_tab1" id="table_cs1">
+            @Html.Partial("_LastShotInspection", x.ChecksheetData)
+        </div>
+    </div>
+</div>
+}

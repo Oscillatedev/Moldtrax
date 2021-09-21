@@ -1,0 +1,55 @@
+﻿@{ 
+    Layout = null;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card_header">
+            <h5>Add</h5>
+        </div>
+    </div>
+
+</div>
+<div class="row" id="">
+    <div class="col-md-12">
+        <table class="table table-bordered table-responsive" id="table_layout">
+            <thead>
+                <tr>
+                    <th>Active</th>
+                    <th>Cavity ID</th>
+                    <th>Date Installed</th>
+                    <th>Date Removed</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align:center;">
+                        <input type="hidden" id="ActiveCavity" value="" />
+                        <input type="hidden" id="CavityNumID" value="" />
+                        <input type="checkbox" value="" id="CavityActive" class="CallingFocusOut" name="CavityActive" />
+                    </td>
+                    <td class="layout_td_1">
+                        <input type="hidden" id="CavityLocID" value="" />
+                        <input type="text" autocomplete="off" class="form-control" value="" id="CavityNumberID" name="CavityNumberID" />
+                    </td>
+                    <td class="layout_td_2">
+                        <input type="date" autocomplete="off" class="form-control" value="" id="CavityDateInstalled" name="CavityDateInstalled" />
+                    </td>
+                    <td class="layout_td_3">
+                        <input type="date" autocomplete="off" class="form-control" value="" id="CavityDateRemoved" name="CavityDateRemoved" />
+                    </td>
+                    <td class="layout_td_4">
+                        <input type="text" autocomplete="off" class="form-control" value="" id="CavityNotes" name="CavityNotes" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12 text-right btn_css">
+        <input type="submit" id="btnsubmit" value="Save" class="add_btn" />
+        <input type="button" class="del_btn" id="CnclBtn" value="Cancel" />
+    </div>
+</div>

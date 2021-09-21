@@ -1,0 +1,624 @@
+﻿@model IEnumerable<Moldtrax.Models.tblTSGuide>
+@using Moldtrax.Models
+@{
+    int TotalCount = 0;
+
+    foreach (var x in Model)
+    {
+        TotalCount += 1;
+    }
+
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+}
+<style>
+    .MyFile {
+        visibility: hidden;
+    }
+
+    .editor_div .editable.medium-editor-element {
+        display: block;
+        width: 100%;
+        padding: 4px;
+        /*font-size: 13px;*/
+        line-height: 1.42857143;
+        color: #000;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out.15s,box-shadow ease-in-out .15s;
+        /* margin-bottom: 5px; */
+        overflow-y: auto;
+        height: 173px;
+        text-align: left;
+        word-break: break-word;
+    }
+    /* width */
+    .editor_div .editable::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .editor_div .editable::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .editor_div .editable::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        .editor_div .editable::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+
+    ::selection {
+        color: #000;
+        /* WebKit/Blink Browsers */
+        background-color: #b1d7fe;
+    }
+
+    ::-moz-selection {
+        color: #ccc;
+        /* Gecko Browsers */
+        background-color: #b1d7fe;
+    }
+
+    .editable,
+    .editable:focus {
+        outline: 0px solid transparent;
+    }
+
+        .editable::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+            color: transparent !important;
+        }
+
+        .editable::-moz-placeholder { /* Firefox 19+ */
+            color: transparent !important;
+        }
+
+        .editable:-ms-input-placeholder { /* IE 10+ */
+            color: transparent !important;
+        }
+
+        .editable:-moz-placeholder { /* Firefox 18- */
+            color: transparent !important;
+        }
+    /*popup css*/
+
+    /* width */
+    div#ShowTxtVal::-webkit-scrollbar {
+        width: 10px;
+    }
+    /* Track */
+    div#ShowTxtVal::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    /* Handle */
+    div#ShowTxtVal::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+        /* Handle on hover */
+        div#ShowTxtVal::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    .table-con {
+        height: 311px;
+    }
+    .modal-dialog {
+        top: 0;
+        right: 0;
+    }
+</style>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+@*<br>*@
+<div class="row">
+    <div class="col-md-12 text-right btn_css" id="TrbleDiv">
+        <a class="add_btn" href="~/DropdownTemplateFormat/TroubleShooterData.xlsx"><i class="fas fa-download"></i> Download Template</a>
+        <button id="UploadTroubleShooter" class="delete_btn"><i class="fas fa-upload"></i> Upload Data</button>
+        <input type="hidden" class="add_btn" value="Upload Template" id="MainTroubleBtnUploadtemplate" data-toggle="modal" data-target="#UploadTemplate" />
+        <input type="button" id="AddTroubleShtr" class="add_btn" onclick="CreateTrobleShooter()" value="Add" />
+        @*<input type="button" id="EditTroubleShtr" onclick="EditTroubleShtr()" class="edit_btn" value="Save" />*@
+        <input type="hidden" id="SaveTroubleMaineBtn" onclick="EditTroubleShtr()" />
+        <button type="button" id="CopyShooterGuide" class="create_btn" data-toggle="modal" data-target="#Modal_textarea1">Copy</button>
+        <input type="button" id="DeleteTroubleShtr" onclick="DeleteSelectedTroubleShooter()" class="del_btn" value="Delete" />
+    </div>
+</div>
+
+@*<br>*@
+<div id="TroubleShooterHtml">
+    <div class="table-con" id="table2">
+        <table class="table table-responsive table-bordered table-condensed table-striped" id="table_troubleCreate">
+            <thead>
+                <tr>
+                    <th><input type='checkbox' class='SelectAll' id='Quotecheckall' value="0" name='checkname' /></th>
+                    <th>No Type</th>
+                    <th>Defect Term</th>
+                    <th>Defect or Task Explaination</th>
+                    <th>Probable Cause</th>
+                    <th>Corrective Action</th>
+                    <th>Preventative Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                    <tr>
+                        <td class="td_check">
+                            <input type="checkbox" value='@x.TSGuide' class="Subcheckbox" name="checkname" />
+                        </td>
+                        <td class="table_first_div">
+                            <div class="full_width">
+                                <div class="w-100">
+                                    @*@Html.DropDownList(x.TSType, ViewBag.NoType as SelectList)*@
+                                    @*@Html.DropDownList(x.TSType, ViewBag.NoType as SelectList, "--Select Runner Type--", new { htmlAttributes = new { } })*@
+                                    <input type="hidden" id="TsTypeVal" value="@x.TSType" />
+                                    <input type="hidden" id="TSGuide" value="@x.TSGuide" />
+                                    <select id="TSType" name="TSType" class="CallingFocusOut12">
+                                        <option></option>
+                                        @foreach (var i in ViewBag.NoType)
+                                        {
+                                            <option value="@i.Value">@i.Text</option>
+                                        }
+                                    </select>
+                                </div>
+                                @*@Html.DropDownListFor(x.TSType, ViewBag.NoType as SelectList, "--Select Runner Type--", new { htmlAttributes = new { @class = "form-control" } })*@
+                                <div class="w-100">
+                                    @*<label for="AddImg" class="btn btn-danger">Add Images</label>*@
+                                    @*<button onclick="OpenImg()" class="add_btn">Add Images</button>*@
+                                    <button class="add_btn">Add Image</button>
+                                </div>
+                                <div class="w-100">
+                                    <button  class="del_btn">Delete Image</button>
+                                </div>
+                                <div class="w-100">
+                                    <input type="file" value="Add Image" id="AddImg" onclick="this.value = null;" name="AddImg" class="MyFileCont" />
+                                </div>
+                                <div class="w-100">
+                                    @*<input type="file" value="Add Image" id="DelImg" class="MyFile" />*@
+                                </div>
+                            </div>
+                        </td>
+                        <td id="SecondDiv" class="table_sec_div">
+                            <div class="w-100">
+                                <textarea autocomplete="off" id="DefectTerm" class="form-control DefectT CallingFocusOut12">@x.TSDefects</textarea>
+                                @*<input type="text" id="DefectTerm" value="@x.TSDefects" class="form-control DefectT" />*@
+                                <div id="UpdatedImg">
+                                    @if (x.ImagePath != null)
+                                    {
+                                        <img id="UploadedFile" class="ImageSrc" src="@x.ImagePath" />
+                                    }
+                                    else
+                                    {
+                                        <img id="UploadedFile" class="ImageSrc" />
+                                    }
+                                    @*@x.TSImage*@
+                                    @*<img id="myImg" src="~/Content/images/logo.png" style="width:100%;max-width:300px" />*@
+                                </div>
+                            </div>
+                        </td>
+                        <td class="table_third_div">
+                            <div id="editor1" class="editor_div editor1c">
+                                <textarea autocomplete="off" rows="12" id="TSExplanation" class="editable CallingFocusOut12">@x.TSExplanation</textarea>
+                                <button style="display:none;" id="Showtxtbtn" data-target="#Modal_textarea" data-toggle="modal"></button>
+                            </div>
+                        </td>
+                        <td class="table_fourth_div">
+                            <div id="editor2" class="editor_div editor2c">
+                                <textarea rows="12" id="TSProbCause" autocomplete="off" class="editable CallingFocusOut12">@x.TSProbCause</textarea>
+                            </div>
+                        </td>
+                        <td class="table_fifth_div">
+                            <div id="editor3" class="editor_div editor3c">
+                                <textarea rows="12" id="TSSolution" autocomplete="off" class="editable CallingFocusOut12">@x.TSSolution</textarea>
+                            </div>
+                        </td>
+                        <td class="table_six_div">
+                            <div id="editor4" class="editor_div editor4c">
+                                <textarea rows="12" id="TSPreventAction" autocomplete="off" class="editable CallingFocusOut12">@x.TSPreventAction</textarea>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <label class="red_total">Total Count: @TotalCount</label>
+</div>
+
+<div class="modal" id="Modal_textarea">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="ShowTxtVal" autocomplete="off" class="textarea-editor"></textarea>
+                @*<div id="ShowTxtVal" class="editable"></div>*@
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveTxtbtn" class="add_btn">Save</button>
+                        <button class="del_btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="Modal_textarea1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            @*<div class="modal-header">
+                    <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+                </div>*@
+            <div class="modal-body">
+                <label>Select Mold</label>
+                <select id="CopyMold">
+                    <option>Select Mold</option>
+                    @foreach (var x in ViewBag.MoldConfigList)
+                    {
+                        <option value="@x.Value">@x.Text</option>
+                    }
+                </select>
+                @*<br />*@
+                @*<div id="ShowTxtVal" class="editable"></div>*@
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveCopyMold" class="add_btn">Save</button>
+                        <button class="del_btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="UploadTemplate">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload Template</h4>
+            </div>
+            <div class="modal-body">
+                <form id="ImportTroubleShooterFile" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="form-group top_margin col-md-12">
+                            <lable class="update_label"><b>Excel File: </b></lable>
+                            <input type="file" id="postedFile" name="postedFile" />
+                        </div>
+                        <div class="btn_css col-md-12 text-right p_top">
+                            <button type="submit" class="add_btn" id="Submit" name="Submit"><i style="display:none;" id="Spinner" class="fa fa-spinner fa-spin"></i> Upload</button>
+                            <button type="button" id="ModalID" class="del_btn" data-dismiss="modal">Close</button>
+                            @*<input class="savebtns" type="submit" id="Submit" name="Submit" value="Submit" />*@
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div id="imgModal" class="modal_img">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="img01">
+</div>
+@*<script src="~/Scripts/Trouble Shooter/TroubleShooter.js"></script>*@
+<script src="~/Scripts/Trouble Shooter/TroubleShooterMaintenance.js"></script>
+
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    $('.textarea-editor').summernote(
+        {
+            toolbar: [
+              ['style', ['style']],
+              ['fontsize', ['fontsize']],
+              ['font', ['bold', 'italic', 'underline', 'clear']],
+              ['fontname', ['fontname']],
+              ['color', ['color']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['height', ['height']],
+              ['insert', ['link', 'picture', 'hr']],
+              ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 500,                 // set editor height
+            minHeight: null,
+            popover: {
+                link: []
+            },// set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+    $('.note-editable').css('font-size', '13px');
+    $(".medium-editor-placeholder").attr("data-placeholder", "");
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+@*<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">*@
+<script>
+    $(document).on("focus", ".MyClass", function () {
+        $(this).removeAttr('placeholder');
+    });
+</script>
+<script>
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+
+     if (@Permission == 2 || @Permission == 3) {
+        $("#DeleteTroubleShtr").hide();
+    }
+
+    else if (@Permission == 4 || @Permission == 5 || @Permission == 6)
+    {
+        $(".del_btn, .add_btn").hide();
+        $("#DeleteTroubleShtr").hide();
+        $("#TSType, #DefectTerm, #TSProbCause, #TSExplanation, #TSSolution, #TSPreventAction").prop('disabled', true);
+        $(".add_btn").prop('disabled', true);
+        $("#AddTroubleShtr, #CopyDetailTrouble, #Addbtn, #DeleBtn").hide();
+
+        $('.editable, .note-editable').attr('contenteditable', false);
+        $("#SaveTxtbtn, #UploadTroubleShooter, #DownloadTroubleTempl, #CopyShooterGuide").hide();
+    }
+
+    document.getElementById('table2').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+
+    $(".MyFileCont").change(function () {
+        //$(this).closest("tr").find('td:eq(2)').find("#UploadedFile");
+        var ImgUpload = $(this).closest("tr").find('td:eq(1)').find("#AddImg");
+        var TsGuide = $(this).closest("tr").find('td:eq(1)').find("#TSGuide").val();
+        var ImgDiv = $(this).closest("tr").find('td:eq(2)').find("#UploadedFile");
+        var DefectT = $(this).closest("tr").find('td:eq(2)').find(".DefectT").val();
+
+        var file = ImgUpload[0];
+
+        var File1 = ImgUpload[0];
+
+        //var readImg = new FileReader();
+
+        //readImg.readAsDataURL(file.files[0]);
+        //readImg.onload = function (e) {
+
+        //    ImgDiv.attr('src', e.target.result).fadeIn();
+        //};
+
+        var formData = new FormData();
+        formData.append(File1.files[0].name, File1.files[0]);
+
+        formData.append('TsGuide', TsGuide);
+
+        $.ajax({
+            url: '/MaintenanceTracking/UplaodImage?TsGuide=' + TsGuide,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                @*@FilePatah = data;*@
+                @*var sds = @Server.MapPath("~/TroubleShooterImage/" + FilePatah);*@
+                //var img = "<img id='UploadedFile' class='ImageSrc123' src='~/TroubleShooterImage/" + data + "' />";
+                ImgDiv.attr('src', data);
+
+                //$(this).closest("tr").find('td:eq(2)').find("#UpdatedImg").html("asdasda asdasdasdasd asdasd");
+            },
+            error: function () { }
+
+
+        });
+
+    });
+
+    $("#UploadTroubleShooter").click(function () {
+        $("#MainTroubleBtnUploadtemplate").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+
+        $(".modal-backdrop").hide();
+    })
+
+
+    $("#ImportTroubleShooterFile").submit(function (e) {
+        debugger;
+        $("#Spinner").show();
+        e.preventDefault();
+        var MainMoldID = $("#MoldResinType").val();
+
+        var fd = new FormData();
+        var files = $('#postedFile')[0].files[0];
+        fd.append('postedFile', files);
+        $(".loader__wrap").show();
+        $.ajax({
+            url: '/MaintenanceTracking/ExportTroubleData?MID=' + MainMoldID,
+            type: 'Post',
+            data: fd,
+            dataType: 'html',
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                $("#ModalID").click();
+                $("#MaintenanceMain").html(data);
+            },
+            error: function () {
+            }
+        })
+    })
+
+    $('.CallingFocusOut12').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.CallingFocusOut12').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblTSGuide.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.TroubleshootGuide.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+
+
+    $(".CallingFocusOut12").focusout(function () {
+        $(this).closest("tr").attr('name', '1');
+    });
+
+
+
+
+    //$(".CallingFocusOut12").focusout(function () {
+    //    var obj = new Object();
+    //    obj.MoldDataID = $("#MoldResinType").val();
+    //    obj.TSType = $(this).closest("tr").find('td:eq(1)').find("#TSType").val();
+    //    obj.TSGuide = $(this).closest("tr").find('td:eq(1)').find("#TSGuide").val();
+    //    obj.TSDefects = $(this).closest("tr").find('td:eq(2)').find("#DefectTerm").val();
+    //    obj.ImagePath = $(this).closest("tr").find('td:eq(2)').find("#UploadedFile").attr('src');
+    //    obj.TSExplanation = $(this).closest("tr").find('td:eq(3)').find("#TSExplanation").val();
+    //    obj.TSProbCause = $(this).closest("tr").find('td:eq(4)').find("#TSProbCause").val();
+    //    obj.TSSolution = $(this).closest("tr").find('td:eq(5)').find("#TSSolution").val();
+    //    obj.TSPreventAction = $(this).closest("tr").find('td:eq(6)').find("#TSPreventAction").val();
+
+    //    $.ajax({
+
+    //        url: '/MaintenanceTracking/SaveTroubleShooter',
+    //        type: 'Post',
+    //        data: obj,
+    //        success: function () {
+    //        },
+    //        error: function () {
+
+    //        }   
+    //    })
+    //});
+
+    $("#SaveCopyMold").click(function () {
+        var MoldID = $("#CopyMold").val();
+        var MainMoldID = $("#MoldResinType").val();
+        var model = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checkname].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var row = $(this).closest('tr');
+                var ImgD = row.find("TD").eq(1).find("#AddImg");
+                var Trouble = {};
+                Trouble.TSType = row.find("TD").eq(1).find("#TSType").val();
+                //Trouble.TSGuide = row.find("TD").eq(1).find("#TSGuide").val();
+                Trouble.TSGuide = 0;
+                Trouble.TSDefects = row.find("TD").eq(2).find("#DefectTerm").val();
+                Trouble.ImagePath = row.find("TD").eq(2).find("#UploadedFile").attr('src');
+                Trouble.TSExplanation = row.find("TD").eq(3).find("#TSExplanation").val();
+                Trouble.TSProbCause = row.find("TD").eq(4).find("#TSProbCause").val();
+                Trouble.TSSolution = row.find("TD").eq(5).find("#TSSolution").val();
+                Trouble.TSPreventAction = row.find("TD").eq(6).find("#TSPreventAction").val();
+                Trouble.MoldDataID = MoldID;
+                model.push(Trouble);
+            }
+        });
+
+        if (model.length == 0) {
+            return false;
+        }
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/PasteCopyTroubleShooter?MainMoldID=' + MainMoldID,
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Item has been successfully copied.',
+                    type: "success"
+                }).then(function () {
+                    $("#MaintenanceMain").html(data);
+                    $(".medium-editor-placeholder").attr("data-placeholder","");
+                    $(".modal-backdrop").hide();
+                })
+            },
+            error: function () {
+
+            }
+        });
+    })
+</script>
+<script>
+    document.getElementById('table2').style.height = window.innerHeight - 447 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

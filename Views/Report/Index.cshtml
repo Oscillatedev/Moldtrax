@@ -1,0 +1,562 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    fieldset {
+        border: 1px groove #ddd !important;
+        padding: 10px 20px 10px 20px !important;
+        margin: 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    legend {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        width: auto;
+        padding: 0 10px;
+        border-bottom: none;
+        font-style: italic;
+        margin-bottom: 1px;
+    }
+
+    fieldset input {
+        line-height: 20px !important;
+        padding: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .m-b-20 {
+        margin-bottom: 20px;
+    }
+
+    .btn_css button {
+        width: 105px;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    #fasttrax_reports img.ui-datepicker-trigger {
+        background-repeat: no-repeat;
+        z-index: 9999;
+        background-position: center !important;
+        background-size: auto !important;
+        float: right;
+        position: absolute;
+        top: 8px;
+        right: 10px;
+    }
+    img.ui-datepicker-trigger {
+        margin-top: 0;
+        margin-right: 0;
+    }
+    img.ui-datepicker-trigger {
+    display: none;
+}
+</style>
+<div class="w-100 report_header">
+    <h3 class="r_head">
+        Report Criteria
+    </h3>
+</div>
+<div class="card box_design">
+    <div class="card_body">
+        <div class="row m-b-20">
+            <div class="col-md-6">
+                <fieldset>
+                    <legend>Type</legend>
+                    <div class="radio">
+                        <input type="radio" id="Type" name="Type" onchange="CallType(1)" checked value="1" /> <span>Statistical</span>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" id="Type" name="Type" onchange="CallType(2)" value="2" /> <span>Reference</span>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="col-md-6">
+                <fieldset>
+                    <legend>Mold</legend>
+                    <select id="MoldDataID" onchange="MoldDataIDDrop()" class="form-control">
+                        <option value="0">--Select Mold--</option>
+                        @foreach (var x in ViewBag.MoldDataID)
+                        {
+                            <option value="@x.Value">@x.Text</option>
+                        }
+                    </select>
+                </fieldset>
+            </div>
+        </div>
+        <div class="row m-b-20">
+            <div class="col-md-12">
+                <fieldset>
+                    <legend>Time Period</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Begin:</label>
+                            <select id="StartDateVal" class="form-control">
+                                <option></option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label>End:</label>
+                            <select id="EndDateVal" class="form-control">
+                                <option></option>
+                            </select>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="row m-b-20">
+            <div class="col-md-12">
+                <fieldset>
+                    <legend>Reports</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>Statistical</label>
+                            <div class="radio">
+                                <input type="radio" name="Statistical" id="Statistical" class="StatisticalRadioBtn" checked value="1" /> <span>Repair Sheet</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Statistical" name="Statistical" class="StatisticalRadioBtn" value="2" /> <span>Maintenance Timeline</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Statistical" name="Statistical" class="StatisticalRadioBtn" value="3" /> <span>Defect Cost Analysis</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Statistical" name="Statistical" class="StatisticalRadioBtn" value="4" /> <span>Defect Tracking</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Statistical" name="Statistical" class="StatisticalRadioBtn" value="5" /> <span>Total Time Run</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label>Reference</label>
+                            <div class="radio">
+                                <input type="radio" name="Reference" id="Reference" class="ReferenceRadioBtn" checked value="1" /> <span>IML Sheet</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Reference" name="Reference" class="ReferenceRadioBtn" value="2" /> <span>Troubleshooters Guide</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Reference" name="Reference" class="ReferenceRadioBtn" value="3" /> <span>Tech Tips</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Reference" name="Reference" class="ReferenceRadioBtn" value="4" /> <span>List of Mold Tooling</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" id="Reference" name="Reference" class="ReferenceRadioBtn" value="5" /> <span>Last Shot Inspection</span>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="row m-b-20">
+            <div class="col-md-6 text-center btn_css">
+                <button href="#" formtarget="_blank" onclick="ShowReport()" class="add_btn">Preview</button>
+                <button href="#" id="PrintBtn" class="create_btn">Print</button>
+            </div>
+            <div class="col-md-6 text-center btn_css">
+                <button href="#" class="del_btn" data-toggle="modal" data-target="#fasttrax_reports">FastTrax</button>
+                @*<button href="#" class="del_btn">Close</button>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- The Modal -->
+<div class="modal" id="fasttrax_reports">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title">FastTrax Reports</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="label">Begin Date:</label>
+                        <div class="input-group">
+                            @*<div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                            </div>*@
+                            <input type="date" autocomplete="off" value="@Convert.ToDateTime(ViewBag.StartDate).ToString("yyyy-MM-dd")" id="MldStartDate" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="label">End Date:</label>
+                        <div class="input-group">
+                            @*<div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                            </div>*@
+                            <input type="date" value="@Convert.ToDateTime(ViewBag.EndDate).ToString("yyyy-MM-dd")" autocomplete="off" id="MldEndDate" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <label class="label">Report:</label>
+                        <select id="ReportType" class="form-control">
+                            <option value="Complete Maintenance Tracking All Mold" >Complete Maintenance Tracking All Mold</option>
+                            <option value="Corrective Action Analysis">Corrective Action Analysis</option>
+                            <option value="Mold Performance Report">Mold Performance Report</option>
+                            <option value="Defect Position Analysis">Defect Position Analysis</option>
+                            <option value="Defects by Mold Block and Quality">Defects by Mold Block and Quality</option>
+                            <option value="Inventory Tracking">Inventory Tracking</option>
+                            @*<option value="Maintenance Alert">Maintenance Alert</option>*@
+                            <option value="Mold List">Mold List</option>
+                            <option value="Mold Stop Reason Costs">Mold Stop Reason Costs</option>
+                            @*<option value="Mold Tooling Costs">Mold Tooling Costs</option>*@
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer btn_css">
+                <button type="button" class="create_btn" onclick="ShowReportData()">View</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        $('#navReport').addClass('actives');
+        var Type = $('input[name=Type]:checked').val();
+        $("#HeaderTop").hide();
+        CallType(Type);
+    });
+
+    $(document).ready(function () {
+        $('#PrintBtn').click(function () {
+            debugger
+            var Type = $('input[name=Type]:checked').val();
+            var StartDate = $("#StartDateVal").val();
+            var stdate = new Date($('#StartDateVal').val());
+            var EndDate = $("#EndDateVal").val();
+            var EDate = new Date($('#EndDateVal').val());
+            //var Mid = $("#MoldDataID").val();
+
+
+            var MoldID = $("#MoldDataID").val();
+            //var Type = $('input[name=Type]:checked').val();
+
+            //if (Type == 1) {
+            //    window.open("/Report/PrintFile?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MoldID=" + MoldID + "&ReportName=RepairSheet");
+            //}
+            //else if (Type == 2) {
+            //    window.open("/Report/PrintFile?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MoldID=" + MoldID + "&ReportName=MaintenanceTimeLine");
+            //}
+
+            if (MoldID == 0) {
+                Swal.fire("Please select mold first.");
+                return false;
+            }
+
+
+            if (Type == 1) {
+
+                var Statistical = $('input[name=Statistical]:checked').val();
+                var URL = '';
+
+                if (Statistical == 1) {
+
+                    window.open('/Report/PrintFile?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MoldID=' + MoldID + '&ReportName=RepairSheet');
+                    //window.location.href = '/Reports/RepairSheet?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid;
+                }
+                else if (Statistical == 2) {
+                    if (Type == 1) {
+                        if (MoldID == 0) {
+                            Swal.fire('Please select a mold.')
+                            return false;
+                        }
+
+                        if (StartDate == "" || EndDate == "") {
+                            //Swal.fire('Begin Date and End Date are required!')
+                            return false;
+                        }
+
+                        if (stdate > EDate) {
+                            Swal.fire('The Begin Date must be before End Date.')
+                            return false;
+                        }
+                    }
+                    window.open('/Report/PrintFile?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MoldID=' + MoldID + '&ReportName=MaintenanceTimeLine');
+                }
+                else if (Statistical == 3) {
+                    if (Type == 1) {
+                        if (MoldID == 0) {
+                            Swal.fire('Please select a mold.')
+                            return false;
+                        }
+                        if (StartDate == "" || EndDate == "") {
+                            //Swal.fire('Begin Date and End Date are required!')
+                            return false;
+                        }
+                        if (stdate > EDate) {
+                            Swal.fire('The Begin Date must be before End Date.')
+                            return false;
+                        }
+                    }
+                    window.open('/Report/PrintFile?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MoldID=' + MoldID + '&ReportName=DefectCostAnalysis');
+                }
+                else if (Statistical == 4) {
+                    if (Type == 1) {
+                        if (MoldID == 0) {
+                            Swal.fire('Please select a mold.')
+                            return false;
+                        }
+                        if (StartDate == "" || EndDate == "") {
+                            //Swal.fire('Begin Date and End Date are required!')
+                            return false;
+                        }
+                        if (stdate > EDate) {
+                            Swal.fire('The Begin Date must be before End Date.')
+                            return false;
+                        }
+                    }
+                    window.open('/Report/PrintFile?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MoldID=' + MoldID + '&ReportName=DefectTracking');
+                }
+                else if (Statistical == 5) {
+                    if (Type == 1) {
+                        if (MoldID == 0) {
+                            Swal.fire('Please select a mold.')
+                            return false;
+                        }
+                        if (StartDate == "" || EndDate == "") {
+                            //Swal.fire('Begin Date and End Date are required!')
+                            return false;
+                        }
+                        if (stdate > EDate) {
+                            Swal.fire('The Begin Date must be before End Date.')
+                            return false;
+                        }
+                    }
+                    window.open('/Report/PrintFile?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + MoldID + '&ReportName=TotalTimeRun');
+                }
+
+            }
+            else {
+                var Reference = $('input[name=Reference]:checked').val();
+                if (Reference == 1) {
+                    window.open('/Report/PrintFile?MOLDID=' + MoldID + '&ReportName=IMLSheet');
+                }
+                else if (Reference == 2) {
+                    window.open('/Report/PrintFile?MOLDID=' + MoldID + '&ReportName=TroubleShooterGuide');
+                }
+                else if (Reference == 3) {
+                    window.open('/Report/PrintFile?MOLDID=' + MoldID + '&ReportName=TechTipReport');
+                }
+                else if (Reference == 4) {
+                    window.open('/Report/PrintFile?MOLDID=' + MoldID + '&ReportName=MoldTooling');
+                }
+                else if (Reference == 5) {
+                    window.open('/Report/PrintFile?MOLDID=' + MoldID + '&ReportName=LastShotInspection');
+                }
+
+            }
+        })
+
+    })
+
+    function ShowReportData()
+    {
+        var DataType = $("#ReportType").val();
+        var StartDate = $("#MldStartDate").val();
+        var EndDate = $("#MldEndDate").val();
+        var ReportName = $("#Complete Maintenance Tracking All Mold").val();
+
+        window.open('/Report/ShowMoldtraxReport?Name=' + DataType + '&StartDate=' + StartDate + '&EndDate=' + EndDate);
+    }
+
+
+    function CallType(ID) {
+        debugger;
+        if (ID == 1) {
+            $("#StartDateVal").removeAttr('disabled');
+            $("#EndDateVal").removeAttr('disabled');
+            //$("input[type=radio]").attr('disabled', 'disabled');
+            $(".StatisticalRadioBtn").removeAttr('disabled');
+            $(".ReferenceRadioBtn").attr('disabled', 'diasbled');
+        }
+        else {
+            $("#StartDateVal").val('');
+            $("#EndDateVal").val('');
+            $("#StartDateVal").attr('disabled', 'disabled');
+            $("#EndDateVal").attr('disabled', 'disabled');
+            $(".StatisticalRadioBtn").attr('disabled', 'disabled');
+            $(".ReferenceRadioBtn").removeAttr('disabled');
+        }
+
+    }
+
+    function MoldDataIDDrop() {
+        debugger;
+        var MID = $("#MoldDataID").val();
+        var Type = $('input[name=Type]:checked').val();
+
+        if (Type == 1)
+        {
+        $.ajax({
+            url: '/Report/CallStartandEndDate?MID=' + MID,
+            type: 'Post',
+            success: function (response) {
+                debugger;
+                var StartDate = "";
+                var EndDate = "";
+
+                $("#StartDateVal").empty();
+                $("#EndDateVal").empty();
+
+                $("#StartDateVal").append("<option></option>");
+                $.each(response.Sdate, function (index, value) {
+                    $("#StartDateVal").append('<option value=' + value + '>' + value + '</option>')
+                });
+
+                $("#EndDateVal").append("<option></option>");
+                $.each(response.Edate, function (index, value) {
+                    $("#EndDateVal").append('<option value=' + value + '>' + value + '</option>')
+                });
+
+            },
+            error: function () {
+
+            }
+            })
+        }
+    }
+
+    function ShowReport() {
+
+        debugger;
+        var Type = $('input[name=Type]:checked').val();
+        var StartDate = $("#StartDateVal").val();
+        var stdate = new Date($('#StartDateVal').val());
+        var EndDate = $("#EndDateVal").val();
+        var EDate = new Date($('#EndDateVal').val());
+        var Mid = $("#MoldDataID").val();
+
+        if (Mid == 0)
+        {
+            Swal.fire("Please select mold first.");
+            return false;
+        }
+
+
+        if (Type == 1) {
+
+            var Statistical = $('input[name=Statistical]:checked').val();
+            var URL = '';
+
+            if (Statistical == 1) {
+
+                window.open('/Report/RepairSheet?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid);
+                //window.location.href = '/Reports/RepairSheet?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid;
+            }
+            else if (Statistical == 2) {
+                if (Type == 1) {
+                    if (Mid == 0) {
+                        Swal.fire('Please select a mold.')
+                        return false;
+                    }
+
+                    if (StartDate == "" || EndDate == "")
+                    {
+                        //Swal.fire('Begin Date and End Date are required!')
+                        return false;
+                    }
+
+                    if (stdate > EDate) {
+                        Swal.fire('The Begin Date must be before End Date.')
+                        return false;
+                    }
+                }
+                window.open('/Report/MaintenanceTimeline?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid);
+
+            }
+            else if (Statistical == 3) {
+                if (Type == 1) {
+                    if (Mid == 0) {
+                        Swal.fire('Please select a mold.')
+                        return false;
+                    }
+                    if (StartDate == "" || EndDate == "") {
+                        //Swal.fire('Begin Date and End Date are required!')
+                        return false;
+                    }
+                    if (stdate > EDate) {
+                        Swal.fire('The Begin Date must be before End Date.')
+                        return false;
+                    }
+                }
+                window.open('/Report/DefectCostAnalysis?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid);
+            }
+            else if (Statistical == 4) {
+                if (Type == 1) {
+                    if (Mid == 0) {
+                        Swal.fire('Please select a mold.')
+                        return false;
+                    }
+                    if (StartDate == "" || EndDate == "") {
+                        //Swal.fire('Begin Date and End Date are required!')
+                        return false;
+                    }
+                    if (stdate > EDate) {
+                        Swal.fire('The Begin Date must be before End Date.')
+                        return false;
+                    }
+                }
+                window.open('/Report/DefectTracking?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid);
+            }
+            else if (Statistical == 5) {
+                if (Type == 1) {
+                    if (Mid == 0) {
+                        Swal.fire('Please select a mold.')
+                        return false;
+                    }
+                    if (StartDate == "" || EndDate == "") {
+                        //Swal.fire('Begin Date and End Date are required!')
+                        return false;
+                    }
+                    if (stdate > EDate) {
+                        Swal.fire('The Begin Date must be before End Date.')
+                        return false;
+                    }
+                }
+                window.open('/Report/TotalTimeRun?StartDate=' + StartDate + '&EndDate=' + EndDate + '&MOLDID=' + Mid);
+            }
+
+        }
+        else {
+            var Reference = $('input[name=Reference]:checked').val();
+            if (Reference == 1) {
+                window.open('/Report/IMLSheet?MOLDID=' + Mid);
+            }
+            else if (Reference == 2) {
+                window.open('/Report/TroubleShooterGuides?MOLDID=' + Mid);
+            }
+            else if (Reference == 3) {
+                window.open('/Report/TechTipsReport?MOLDID=' + Mid);
+            }
+            else if (Reference == 4) {
+                window.open('/Report/MoldTooling?MOLDID=' + Mid);
+            }
+            else if (Reference == 5) {
+                window.open('/Report/LastShotInspection?MOLDID=' + Mid);
+            }
+
+        }
+    }
+
+
+</script>

@@ -1,0 +1,339 @@
+﻿@{
+    Layout = null;
+ }
+
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        color: rgba(0, 0, 0, 0);
+        opacity: 1;
+        display: block;
+        background: url(http://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+        width: 20px;
+        height: 20px;
+        border-width: thin;
+        margin-top: 10px;
+        margin-right: -5px;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    input#MoldDataNotesDate {
+        height: 31px;
+    }
+
+    .w-15 {
+        width: 20%;
+        float: left;
+    }
+
+    .note-editor.note-frame {
+        margin-top: 3em;
+    }
+
+    .note-editor button {
+        width: auto !important;
+    }
+
+    .note-color-row .note-color-btn {
+        width: 20px !important;
+    }
+
+    #table_Notes button {
+        color: black;
+    }
+
+    .medium-editor-element {
+        display: block;
+        width: 100%;
+        padding: 4px;
+        /* font-size: 13px; */
+        line-height: 1.42857143;
+        color: #000;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out.15s,box-shadow ease-in-out .15s;
+        /* margin-bottom: 5px; */
+        overflow-y: auto;
+        height: 173px;
+        text-align: left;
+        word-break: break-word;
+    }
+    /* width */
+    .editablett::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .editablett::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    .editablett::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        .editablett::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    .table-con {
+        overflow-y: auto;
+        height: 526px;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card_header">
+            <h5>Add Notes</h5>
+        </div>
+    </div>
+
+</div>
+<div id="AddNotesHtml">
+    <div class="">
+        <table class="table table-responsive table-bordered table-condensed table-striped" id="table_Notes">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th class="date_memo">&nbsp; Date &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp;  &nbsp;<span class="bwt_width"></span> Memo</th>
+                </tr>
+            </thead>
+            <tbody>
+                    <tr>
+                        <td class="td_check">
+                        </td>
+                        <td>
+                            <div class="w-15">
+                                <input type="hidden" id="MoldDataID" name="MoldDataID" value="" />
+                                <input type="hidden" id="MoldDataNotesAutoID" name="MoldDataNotesAutoID" value="" />
+                                <input type="date" value="" class="SavesNotesFocus form-control" id="AddMoldDataNotesDate" name="AddMoldDataNotesDate" />
+                            </div>
+                            <div class="w-100 SavesNotesFocus" id="Editor0">
+                                <textarea rows="6" autocomplete="off" id="AddMoldToolDescrip" name="AddMoldToolDescrip" class="MoldToolDescrip editablett SavesNotesFocus"></textarea>
+                            </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<button style="display:none;" id="Showtxtbtn" data-target="#MoldNotesPopup" data-toggle="modal"></button>
+<div class="row">
+    <div class="col-md-12 text-right btn_css">
+        <input type="submit" id="btnAddsubmit" value="Save" class="add_btn" />
+        <input type="button" class="del_btn" id="CnclBtn" value="Cancel" />
+    </div>
+</div>
+
+<div class="modal" id="MoldNotesPopup">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="MainEditor" autocomplete="off" class="textarea-editor"></textarea>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <input type="button" id="SaveTxtbtn" class="add_btn" value="Save" />
+                        <input type="button" class="del_btn" value="Cancel" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    
+    $('#MainEditor').summernote(
+        {
+            toolbar: [
+                ['style', ['style']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 450,
+            popover: {
+                link: []
+            },// set editor height
+            minHeight: null,             // set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+    $('.note-editable').css('font-size', '12px');
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+
+<script>
+
+    $(".SavesNotesFocus").dblclick(function () {
+        debugger
+        $(this).closest("tr").attr('name', '1');
+        $(".editable").attr('data-placeholder', '');
+        var row = $(this);
+        var dd = $(this).closest("tr").find("td:eq(1)").find("#Editor0").html();
+        var newdata = $.parseHTML(dd);
+        $("#Showtxtbtn").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $(this).closest("tr").find("td:eq(1)").find("#MoldToolDescrip").attr('name', 'NewDDID');
+        $(this).closest("tr").find("td:eq(1)").find(".MoldToolDescrip").attr('name', 'NewDDID2');
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+
+    })
+
+    $("#CnclBtn").click(function ()
+    {
+        var MoldID = $("#MainMoldHidnID").val();
+        $.ajax({
+            url: '/DetailMoldInfo/GetNotesList?ID=' + MoldID,
+            type: 'Post',
+            success: function (data)
+            {
+                $("#MoldTb").html(data);
+                $(".editablett").attr('data-placeholder', '');
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    $("#SaveTxtbtn").click(function () {
+        debugger;
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+
+        $(".modal-backdrop").hide();
+        $(".popover-content").hide();
+    });
+
+
+    $(".del_btn").click(function () {
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+
+        $(".modal-backdrop").hide();
+    });
+
+    $("#btnAddsubmit").click(function () {
+        debugger;
+        var obj = new Object();
+        obj.MoldDataID = $("#MainMoldHidnID").val();
+        obj.MoldDataNotesDate = $("#AddMoldDataNotesDate").val();
+
+        var Desc = $("#Editor0").html();
+        var NewDesc = $.parseHTML(Desc);
+        obj.MoldDataNotesMemo = NewDesc[1].innerHTML;
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/SaveNotes',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data);
+                    $(".modal-backdrop").hide();
+                    $(".editablett").attr('data-placeholder', '');
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+
+    var editor = new MediumEditor('.editablett', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+</script>

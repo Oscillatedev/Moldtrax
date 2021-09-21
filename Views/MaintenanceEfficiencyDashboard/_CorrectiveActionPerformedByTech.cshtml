@@ -1,0 +1,67 @@
+﻿@model IEnumerable<Moldtrax.Models.CommonChartProp>
+<style>
+    .card_header h5 {
+        margin-bottom: 8px;
+    }
+</style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+<script type="text/javascript">
+    google.charts.load("current", { packages: ['corechart'] });
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+        @*var data = new google.visualization.DataTable();
+                data.addColumn('string', 'name');
+                data.addColumn('number', 'y');
+                data.addColumn('string','style')
+
+                @foreach (var x in Model)
+                 {
+                  @: data.addRow(['@x.Name',@x.Quantity], 'blue')
+                 }*@
+
+
+        var data = google.visualization.arrayToDataTable([
+            ["Element", "CA Count", { role: "style" }],
+
+            @foreach (var x in Model)
+            {
+                @: ["@x.Name",@x.Quantity,"#3366cc"],
+            }
+
+            //["Copper", 8.94, "#b87333"],
+            //["Silver - asdas", 10.49, "silver"],
+            //["Gold", 0, "gold"],
+            //["Platinum", 21.45, "color: #e5e4e2"]
+        ]);
+
+        var view = new google.visualization.DataView(data);
+        view.setColumns([0, 1,
+            {
+                calc: "stringify",
+                sourceColumn: 1,
+                type: "string",
+                role: "annotation"
+            },
+            2]);
+
+        var options = {
+            title: "Corrective Action Performed By Tech",
+            width: 1000,
+            height: 500,
+            chartArea: { width: 900, height: 300 },
+            bar: { groupWidth: "90%" },
+            legend: { position: "none" },
+            titleTextStyle: { color: "black", fontSize: 22, bold: true, italic: false },
+        };
+
+        var chart = new google.visualization.ColumnChart(document.getElementById("CorrectiveActionByTech"));
+        chart.draw(view, options);
+    }
+</script>
+
+<div id="CorrectiveActionByTech"></div>
+
+

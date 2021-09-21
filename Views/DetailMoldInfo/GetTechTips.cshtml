@@ -1,0 +1,115 @@
+﻿@model Moldtrax.Models.tblTechTips
+
+@{
+    ViewBag.Title = "GetTechTips";
+    Layout = null;
+}
+<style>
+    input.edit_btn {
+        margin: 0;
+    }
+</style>
+<form method="post" action="/DetailMoldInfo/SaveTechTipsMoldSpec">
+    <div class="row">
+        <div class="col-md-6">
+            <h3><span>Tech Tips </span></h3>
+        </div>
+        <div class="col-md-6 text-right">
+            <input type="submit" value="Save" class="edit_btn" />
+        </div>
+    </div>
+    @*<br>*@
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs sticky-top TechTipsNavTab" role="tablist" id="inner_tab">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#home1">Mold Specs</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu1">Hot Runner</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu2">Disassembly</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu3">Cleaning</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu4">Assembly</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu5">Final Check</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu6">Tool Kit</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" href="#innermenu7">Polishing</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#innermenu8">Links</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <input type="hidden" value="@Model.TechTipsID" id="TechTipsID" name="TechTipsID" />
+    <input type="hidden" value="@Model.MoldDataID" id="MoldDataID" name="MoldDataID" />
+    <div class="tab-content" id="inner_tab_content">
+        <div id="home1" class="tab-pane active">
+            @Html.Partial("_TechTipsMoldSpecData", Model)
+        </div>
+        <div id="innermenu1" class="tab-pane fade">
+            @Html.Partial("_TTHotRunner", Model)
+        </div>
+
+        <div id="innermenu2" class="tab-pane fade CallingFocusOutTechTips">
+            <textarea class="form-control editable" rows="100" id="TTDisassmbly" name="TTDisassmbly">@Model.TTDisassmbly</textarea>
+        </div>
+        <div id="innermenu3" class="tab-pane fade CallingFocusOutTechTips">
+            <textarea class="form-control editable" rows="100" id="TTClean" name="TTClean">@Model.TTClean</textarea>
+        </div>
+        <div id="innermenu4" class="tab-pane fade CallingFocusOutTechTips">
+            <textarea class="form-control editable" rows="100" id="TTAssmbly" name="TTAssmbly">@Model.TTAssmbly</textarea>
+        </div>
+        <div id="innermenu5" class="tab-pane fade CallingFocusOutTechTips">
+            <textarea class="form-control editable" rows="100" id="TTFinalChk" name="TTFinalChk">@Model.TTFinalChk</textarea>
+        </div>
+        <div id="innermenu6" class="tab-pane fade CallingFocusOutTechTips">
+            <textarea class="form-control editable" rows="100" id="TTToolKit" name="TTToolKit">@Model.TTToolKit</textarea>
+        </div>
+        <div id="innermenu7" class="tab-pane fade CallingFocusOutTechTips">
+            <textarea class="form-control editable" rows="100" id="TTPolishing" name="TTPolishing">@Model.TTPolishing</textarea>
+        </div>
+        <div id="innermenu8" class="tab-pane fade">
+            @Html.Action("TTLinksGetData", "DetailMoldInfo")
+        </div>
+    </div>
+</form>
+
+<script>
+    function GetFocusOnEditor() {
+        $('.note-editable').trigger('focus');
+    }
+
+    function SaveRemainingVal(str)
+    {
+        var val = $("#" + str + "").val();
+
+        $.ajax({
+            url: '/DetailMoldInfo/SaveRemainigVal',
+            type: 'Post',
+            data: { str: val, MoldID:@Model.MoldDataID, TechID: @Model.TechTipsID, ColumnName: str },
+            success: function ()
+            {
+
+            },
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+   
+
+</script>
+

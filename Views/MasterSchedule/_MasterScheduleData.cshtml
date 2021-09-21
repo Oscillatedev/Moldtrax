@@ -1,0 +1,941 @@
+﻿@model IEnumerable<Moldtrax.ViewMoldel.tblScheduleViewModel>
+@using Moldtrax.Models
+@{
+    ViewBag.Title = "Index";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+    Layout = null;
+
+    int Total = 0;
+
+    foreach (var x in Model)
+    {
+        Total += 1;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+}
+<style>
+    .highlight {
+        background-color: #aaa;
+    }
+
+    .table-con {
+        height: 605px;
+        padding: 0;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        color: rgba(0, 0, 0, 0);
+        opacity: 1;
+        display: block;
+        background: url(http://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+        width: 20px;
+        height: 20px;
+        border-width: thin;
+        margin-top: 10px;
+        margin-right: -5px;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    div#table_master_schedule_length, div#table_master_schedule_info, div#table_master_schedule_paginate {
+        display: none;
+    }
+
+    div#table_master_schedule_filter {
+        position: fixed;
+        top: 7.3em;
+        width: 80%;
+        background: #f8f8f8;
+        padding-top: 5px;
+        padding-left: 4px;
+    }
+
+    table#table_master_schedule {
+        margin-top: 34px !important;
+        margin-bottom: 0 !important;
+    }
+
+    input[type="date"]:in-range::-webkit-datetime-edit-year-field, input[type="date"]:in-range::-webkit-datetime-edit-month-field, input[type="date"]:in-range::-webkit-datetime-edit-day-field, input[type="date"]:in-range::-webkit-datetime-edit-text {
+        color: transparent;
+    }
+
+    .modal-body table#table_master_schedule {
+        margin: 0 !important;
+    }
+</style>
+
+<script>
+
+    $(document).ready(function () {
+        $("#table_master_schedule tbody tr:first").addClass('highlight');
+
+        $("#table_master_schedule tr").click(function () {
+            var selected = $(this).hasClass("highlight");
+            if (!selected)
+                $("#table_master_schedule tr").removeClass("highlight");
+            $(this).addClass("highlight");
+        })
+    })
+</script>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5 class="main_top_head">Master Schedule</h5>
+            </div>
+            <div class="card_body">
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css" id="MainDiv">
+
+                        @using (Html.BeginForm("Export", "MasterSchedule", FormMethod.Post))
+                        {
+                            <input class="del_btn" type="submit" value="Export" />
+                            <input type="button" class="edit_btn" value="Add" id="AddMasterSchedule" />
+                            <input type="hidden" class="edit_btn" data-toggle="modal" id="OldMasterSchedule" data-target="#MasterScheduleAdd" value="Add" />
+                            <input type="button" class="del_btn" id="DeleteSvhe" onclick="DeleteSubMainentance()" value="Delete" />
+                            <input type="button" class="create_btn" onclick="window.open('/MasterSchedule/GeneratePDF')" value="Print" />
+                        }
+
+                    </div>
+                </div>
+                <div class="row" id="master_sche">
+
+                    <div class="col-md-12">
+                        <div class="card_inner_block table-con" id="table">
+                            <table class="table table-bordered table-responsive" id="table_master_schedule">
+                                <thead>
+                                    <tr>
+                                        <th class="td_schedule1"><input type="checkbox" id="MaintenenaceChkAll" value=""></th>
+                                        <th id="DateSorting" class="td_schedule2">Date Noted <img src="~/images/sort.png" /></th>
+                                        <th class="td_schedule3">Time <img src="~/images/sort.png" /></th>
+                                        <th class="td_schedule4">Mold <img src="~/images/sort.png" /></th>
+                                        <th class="td_schedule5">Priority <img src="~/images/sort.png" /></th>
+                                        <th class="td_schedule6">Action Item <img src="~/images/sort.png" /></th>
+                                        <th class="td_schedule7">Cycles <img src="~/images/sort.png" /></th>
+                                        <th class="td_schedule8">Status <img src="~/images/sort.png" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var x in Model)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" id="ChkMaintenance" name="ChckMainName" class="Subcheckbox" value="@x.SchID">
+                                                <input type="hidden" value="@x.SchID" id="SchID" />
+                                            </td>
+                                            <td>
+                                                @if (x.schDate != null && x.schDate != DateTime.MinValue)
+                                                {
+                                                    <input type="text" autocomplete="off" data-order="@Convert.ToDateTime(x.schDate).ToString("MM/dd/yyyy")" value="@Convert.ToDateTime(x.schDate).ToString("MM/dd/yyyy")" id="" name="schDate" class="form-control dt schDate">
+                                                }
+                                                else
+                                                {
+                                                    <input type="text" autocomplete="off" value="" id="" name="schDate" class="form-control dt schDate">
+                                                }
+                                            </td>
+                                            <td>
+                                                <input type="text" autocomplete="off" value="@x.NewSchTime" id="schTime" name="schTime" class="form-control FocusOutMasterSch">
+                                            </td>
+                                            <td>
+                                                <input type="hidden" id="NSchMoldID" value="@x.MoldName" />
+                                                <select id="SchMoldID" name="SchMoldID" class="form-control FocusOutMasterSch SaveDropDownVal">
+                                                    <option value="0"></option>
+                                                    @foreach (var s in ViewBag.MoldText)
+                                                    {
+                                                        <option name="@s.Value" value="@s.Text">@s.Text</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <input type="hidden" id="Priority" value="@x.schPriority" />
+
+                                                <select id="schPriority" name="schPriority" class="form-control FocusOutMasterSch SaveDropDownVal">
+                                                    <option value="0"></option>
+                                                    @for (int i = 1; i <= 9; i++)
+                                                    {
+                                                        <option>@i</option>
+                                                    }
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <textarea id="schActionItem" autocomplete="off" name="schActionItem" class="Trbleditable FocusOutMasterSch">@x.schActionItem</textarea>
+                                                @*<input type="text" value="@x.schActionItem" id="schActionItem" name="schActionItem" class="form-control Trbleditable" />*@
+                                            </td>
+                                            <td>
+                                                <input type="text" value="@x.NewSchCycles" autocomplete="off" id="schCycles" name="schCycles" class="form-control FocusOutMasterSch">
+                                            </td>
+                                            <td>
+                                                <input type="hidden" value="@x.schStatus" id="StatusVal" />
+                                                <select class="form-control FocusOutMasterSch SaveDropDownVal" id="schStatus" name="schStatus">
+                                                    <option value="0"></option>
+                                                    @foreach (var s in ViewBag.StatusVal)
+                                                    {
+                                                        <option value="@s.Value">@s.Text</option>
+                                                    }
+                                                </select>
+                                                @*<input type="text" value="@x.schStatus" id="schStatus" name="schStatus" class="form-control">*@
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <label class="red_total">Total Action Item: @Total</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="MasterScheduleAdd">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Master Schedule</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="table_master_schedule">
+                    <thead>
+                        <tr>
+                            <th class="td_schedule2">Date Noted</th>
+                            <th class="td_schedule3">Time</th>
+                            <th class="td_schedule4">Mold</th>
+                            <th class="td_schedule5">Priority</th>
+                            <th class="td_schedule6">Action Item</th>
+                            <th class="td_schedule7">Cycles</th>
+                            <th class="td_schedule8">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" autocomplete="off" value="" id="AddschDate" name="schDate" class="form-control">
+                            </td>
+                            <td>
+                                <input type="text" value="" autocomplete="off" id="AddschTime" name="schTime" class="form-control">
+                            </td>
+                            <td>
+                                <select id="AddSchMoldID" name="SchMoldID" class="form-control">
+                                    <option value="0"></option>
+                                    @foreach (var s in ViewBag.MoldText)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <select id="AddschPriority" name="schPriority" class="form-control">
+                                    <option value="0"></option>
+                                    @for (int i = 1; i <= 9; i++)
+                                    {
+                                        <option>@i</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <textarea id="AddschActionItem" autocomplete="off" name="schActionItem" class="Trbleditable"></textarea>
+                            </td>
+                            <td>
+                                <input type="text" value="" autocomplete="off" id="AddschCycles" name="schCycles" class="form-control">
+                            </td>
+                            <td>
+                                <select class="form-control" id="AddschStatus" name="schStatus">
+                                    <option value="0"></option>
+                                    @foreach (var s in ViewBag.StatusVal)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="SaveMasterSchNew" class="add_btn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+        </div>
+    </div>
+</div>
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+
+<script>
+    document.getElementById('table').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+
+<script>
+    $(function () {
+        $("#table_master_schedule tbody tr").each(function () {
+            debugger;
+            var row = $(this);
+            var Trouble;
+            var Date;
+            Trouble = row.find("TD").eq(4).find("#Priority").val();
+            row.find("TD").eq(4).find("#schPriority").val(Trouble);
+
+            Date = row.find("TD").eq(1).find("#schDate").val();
+            if (Date == '0001-01-01') {
+                row.find("TD").eq(1).find("#schDate").val('');
+            }
+
+            var Mold = row.find("TD").eq(3).find("#NSchMoldID").val();
+            row.find("TD").eq(3).find("#SchMoldID").val(Mold);
+            //var newdate = Date.split(' ')[0].split("/").reverse().join("-");
+            var st = row.find("TD").eq(7).find("#StatusVal").val();
+            row.find("TD").eq(7).find("#schStatus").val(st);
+            //row.find("TD").eq(10).find("#MoldToolingDateOrdered").val(newdate);
+        })
+    })
+
+
+    $("#DateSorting").click(function ()
+    {
+        debugger;
+        var Orderby = $("#OrderbyVal").val();
+        var URL;
+        if (Orderby == "Asc") {
+            URL = '/MasterSchedule/OrderbyDesc';
+            $("#OrderbyVal").val('Desc');
+        }
+        else
+        {
+            URL = '/MasterSchedule/OrderbyAsc';
+            $("#OrderbyVal").val('Asc');
+        }
+
+            $.ajax({
+
+                url: URL,
+            type: 'Post',
+            success: function (data)
+            {
+                $("#MasterHtml").html(data);
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+
+    })
+
+
+    //If your date format is mm/dd//yyyy.
+
+
+    $("#AddschDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    })
+   
+
+
+
+    $(function () {
+        $(".dt").datepicker({
+            dateFormat: "mm/dd/yy",
+            changeMonth: true,
+            changeYear: true,
+            onClose: function () {
+                var obj = new Object();
+                obj.SchID = $(this).closest("tr").find('td:eq(0)').find("#SchID").val();
+                obj.schDate = $(this).closest("tr").find('td:eq(1)').find("input[name='schDate']").val();
+
+                var Time = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#schTime").val().toLowerCase());
+                $(this).closest("tr").find('td:eq(2)').find("#schTime").val(Time);
+
+                obj.schTime = Time;
+
+                obj.schMoldDataID = $(this).closest("tr").find('td:eq(3)').find('option:selected').attr("name");
+                obj.schPriority = $(this).closest("tr").find('td:eq(4)').find("#schPriority").val();
+                obj.schActionItem = $(this).closest("tr").find('td:eq(5)').find("#schActionItem").val();
+
+                var Cycle = $(this).closest("tr").find('td:eq(6)').find("#schCycles").val().replace(/\,/g, '');
+                $(this).closest("tr").find('td:eq(6)').find("#schCycles").val(addCommas(Cycle));
+                obj.schCycles = Cycle;
+                obj.schStatus = $(this).closest("tr").find('td:eq(7)').find("#schStatus").val();
+
+                $.ajax({
+
+                    url: '/MasterSchedule/SaveFocusOutTroubleTracking',
+                    type: 'Post',
+                    data: obj,
+                    success: function (data) {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    })
+
+    $.fn.dataTableExt.ofnSearch['html-input'] = function (value) {
+        return $(value).val();
+    };
+
+    var table = $("#table_master_schedule").DataTable({
+        paging: false,
+        columnDefs: [
+            { "type": "html-input", "targets": [2, 3, 4, 5, 6, 7] }
+        ]
+    });
+
+
+    $("#AddschTime").dblclick(function ()
+    {
+        $("#AddschTime").val(GetCurrentTime());
+    })
+
+    $("#AddschTime").focusout(function ()
+    {
+        var Time = $("#AddschTime").val();
+        $("#AddschTime").val(convertTo24Hour(Time));
+    })
+
+
+    $("#AddMasterSchedule").click(function ()
+    {
+        $("#OldMasterSchedule").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+        $(".modal-backdrop").hide();
+    })
+
+    $("#AddschTime").change(function ()
+    {
+        debugger
+        
+        var schtime = $("#AddschTime").val().toLowerCase();
+        var SchTime = convertTo24Hour(schtime);
+
+        if (SchTime != "Invalid date") {
+            $("#AddschTime").val(SchTime);
+        }
+    })
+
+    function convertTo24Hour(time) {
+        if (time == "12" || time == "12:00" || time == "12:0") {
+            time = "12pm";
+        }
+        var momentObj = moment(time, ["h:mm A"])
+        return momentObj.format("HH:mm");
+    }
+
+
+
+    $(document).ready(function () {
+        //$('#table_master_schedule').DataTable({ searching: false, paging: false });
+        $(".Trbleditable").attr('data-placeholder', '');
+    });
+
+    $(document).ready(function () {
+        $('#navMaster').addClass('actives');
+    });
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.Trbleditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+       function AppendMaintenanceSubForm()
+       {
+           debugger;
+    var htmlstring = "<tr><td><input type='checkbox' id='ChkMaintenance' name='ChckMainName' class='Subcheckbox' value='0'></td>";
+        htmlstring += "<td><input type='hidden' value='0' id='SchID' /><input type='date' min='1899-12-30' value='' id='schDate' name='schDate' class='form-control'></td>";
+        htmlstring += "<td><input type='text' value='' id='schTime' name='schTime' class='form-control'></td>";
+        htmlstring += "<td><select id='SchMoldID' name='SchMoldID' class='form-control'>@foreach (var s in ViewBag.MoldText){<option value='0'></option><option value='@s.Value'>@s.Text</option>}</select></td>";
+        htmlstring += "<td><select id='schPriority' class='form-control' name='schPriority'>@for (int i = 1; i <= 9; i++) {<option value='0'></option><option value='@i'>@i</option>}</select></td>";
+        htmlstring += "<td><textarea id='schActionItem' name='schActionItem' class='form-control Trbleditable'></textarea></td>";
+        htmlstring += "<td><input type='text' value='' id='schCycles' name='schCycles' class='form-control'></td>";
+        htmlstring += "<td><select class='form-control' id='schStatus' name='schStatus'>@foreach (var s in ViewBag.StatusVal){<option value='0'></option><option value='@s.Text'>@s.Text</option>}</select></td></tr>";
+
+           $("#table_master_schedule tbody").append(htmlstring);
+
+         var ColorPickerExtension = MediumEditor.extensions.button.extend({
+             name: "colorPicker",
+             action: "applyForeColor",
+             aria: "color picker",
+             contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+             init: function () {
+                 this.button = this.document.createElement('button');
+                 this.button.classList.add('medium-editor-action');
+                 this.button.innerHTML = '<b>C</b>';
+                 initPicker(this.button);
+             }
+         });
+
+         var pickerExtension = new ColorPickerExtension();
+
+         function setColor(color) {
+             pickerExtension.base.importSelection(this.selectionState);
+             pickerExtension.document.execCommand("styleWithCSS", false, true);
+             pickerExtension.document.execCommand("foreColor", false, color);
+         }
+
+         function initPicker(element) {
+             $(element).spectrum({
+                 allowEmpty: true,
+                 color: "#f00",
+                 showInput: true,
+                 showAlpha: true,
+                 showPalette: true,
+                 showInitial: true,
+                 hideAfterPaletteSelect: false,
+                 preferredFormat: "hex3",
+                 change: function (color) {
+                     setColor(color);
+                 },
+                 hide: function (color) {
+                     //applyColor(color);
+                 },
+                 palette: [
+                     ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                     ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                     ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                     ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                     ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                     ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                     ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                     ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+                 ]
+             });
+         }
+         //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+         var editor = new MediumEditor('.Trbleditable', {
+             toolbar: {
+                 buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+             },
+             extensions: {
+                 'colorPicker': pickerExtension
+             }
+         });
+    }
+
+    //function convertTo24Hour(time) {
+    //    var momentObj = moment(time, ["h:mm A"])
+    //    return momentObj.format("HH:mm");
+    //}
+
+
+    $(".SaveDropDownVal").change(function ()
+    {
+        debugger;
+        var obj = new Object();
+        obj.SchID = $(this).closest("tr").find('td:eq(0)').find("#SchID").val();
+        obj.schDate = $(this).closest("tr").find('td:eq(1)').find("input[name='schDate']").val();
+
+        var Time = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#schTime").val().toLowerCase());
+        $(this).closest("tr").find('td:eq(2)').find("#schTime").val(Time);
+
+        obj.schTime = Time;
+
+        obj.schMoldDataID = $(this).closest("tr").find('td:eq(3)').find('option:selected').attr('name');
+        obj.schPriority = $(this).closest("tr").find('td:eq(4)').find("#schPriority").val();
+        obj.schActionItem = $(this).closest("tr").find('td:eq(5)').find("#schActionItem").val();
+
+        var Cycle = $(this).closest("tr").find('td:eq(6)').find("#schCycles").val().replace(/\,/g, '');
+        $(this).closest("tr").find('td:eq(6)').find("#schCycles").val(addCommas(Cycle));
+        obj.schCycles = Cycle;
+        obj.schStatus = $(this).closest("tr").find('td:eq(7)').find("#schStatus").val();
+
+        $.ajax({
+
+            url: '/MasterSchedule/SaveFocusOutTroubleTracking',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    $(".FocusOutMasterSch").focusout(function ()
+    {
+        debugger;
+        var obj = new Object();
+        obj.SchID = $(this).closest("tr").find('td:eq(0)').find("#SchID").val();
+        obj.schDate = $(this).closest("tr").find('td:eq(1)').find("input[name='schDate']").val();
+
+        var Time = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#schTime").val().toLowerCase());
+        $(this).closest("tr").find('td:eq(2)').find("#schTime").val(Time);
+
+        obj.schTime = Time;
+
+        obj.schMoldDataID = $(this).closest("tr").find('td:eq(3)').find('option:selected').attr('name');
+        obj.schPriority = $(this).closest("tr").find('td:eq(4)').find("#schPriority").val();
+        obj.schActionItem = $(this).closest("tr").find('td:eq(5)').find("#schActionItem").val();
+
+        var Cycle = $(this).closest("tr").find('td:eq(6)').find("#schCycles").val().replace(/\,/g, '');
+        $(this).closest("tr").find('td:eq(6)').find("#schCycles").val(addCommas(Cycle));
+        obj.schCycles = Cycle;
+        obj.schStatus = $(this).closest("tr").find('td:eq(7)').find("#schStatus").val();
+
+        $.ajax({
+
+            url: '/MasterSchedule/SaveFocusOutTroubleTracking',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $("#SaveMasterSchNew").click(function ()
+    {
+        var obj = new Object();
+        //obj.SchID = $("#AddSchID").val();
+        obj.schDate = $("#AddschDate").val();
+        obj.schTime = $("#AddschTime").val();
+        obj.schMoldDataID = $("#AddSchMoldID").val();
+        obj.schPriority = $("#AddschPriority").val();
+        obj.schActionItem = $("#AddschActionItem").val();
+        obj.schCycles = $("#AddschCycles").val();
+        obj.schStatus = $("#AddschStatus").val();
+
+        $.ajax({
+
+            url: '/MasterSchedule/SaveTroubleTracking',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    window.location.href = "/MasterSchedule/Index";
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+
+
+    $(document).ready(function () {
+
+        $('#MaintenenaceChkAll').click(function () {
+            debugger;
+            if ($(this).is(':checked'))
+                $('input[name="ChckMainName"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="ChckMainName"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="ChckMainName"].Subcheckbox').click(function () {
+            debugger;
+            if ($('input:checkbox[name="ChckMainName"].Subcheckbox').length == $('input:checkbox[name="ChckMainName"].Subcheckbox:checked').length) {
+                $('input[name="ChckMainName"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="ChckMainName"].SelectAll').prop("checked", false);
+            }
+
+        })
+
+    })
+
+    $("#SaveMaintenanceSub").click(function () {
+        debugger;
+
+        var model = new Array();
+
+        $("#table_master_schedule tbody tr").each(function () {
+            var row = $(this);
+
+            var db = {};
+
+            //Tooling.MoldToolingID = row.find("TD").eq(0).find("#MoldTLID").val();
+            db.SchID = row.find("TD").eq(0).find("#SchID").val();
+            db.schDate = row.find("TD").eq(1).find("#schDate").val();
+            db.schTime = row.find("TD").eq(2).find("#schTime").val();
+            db.schMoldDataID = row.find("TD").eq(3).find("#SchMoldID").val();
+            db.schPriority = row.find("TD").eq(4).find("#schPriority").val();
+            db.schActionItem = row.find("TD").eq(5).find("#schActionItem").val();
+            db.schCycles = row.find("TD").eq(6).find("#schCycles").val();
+            db.schStatus = row.find("TD").eq(7).find("#schStatus").val();
+            //db.schMoldDataID = $("#MoldResinType").val();
+
+            model.push(db);
+        })
+        $.ajax({
+
+            url: '/MasterSchedule/SaveTroubleTracking',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function ()
+                    {
+                    window.location.href = "/MasterSchedule/Index";
+                    })
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    function DeleteSubMainentance() {
+        debugger;
+
+        //$(".loader__wrap").show();
+
+        var selID = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=ChckMainName].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+            if (selID == 0) {
+                $(this).closest("tr").remove();
+            }
+        });
+
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/MasterSchedule/DeleteSubMainData",
+                        type: "post",
+                        data: { str: str },
+                        success: function (data) {
+                            debugger;
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                                Swal.fire({
+                                    title: "Deleted!",
+                                    text: 'Data has been deleted.',
+                                    type: "success"
+                                }).then(function () {
+                                    window.location.href = "/MasterSchedule/Index";
+                                })
+
+                            //$("#MaintenanceSubFormDiv").html(data);
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        debugger;
+    }
+
+    function PrintPage()
+    {
+        $("#MainDiv").hide();
+        window.print();
+        return false;
+    }
+
+    function fnExcelReport() {
+        $("#table_master_schedule").table2excel({
+            // exclude CSS class
+            exclude: ".noExl",
+            name: "Master Schedule",
+            filename: "Master Schedule", //do not include extension
+            fileext: ".xlsx" // file extension
+        });
+    }
+
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+
+        document.body.innerHTML = originalContents;
+    }
+
+
+        if (@Permission == 2) {
+        $("#AddMasterSchedule, #ExportBtn, #PrintBtn").hide();
+    }
+
+    else if (@Permission == 3) {
+        $("#DeleteSvhe, #AddMasterSchedule").hide();
+        $("#schTime, #SchMoldID, #schPriority, #schActionItem, #schCycles, #schStatus").attr("disabled", "disabled");
+        $(".schDate").attr("disabled", "disabled");
+        $(".EditorCol").attr('contenteditable', 'false');
+    }
+
+    else if (@Permission == 4 || @Permission == 5) {
+        $("#DeleteSvhe, #AddMasterSchedule").hide();
+        $(".create_btn, .del_btn").hide();
+        $("#schTime, #SchMoldID, #schPriority, #schActionItem, #schCycles, #schStatus").attr("disabled", "disabled");
+        $(".schDate").attr("disabled", "disabled");
+        $(".EditorCol").attr('contenteditable', 'false');
+    }
+
+
+    $('.FocusOutMasterSch').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.FocusOutMasterSch').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblSchedule.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.MasterSchedule.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+</script>
+<script>
+    document.getElementById('table').style.height = window.innerHeight - 141 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

@@ -1,0 +1,375 @@
+﻿@model Moldtrax.Models.tblMoldTooling
+@{
+    int Userid = 0;
+    HttpCookie nameCookie = Request.Cookies["SelectedMoldID"];
+    string name = nameCookie != null ? nameCookie.Value.Split('=')[1] : "undefined";
+    if (name != "undefined")
+    {
+        Userid = Convert.ToInt32(name);
+    }
+
+    Layout = null;
+}
+
+<div id="ToolingHtml">
+    <form id="Toolingmm">
+        <table class="table table-responsive table-bordered table-condensed table-striped" id="table_trouble">
+            <thead>
+                <tr>
+                    <th>@*<input type='checkbox' class='SelectAll' id='Quotecheckall' value="0" name='checkname' />*@</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                    <th>Location</th>
+                    <th>Part#</th>
+                    <th>Detail#</th>
+                    <th>Vendor</th>
+                    <th>Cost</th>
+                    <th>Parts on Hand</th>
+                    <th>Reorder Level</th>
+                    <th>#Ordered</th>
+                    <th>Date Ordered</th>
+                    <th>#Received</th>
+                    <th>&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <input type="hidden" id="MoldDataID" name="MoldDataID" value="@Userid" />
+                        <input type="hidden" id="ComID" name="ComID" value="" />
+                    </td>
+                    <td class="table_first_div">
+                        <div>
+                            <div class="w-100">
+                                <select id="MoldToolingType" name="MoldToolingType">
+                                    <option></option>
+                                    @foreach (var i in ViewBag.MoldTooling)
+                                    {
+                                        <option value="@i.Value">@i.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="table_sec_div">
+                        <div class="w-100">
+                            <div id="UpdatedImg">
+                                <div id="Editor1" class="editor_div editor1c">
+                                    <textarea rows="6" autocomplete="off" id="MoldToolDescrip" name="MoldToolDescrip" class="MoldToolDes editable">@Model.MoldToolDescrip</textarea>
+                                    <input type="button" style="display:none;" id="Showtxtbtn" data-target="#Modal_textarea" data-toggle="modal" />
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="td_width_mid">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" class="textarea-editor" id="MoldToolingLocation" name="MoldToolingLocation">@Model.Location</textarea>
+                        </div>
+                    </td>
+                    <td class="td_width_mid">
+                        <div class="w-100">
+
+                            <div id="UpdatedImg">
+                                <div class="editor_div ">
+                                    <textarea rows="6" autocomplete="off" class="textarea-editor" id="MoldToolingPartNumber" name="MoldToolingPartNumber">@Model.MoldToolingPartNumber</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="td_width_mid">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" class="textarea-editor" id="MoldToolingPrintNumber" name="MoldToolingPrintNumber">@Model.MoldToolingPrintNumber</textarea>
+                        </div>
+                    </td>
+                    <td class="td_width_mid">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" class="textarea-editor" id="MoldToolingVendor" name="MoldToolingVendor">@Model.MoldToolingVendor</textarea>
+                        </div>
+                    </td>
+                    <td class="td_width_mid">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" class="textarea-editor" id="MoldToolCost" name="MoldToolCost">@Model.MoldToolCost</textarea>
+                        </div>
+                    </td>
+                    <td class="td_width_mid2">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" id="MoldToolingPartsOnHand" name="MoldToolingPartsOnHand" class="textarea-editor">@Model.MoldToolingPartsOnHand</textarea>
+                        </div>
+                    </td>
+                    <td class="td_width_mid2">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" id="MoldToolingReorderLevel" name="MoldToolingReorderLevel" class="textarea-editor">@Model.MoldToolingReorderLevel</textarea>
+                        </div>
+                    </td>
+                    <td class="td_width_order">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" id="MoldToolingNumOrdered" name="MoldToolingNumOrdered" class="textarea-editor">@Model.MoldToolingNumOrdered</textarea>
+                        </div>
+                    </td>
+                    <td class="td_date_div">
+                        <div class="editor_div">
+                            <input type="text" autocomplete="off" class="form-control Datepicker" id="MoldToolingDateOrdered" name="MoldToolingDateOrdered" />
+                        </div>
+                    </td>
+                    <td class="td_receive">
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" id="MoldToolingNumReceived" name="MoldToolingNumReceived" class="textarea-editor">@Model.MoldToolingNumReceived</textarea>
+                        </div>
+                    </td>
+                    <td class="td_btn">
+                        <div class="editor_div a_bg">
+                            <a href="#" id="AddPartsRec" class="recived_btn">Add Parts <br> Received</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="row">
+            <div class="col-md-12 btn_css text-right">
+                <input type="submit" class="add_btn" value="Save" />
+                <input type="button" class="delete_btn" id="CnclTooLBtn" value="Cancel" />
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    $('.textarea-editor2').summernote(
+        {
+            toolbar: [
+              ['style', ['style']],
+              ['fontsize', ['fontsize']],
+              ['font', ['bold', 'italic', 'underline', 'clear']],
+              ['fontname', ['fontname']],
+              ['color', ['color']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['height', ['height']],
+              ['insert', ['link', 'picture', 'hr']],
+              ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 300,
+            popover: {
+                link: []
+            },// set editor height
+            minHeight: null,             // set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script>
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+    $(document).ready(function () {
+        var CID = $("#MainCompanyID").val();
+        $("#ComID").val(CID);
+    });
+
+
+    $("#MoldToolCost").focusout(function () {
+        var Cost = $("#MoldToolCost").val().replace(/[$,]/g, '');
+        $("#MoldToolCost").val('$' + addCommas(Cost));
+    });
+
+
+    $(".editor1c").dblclick(function () {
+        debugger;
+
+        $(this).closest("tr").attr('name', '1');
+        $(".editable").attr('data-placeholder', '');
+        var row = $(this);
+        var dd = $(this).closest("tr").find("td:eq(2)").find("#Editor1").html();
+        var newdata = $.parseHTML(dd);
+        $("#Showtxtbtn").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $(this).closest("tr").find("td:eq(2)").find("#MoldToolDescrip").attr('name', 'NewDDID');
+        $(this).closest("tr").find("td:eq(2)").find(".editable").attr('name', 'NewDDID2');
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+      
+    })
+
+    $("#SaveTxtbtn").click(function () {
+        debugger;
+
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+        $(".popover-content").hide();
+    })
+
+
+    $(".del_btn").click(function () {
+
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+    })
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+
+    var editor = new MediumEditor('.editable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+
+    $("#Toolingmm").submit(function (e) {
+        debugger;
+        var MoldID = $("#MainMoldHidnID").val();
+        var obj = new Object();
+        obj.MoldToolingType = $("#MoldToolingType").val();
+
+        var dd = $("#Editor1").html();
+        var newdata = $.parseHTML(dd);
+        obj.MoldToolDescrip = newdata[1].innerHTML;
+
+        obj.MoldToolingPartNumber = $("#MoldToolingPartNumber").val();
+        obj.MoldToolingPrintNumber = $("#MoldToolingPrintNumber").val();
+        obj.MoldToolingVendor = $("#MoldToolingVendor").val();
+        obj.Location = $("#MoldToolingLocation").val();
+        var Cost = $("#MoldToolCost").val().replace(/[$,]/g, '');
+        obj.MoldToolCost = Cost;
+        obj.CompanyID = $("#MainCompanyID").val();
+
+        obj.MoldToolingPartsOnHand = parseInt($("#MoldToolingPartsOnHand").val());
+        obj.MoldToolingReorderLevel = $("#MoldToolingReorderLevel").val();
+        obj.MoldToolingNumOrdered = $("#MoldToolingNumOrdered").val();
+        obj.MoldToolingDateOrdered = $("#MoldToolingDateOrdered").val();
+        obj.MoldToolingNumReceived = $("#MoldToolingNumReceived").val();
+        obj.MoldDataID = MoldID;
+
+
+        e.preventDefault();
+        $.ajax({
+            url: '/DetailMoldInfo/CreateTooling',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $(".Datepicker").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+    $("#CnclTooLBtn").click(function () {
+        var MoldID = $("#MainMoldHidnID").val();
+        $.ajax({
+            url: '/DetailMoldInfo/ToolingGetData?ID=' + MoldID,
+            type: 'Get',
+            success: function (data) {
+                $("#MoldTb").html(data);
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $("#AddPartsRec").click(function () {
+        debugger;
+        var Partsonhand = parseFloat($("#MoldToolingPartsOnHand").val());
+        var Received = parseFloat($("#MoldToolingNumReceived").val());
+
+        $("#MoldToolingPartsOnHand").val(parseFloat(Partsonhand + Received).toFixed(2));
+        $("#MoldToolingNumReceived").val(0);
+
+    })
+
+</script>

@@ -1,0 +1,273 @@
+﻿@model Moldtrax.Models.tblVendors
+
+
+<style>
+        .w_35 label {
+    width: 35%;
+    float: left;
+}
+.w_35 .form-control {
+    width: 65%;
+    float: left;
+}
+.w_15 label {
+    width: 16.5%;
+    float: left;
+}
+.w_15 .form-control {
+    width: 83.5%;
+    float: left;
+}
+    .w_30 label {
+        width: 32%;
+        float: left;
+        line-height: 26px;
+    }
+    .w_35 label, .w_15 label {
+        line-height: 28px;
+    }
+    .w_30 .form-control {
+        width: 68%;
+        float: left;
+    }
+    </style>
+<form id="VendorDetailFrm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card_header m-0">
+                <h5 class="main_top_head">@Model.VendorName</h5>
+            </div>
+        </div>
+        <div class="col-md-6 text-right btn_css">
+            <input type="button" class="add_btn" value="Add" onclick="AddVendor()" />
+            <input type="submit" class="create_btn" value="Save" />
+            <input type="button" class="delete_btn" onclick="DeleteVendor(@Model.VendorID)" value="Delete Selected Customer" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card box_design" id="cust_info">
+                <div class="card_header">
+                    <h5>Vendor Name & Address</h5>
+                </div>
+                <input type="hidden" id="VendorID" name="VendorID" value="@Model.VendorID" />
+                <input type="hidden" value="@Model.CompanyID" id="CompanyID" name="CompanyID" />
+                <div class="card_body">
+                    <label>Name</label>
+                    <input type="text" autocomplete="off" value="@Model.VendorName" id="VendorName" name="VendorName" class="form-control">
+
+                    <label>Address</label>
+                    <textarea autocomplete="off" class="form-control" id="Address1" name="Address1" rows="2">@Model.Address1</textarea>
+
+                    <label>City</label>
+                    <input type="text" autocomplete="off" value="@Model.City" id="City" name="City" class="form-control">
+
+                    <label>State/Prov</label>
+                    <input type="text" autocomplete="off" value="@Model.StateOrProvince" id="StateOrProvince" name="StateOrProvince" class="form-control">
+
+                    <label>Zip/Postal</label>
+                    <input type="text" autocomplete="off" value="@Model.PostalCode" id="PostalCode" name="PostalCode" class="form-control">
+
+                    <label>Country</label>
+                    <input type="text" autocomplete="off" value="@Model.Country" id="Country" name="Country" class="form-control">
+
+                    <label>Phone</label>
+                    <input type="text" autocomplete="off" value="@Model.PhoneNumber" id="PhoneNumber" name="PhoneNumber" class="form-control">
+
+                    <label>Fax</label>
+                    <input type="text" autocomplete="off" value="@Model.FaxNumber" id="FaxNumber" name="FaxNumber" class="form-control">
+
+                    <label>Web Site</label>
+                    <input type="text" autocomplete="off" value="@Model.VendorURL" id="VendorURL" name="VendorURL" class="form-control">
+                </div>
+            </div>
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Vendor Notes</h5>
+                </div>
+                <div class="card_body ">
+                    <textarea autocomplete="off" class="form-control" id="Notes" name="Notes" style="height: 97px;">@Model.Notes</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>First Contact</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6 w_35">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont1FirstName" id="VENCont1FirstName" name="VENCont1FirstName" class="form-control">
+                        </div>
+                        <div class="col-md-6 w_35">
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont1LastName" id="VENCont1LastName" name="VENCont1LastName" class="form-control">
+                        </div>
+                        <div class="col-md-12 w_15">
+                            <label>E-Mail</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont1EMail" id="VENCont1EMail" name="VENCont1EMail" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 w_30">
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont1Phone" id="VENCont1Phone" name="VENCont1Phone" class="form-control">
+                        </div>
+                        <div class="col-md-4 w_30">
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont1Fax" id="VENCont1Fax" name="VENCont1Fax" class="form-control">
+                        </div>
+                        <div class="col-md-4 w_30">
+                            <label>Mobile</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont1Mobile" id="VENCont1Mobile" name="VENCont1Mobile" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Second Contact</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6 w_35">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont2FirstName" id="VENCont2FirstName" name="VENCont2FirstName" class="form-control">
+                        </div>
+                        <div class="col-md-6 w_35">
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont2LastName" id="VENCont2LastName" name="VENCont2LastName" class="form-control">
+                        </div>
+                        <div class="col-md-12 w_15">
+                            <label>E-Mail</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont2EMail" id="VENCont2EMail" name="VENCont2EMail" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 w_30">
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont2Phone" id="VENCont2Phone" name="VENCont2Phone" class="form-control">
+                        </div>
+                        <div class="col-md-4 w_30">
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont2Fax" id="VENCont2Fax" name="VENCont2Fax" class="form-control">
+                        </div>
+                        <div class="col-md-4 w_30">
+                            <label>Mobile</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont2Mobile" id="VENCont2Mobile" name="VENCont2Mobile" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Third Contact</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6 w_35">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont3FirstName" id="VENCont3FirstName" name="VENCont3FirstName" class="form-control">
+                        </div>
+                        <div class="col-md-6 w_35">
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont3LastName" id="VENCont3LastName" name="VENCont3LastName" class="form-control">
+                        </div>
+                        <div class="col-md-12 w_15">
+                            <label>E-Mail</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont3EMail" id="VENCont3EMail" name="VENCont3EMail" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4 w_30">
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont3Phone" id="VENCont3Phone" name="VENCont3Phone" class="form-control">
+                        </div>
+                        <div class="col-md-4 w_30">
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont3Fax" id="VENCont3Fax" name="VENCont3Fax" class="form-control">
+                        </div>
+                        <div class="col-md-4 w_30">
+                            <label>Mobile</label>
+                            <input type="text" autocomplete="off" value="@Model.VENCont3Mobile" id="VENCont3Mobile" name="VENCont3Mobile" class="form-control">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $("#VendorDetailFrm").submit(function (e) {
+        var data = $("#VendorDetailFrm").serialize();
+
+        e.preventDefault();
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveVendorDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    window.location.href = "/CompanyInfo/Index";
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    function AddVendor() {
+        $.ajax({
+            url: '/CompanyInfo/VendorDetail?VenID=-1',
+            type: 'Post',
+            success: function (data) {
+                $("#VendrDeta").html(data);
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+
+
+    function DeleteVendor(ID) {
+        $.ajax({
+            url: '/CompanyInfo/VendorDelete?CustID=' + ID,
+            type: 'Post',
+            success: function (data) {
+                Swal.fire({
+                    title: "Deleted!",
+                    text: 'Data has been deleted.',
+                    type: "success"
+                }).then(function () {
+                    window.location.href = "/CompanyInfo/Index";
+                })
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+</script>

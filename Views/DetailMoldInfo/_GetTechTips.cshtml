@@ -1,0 +1,225 @@
+﻿
+@model Moldtrax.Models.tblTechTips
+@{
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+}
+
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+<script src="~/Scripts/medium-editor.min.js"></script>
+<link href="~/Content/medium-editor.min.css" rel="stylesheet" />
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+
+<style>
+    .table-con {
+        height: 504px;
+    }
+
+    input.edit_btn {
+        margin: 0;
+    }
+
+    #loading, #loading1 {
+        width: 100%;
+        height: 100%;
+        /* top: 0; */
+        /* left: 0; */
+        position: static;
+        /*display: block;*/
+        opacity: 0.7;
+        background-color: #fff;
+        z-index: 99;
+        text-align: center;
+        display: none;
+    }
+
+    #loading-image, #loading-image1 {
+        position: absolute;
+        top: 32%;
+        left: 40%;
+        z-index: 100;
+        width: 25%;
+    }
+
+    #loading-image1 {
+        position: absolute;
+        top: 32%;
+        left: 0;
+        z-index: 100;
+        width: 90%;
+    }
+</style>
+
+<form id="TechTipSbmtForm">
+    <div class="row">
+        <div class="col-md-6">
+            <h3><span>Tech Tips </span></h3>
+        </div>
+        <div class="col-md-6 text-right">
+            @*<input type="hidden" id="SavetechTips" />*@
+            <input type="hidden" id="SavetechTips11" />
+        </div>
+    </div>
+    <ul class="nav nav-tabs TechTipsNavTab sticky-top" role="tablist" id="inner_tab">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" onclick="GetFocusOnEditor()" id="MoldSpecs" href="#home1">Mold Specs</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="HotRunner" href="#innermenu1">Hot Runner</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="Disassembly" href="#innermenu2">Disassembly</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="Cleaning" href="#innermenu3">Cleaning</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="Assembly" href="#innermenu4">Assembly</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="FinalCheck" href="#innermenu5">Final Check</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="ToolKit" href="#innermenu6">Tool Kit</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" onclick="GetFocusOnEditor()" id="Polishing" href="#innermenu7">Polishing</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="Links" href="#innermenu8">Links</a>
+        </li>
+    </ul>
+
+    <input type="hidden" value="@Model.TechTipsID" id="TechTipsID" name="TechTipsID" />
+    <input type="hidden" value="@ViewBag.MoldDataID" id="MoldDataID" name="MoldDataID" />
+    <div class="tab-content table-con" id="inner_tab_content">
+        <div id="home1" class="tab-pane active">
+            @Html.Partial("_TechTipsMoldSpecData", Model)
+        </div>
+        <div id="innermenu1" class="tab-pane fade CallingFocusOutTechTips">
+            @Html.Partial("_TTHotRunner", Model)
+        </div>
+
+        <div id="innermenu2" class="tab-pane fade CallingFocusOutTechTips">
+            <div id="Editor6">
+                <textarea autocomplete="off" class="form-control editablett TTDisassmbly CallingFocusOutTechTips" rows="100" id="TTDisassmbly" name="TTDisassmbly">@Model.TTDisassmbly</textarea>
+                <input type="button" style="display:none;" id="ShowtxtbtnPopMain" data-target="#Modal_textarea12" data-toggle="modal" />
+            </div>
+        </div>
+        <div id="innermenu3" class="tab-pane fade CallingFocusOutTechTips">
+            <div id="Editor7">
+                <textarea autocomplete="off" class="form-control editablett TTClean CallingFocusOutTechTips" rows="100" id="TTClean" name="TTClean">@Model.TTClean</textarea>
+            </div>
+        </div>
+        <div id="innermenu4" class="tab-pane fade CallingFocusOutTechTips">
+            <div id="Editor8">
+                <textarea autocomplete="off" class="form-control editablett TTAssmbly CallingFocusOutTechTips" rows="100" id="TTAssmbly" name="TTAssmbly">@Model.TTAssmbly</textarea>
+            </div>
+        </div>
+        <div id="innermenu5" class="tab-pane fade CallingFocusOutTechTips">
+            <div id="Editor9">
+                <textarea autocomplete="off" class="form-control editablett TTFinalChk CallingFocusOutTechTips" rows="100" id="TTFinalChk" name="TTFinalChk">@Model.TTFinalChk</textarea>
+            </div>
+        </div>
+        <div id="innermenu6" class="tab-pane fade CallingFocusOutTechTips">
+            <div id="Editor10">
+                <textarea autocomplete="off" class="form-control editablett TTToolKit  CallingFocusOutTechTips" rows="100" id="TTToolKit" name="TTToolKit">@Model.TTToolKit</textarea>
+            </div>
+        </div>
+        <div id="innermenu7" class="tab-pane fade CallingFocusOutTechTips">
+            <div id="Editor11">
+                <textarea autocomplete="off" class="form-control editablett TTPolishing CallingFocusOutTechTips" rows="100" id="TTPolishing" name="TTPolishing">@Model.TTPolishing</textarea>
+            </div>
+        </div>
+        <div id="innermenu8" class="tab-pane fade">
+            @Html.Action("TTLinksGetData", "DetailMoldInfo")
+        </div>
+    </div>
+</form>
+
+<div class="modal" id="Modal_textarea12">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close2" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="MainEditor" autocomplete="off" class="textarea-editor"></textarea>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <input type="button" id="SaveTxtbtnMain" class="add_btn" value="Save" />
+                        <input type="button" class="del_btnMain delete_btn" value="Cancel" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="~/dist/summernote-lite.js"></script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script src="~/Scripts/DetailMold/TechTips.js" defer></script>
+
+<script>
+
+   if (@Permission == 2 || @Permission == 3) {
+        $("#TTLinksDeleteBtn").hide();
+    }
+    else if (@Permission == 4 || @Permission == 5 || @Permission == 6)
+    {
+        $(".CallingFocusOutTechTips, .CallingFocusOutTTLinks").attr('disabled', 'disabled');
+        $("#TTDisassmbly, #TTClean, #TTAssmbly, #TTFinalChk, #TTToolKit, #TTPolishing, #TTHRDisassembly, #TTHRClean, #TTHRAssembly, #TTHRFinalChk, #TTHRPolishing, #TTHRToolKit").prop('disabled', true);
+        $("#TTLinksDeleteBtn, #AddImage, #DelPartImage,#OldTTLinks, #AddImage2, #DeleImage2").hide();
+        //$('.editor_div').css('pointer-events', 'none');
+
+        $(".editablett, .note-editable").attr('contenteditable', false);
+
+        $("#SaveTxtbtnMain, #NewTTLinks").hide();
+        //$("#Editor6, #Editor7, #Editor8, #Editor9, #Editor10, #Editor11").css('pointer-events', 'none');
+    }
+
+    //function SaveTechTipsFunc()
+    //{
+    //    alert("asdasd");
+    //}
+
+    //$("#TechTipSbmtForm").submit(function (e) {
+    //    e.preventDefault();
+
+    //    var data = $("#TechTipSbmtForm").serialize();
+
+    //    jQuery.ajaxSettings.traditional = true;
+
+    //    $.ajax({
+    //        type: 'POST',
+    //        url: '/DetailMoldInfo/SaveTechTipsMoldSpec',
+    //        data: JSON.stringify(data),
+    //        success: function (data) {
+    //            Swal.fire({
+    //                text: 'Data saved Successfully.',
+    //                type: "success"
+    //            }).then(function () {
+    //            })
+    //        },
+    //        error: function () {
+
+    //        }
+    //    })
+    //})
+
+
+
+</script>

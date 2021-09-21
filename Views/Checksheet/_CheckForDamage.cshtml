@@ -1,0 +1,327 @@
+﻿@model IEnumerable<Moldtrax.Models.FinalChecklstResult>
+@{
+
+    DateTime Date1 = new DateTime();
+    DateTime Date2 = new DateTime();
+    DateTime Date3 = new DateTime();
+
+    foreach (var x in Model)
+    {
+        Date1 = x.Date1;
+        Date2 = x.Date2;
+        Date3 = x.Date3;
+    }
+
+}
+
+<table class="table table-bordered table-responsive" id="check_For_damage">
+    <thead>
+        <tr>
+            <th>Inspection Name</th>
+            <th>
+                @if (Date1 != null && Date1 != DateTime.MinValue)
+                {
+                    <input type="date" class="form-control" value="@(Convert.ToDateTime(Date1).ToString("yyyy-MM-dd"))" />
+                }
+
+                else
+                {
+                    <input type="date" class="form-control" value="" />
+                }
+            </th>
+            <th>Additional Comments</th>
+            <th>
+
+                @if (Date2 != null && Date2 != DateTime.MinValue)
+                {
+                    <input type="date" class="form-control" value="@(Convert.ToDateTime(Date2).ToString("yyyy-MM-dd"))" />
+                }
+
+                else
+                {
+                    <input type="date" class="form-control" value="" />
+                }
+
+            </th>
+            <th>Additional Comments</th>
+            <th>
+                @if (Date3 != null && Date3 != DateTime.MinValue)
+                {
+                    <input type="date" class="form-control" value="@(Convert.ToDateTime(Date3).ToString("yyyy-MM-dd"))" />
+                }
+
+                else
+                {
+                    <input type="date" class="form-control" value="" />
+                }
+            
+            </th>
+            <th>Additional Comments</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var x in Model)
+        {
+            <tr>
+                <td>@x.InspectionName</td>
+                <td>
+                    <div id="FirstDiv" class="date_check">
+                        <input type="hidden" value="@x.InspectionDetailID1" id="InspectionDetailID1" />
+                        <input type="checkbox" name="Inspection" class="checkbox-inline OK1" id="OK1" value="@x.Ok1" />
+                        <input type="checkbox" name="Inspection" class="checkbox-inline Attention1" id="Attention1" value="@x.Attention1" />
+                        <input type="checkbox" name="Inspection" class="checkbox-inline NoRun1" id="NoRun1" value="@x.NoRun1" />
+                    </div>
+                </td>
+                <td><input type="text" value="@x.AdditionalComments1" id="AdditionalComments1" class="AdditionalCmnt1 form-control" /></td>
+                <td>
+                    <div id="SecondDiv" class="date_check">
+                        <input type="hidden" value="@x.InspectionDetailID2" id="InspectionDetailID2" />
+                        <input type="checkbox" class="checkbox-inline OK2" id="OK2" value="@x.Ok2" />
+                        <input type="checkbox" class="checkbox-inline Attention2" id="Attention2" value="@x.Attention2" />
+                        <input type="checkbox" class="checkbox-inline NoRun2" id="NoRun2" value="@x.NoRun2" />
+                    </div>
+                </td>
+                <td><input type="text" value="@x.AdditionalComments2" id="AdditionalComments2" class="AdditionalCmnt2 form-control" /></td>
+                <td>
+                    <div id="ThirdDiv" class="date_check">
+                        <input type="hidden" value="@x.InspectionDetailID3" id="InspectionDetailID3" />
+                        <input type="checkbox" class="checkbox-inline OK3" id="OK3" value="@x.Ok3" />
+                        <input type="checkbox" class="checkbox-inline Attention3" id="Attention3" value="@x.Attention3" />
+                        <input type="checkbox" class="checkbox-inline NoRun3" id="NoRun3" value="@x.NoRun3" />
+                    </div>
+                </td>
+                <td><input type="text" value="@x.AdditionalComments3" id="AdditionalComments3" class="AdditionalCmnt3 form-control" /></td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<script>
+
+    $(".AdditionalCmnt1").focusout(function ()
+    {
+        var row = $(this);
+        var str = row.find("TD").eq(2).find("#AdditionalComments1").val();
+        var ID = row.find("TD").eq(1).find("#InspectionDetailID1").val();
+        UpdateCmt(str, ID);
+    })
+
+    $(".AdditionalCmnt2").focusout(function () {
+        var row = $(this);
+        var str = row.find("TD").eq(4).find("#AdditionalComments2").val();
+        var ID = row.find("TD").eq(3).find("#InspectionDetailID2").val();
+        UpdateCmt(str, ID);
+    })
+
+    $(".AdditionalCmnt3").focusout(function () {
+        var row = $(this);
+        var str = row.find("TD").eq(6).find("#AdditionalComments3").val();
+        var ID = row.find("TD").eq(5).find("#InspectionDetailID3").val();
+        UpdateCmt(str, ID);
+    })
+
+
+    function UpdateCmt(str, ID)
+    {
+        $.ajax({
+            url: '/Checksheet/UpdateAdditionalComments?str=' + str + '&InspectionID=' + ID,
+            type: 'Post',
+            success: function () {
+
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+
+    function UpdateVal(ok, Attention, NoRun, InspectionDetailID) {
+        $.ajax({
+            url: '/Checksheet/OkAfterUpdate?OK=' + ok + '&Attention=' + Attention + '&NoRun=' + NoRun + '&InspectionDetailID=' + InspectionDetailID,
+            type: 'Post',
+            success: function () {
+
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+
+    $(function () {
+        $("#check_For_damage tbody tr").each(function () {
+            debugger;
+            var row = $(this);
+
+            if (row.find("TD").eq(1).find("#OK1").val() == 'value') {
+                row.find("TD").eq(1).find("#OK1").prop("checked", true);
+                row.find("td").eq(1).css('background-color', '#22b14c');
+            }
+            else if (row.find("TD").eq(1).find("#Attention1").val() == 'value') {
+                row.find("TD").eq(1).find("#Attention1").prop("checked", true);
+                row.find("td").eq(1).css('background-color', '#fff200');
+            }
+            else if (row.find("TD").eq(1).find("#NoRun1").val() == 'value') {
+                row.find("TD").eq(1).find("#NoRun1").prop("checked", true);
+                row.find("td").eq(1).css('background-color', '#ed1c24');
+            }
+
+            if (row.find("TD").eq(3).find("#OK2").val() == 'value') {
+                row.find("TD").eq(3).find("#OK2").prop("checked", true);
+                row.find("td").eq(3).css('background-color', '#22b14c');
+            }
+            else if (row.find("TD").eq(3).find("#Attention2").val() == 'value') {
+                row.find("TD").eq(3).find("#Attention2").prop("checked", true);
+                row.find("td").eq(3).css('background-color', '#fff200');
+            }
+            else if (row.find("TD").eq(3).find("#NoRun2").val() == 'value') {
+                row.find("TD").eq(3).find("#NoRun2").prop("checked", true);
+                row.find("td").eq(3).css('background-color', '#ed1c24');
+            }
+
+
+            if (row.find("TD").eq(5).find("#OK3").val() == 'value') {
+                row.find("TD").eq(5).find("#OK3").prop("checked", true);
+                row.find("td").eq(5).css('background-color', '#22b14c');
+            }
+            else if (row.find("TD").eq(5).find("#Attention3").val() == 'value') {
+                row.find("TD").eq(5).find("#Attention3").prop("checked", true);
+                row.find("td").eq(5).css('background-color', '#fff200');
+            }
+            else if (row.find("TD").eq(5).find("#NoRun3").val() == 'value') {
+                row.find("TD").eq(5).find("#NoRun3").prop("checked", true);
+                row.find("td").eq(5).css('background-color', '#ed1c24');
+            }
+
+
+        })
+    })
+
+
+    $(".OK1").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(1).css('background-color', '#22b14c');
+        row.find("td").eq(1).find("#Attention1").prop("checked", false);
+        row.find("td").eq(1).find("#NoRun1").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(1).find("#InspectionDetailID1").val();
+        var ok = 1;
+        var Attention = 0;
+        var NoRun = 0;
+
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+
+    })
+
+    $(".Attention1").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(1).css('background-color', '#fff200');
+        row.find("td").eq(1).find("#OK1").prop("checked", false);
+        row.find("td").eq(1).find("#NoRun1").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(1).find("#InspectionDetailID1").val();
+        var ok = 0;
+        var Attention = 1;
+        var NoRun = 0;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+    $(".NoRun1").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(1).css('background-color', '#ed1c24');
+        row.find("td").eq(1).find("#OK1").prop("checked", false);
+        row.find("td").eq(1).find("#Attention1").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(1).find("#InspectionDetailID1").val();
+        var ok = 0;
+        var Attention = 0;
+        var NoRun = 1;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+
+
+    $(".OK2").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(3).css('background-color', '#22b14c');
+        row.find("td").eq(3).find("#Attention2").prop("checked", false);
+        row.find("td").eq(3).find("#NoRun2").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(3).find("#InspectionDetailID2").val();
+        var ok = 1;
+        var Attention = 0;
+        var NoRun = 0;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+
+    })
+
+    $(".Attention2").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(3).css('background-color', '#fff200');
+        row.find("td").eq(3).find("#OK2").prop("checked", false);
+        row.find("td").eq(3).find("#NoRun2").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(3).find("#InspectionDetailID2").val();
+        var ok = 0;
+        var Attention = 1;
+        var NoRun = 0;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+    $(".NoRun2").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(3).css('background-color', '#ed1c24');
+        row.find("td").eq(3).find("#OK2").prop("checked", false);
+        row.find("td").eq(3).find("#Attention2").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(3).find("#InspectionDetailID2").val();
+        var ok = 0;
+        var Attention = 0;
+        var NoRun = 1;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+
+
+    $(".OK3").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(5).css('background-color', '#22b14c');
+        row.find("td").eq(5).find("#Attention3").prop("checked", false);
+        row.find("td").eq(5).find("#NoRun3").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(5).find("#InspectionDetailID3").val();
+        var ok = 1;
+        var Attention = 0;
+        var NoRun = 0;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+    $(".Attention3").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(5).css('background-color', '#fff200');
+        row.find("td").eq(5).find("#OK3").prop("checked", false);
+        row.find("td").eq(5).find("#NoRun3").prop("checked", false);
+
+        var InspectionDetailID = row.find("td").eq(5).find("#InspectionDetailID3").val();
+        var ok = 0;
+        var Attention = 1;
+        var NoRun = 0;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+    $(".NoRun3").click(function () {
+        var row = $(this).closest("tr");
+        row.find("td").eq(5).css('background-color', '#ed1c24');
+        row.find("td").eq(5).find("#OK3").prop("checked", false);
+        row.find("td").eq(5).find("#Attention3").prop("checked", false);
+        var InspectionDetailID = row.find("td").eq(5).find("#InspectionDetailID3").val();
+        var ok = 0;
+        var Attention = 0;
+        var NoRun = 1;
+        UpdateVal(ok, Attention, NoRun, InspectionDetailID);
+    })
+
+
+</script>

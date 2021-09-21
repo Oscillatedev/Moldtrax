@@ -1,0 +1,422 @@
+﻿@model IEnumerable<Moldtrax.Models.tblDDDepartmentID>
+    @using Moldtrax.Models
+@{
+    int Total = 0;
+    foreach (var x in Model)
+    {
+        Total += 1;
+    }
+}
+<style>
+    .table-con {
+        height: 540px;
+    }
+</style>
+@*<br>*@
+
+<div class="row">
+    <div class="col-md-6 btn_css">
+        <input type="button" class="add_btn" value="A-Z" id="DepartmentAscOrder" />
+        <input type="button" class="del_btn" value="Z-A" id="DepartmentDescOrder" />
+    </div>
+    <div class="col-md-6 text-right btn_css">
+        <input type="button" class="back_btn" value="Back" onclick="doUndo()" />
+        <input type="button" class="add_btn" value="Add" id="NewDetailMoldDepart" />
+        <input type="hidden" class="add_btn" value="Add" id="OldDetailMoldDepart" data-toggle="modal" data-target="#DetailMoldDepartment" />
+
+        @*<input type="button" onclick="AddDepartment()" class="create_btn" value="Add" data-toggle="modal" data-target="#DetailMoldDepartment" />*@
+        @*<input type="button" onclick="SaveDepartment()" class="edit_btn" value="Save" />*@
+        <input type="button" onclick="DeleteSelectedDepartment()" class="delete_btn" value="Delete" />
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_body table-con" id="table3">
+                <table class="table table-bordered table-responsive" id="table_department">
+                    <thead>
+                        <tr>
+                            <th class="th_detail1"><input type="checkbox" id="MainDepartmentChck" value=""></th>
+                            <th class="th_detail2">Department</th>
+                            <th class="th_detail3">Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var x in Model)
+                        {
+                            <tr>
+                                <td><input type="checkbox" value="@x.ID" name="SubDeprmtnBox" class="Subcheckbox" id=""></td>
+                                <td>
+                                    <input type="hidden" value="@x.ID" id="ID" />
+                                    <input type="text" autocomplete="off" value="@x.DepartmentID" id="DepartmentID" name="DepartmentID" class="form-control DepartmentFocusOut">
+                                </td>
+                                <td>
+                                    <input type="text" autocomplete="off" value="@x.DepartmentIDDesc" id="DepartmentIDDesc" name="DepartmentIDDesc" class="form-control DepartmentFocusOut">
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <label class="red_total">Total: @Total</label>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="DetailMoldDepartment">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Department</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="table_department">
+                    <thead>
+                        <tr>
+                            <th class="th_detail2">Department</th>
+                            <th class="th_detail3">Explanation</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" autocomplete="off" value="" id="AddDepartmentID" name="DepartmentID" class="form-control">
+                                </td>
+                                <td>
+                                    <input type="text" value="" autocomplete="off" id="AddDepartmentIDDesc" name="DepartmentIDDesc" class="form-control">
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" class="add_btn" id="SaveDepartmentBtn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+
+                @*<button type="button" class="add_btn">Save</button>*@
+                @*<button type="button" class="del_btn" data-dismiss="modal">Close</button>*@
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*<div class="modal fade" id="DetailMoldDepartment">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Department</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <label>Department</label>
+                        <input type="text" value="" id="AddDepartmentID" name="DepartmentID" class="form-control">
+                    </div>
+                    <div class="col-md-12">
+                        <label>Explanation</label>
+                        <input type="text" value="" id="AddDepartmentIDDesc" name="DepartmentIDDesc" class="form-control">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" class="add_btn" id="SaveDepartmentBtn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+
+                @*<button type="button" class="add_btn">Save</button>
+                @*<button type="button" class="del_btn" data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>*@
+
+<script>
+    document.getElementById('table3').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+
+    //$.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+    //    return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+    //        return $('input', td).val();
+    //    });
+    //};
+
+    //$('#table_department').DataTable({
+    //    paging: false,
+    //    searching: false,
+    //    columnDefs: [
+    //        {
+    //            targets: [1, 2],
+    //            type: 'natural',
+    //            orderDataType: "dom-text", type: 'string'
+    //        }
+    //    ]
+    //});
+
+    $("#DepartmentAscOrder").click(function () {
+        $.ajax({
+            url: '/Administration/DepartmentAscedingOrder',
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    $("#DepartmentDescOrder").click(function () {
+        $.ajax({
+            url: '/Administration/DepartmentDescndingOrder',
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+            },
+            error: function () {
+
+            }
+
+        })
+    })
+
+
+    function AddDepartment() {
+        var htmlstring = "<tr><td><input type='checkbox' value='0'></td>";
+        htmlstring += "<td><input type = 'text' value='' id='DepartmentID' name = 'DepartmentID' class='form-control' ></td>";
+        htmlstring += "<td><input type='text' value='' id='DepartmentIDDesc' name='DepartmentIDDesc' class='form-control'></td></tr>";
+        $("#table_department tbody").append(htmlstring);
+    }
+
+    $(".DepartmentFocusOut").focusout(function ()
+    {
+        var obj = new Object();
+        obj.ID = $(this).closest("tr").find('td:eq(1)').find("#ID").val();
+        obj.DepartmentID = $(this).closest("tr").find('td:eq(1)').find("#DepartmentID").val();
+        obj.DepartmentIDDesc = $(this).closest("tr").find('td:eq(2)').find("#DepartmentIDDesc").val();
+        $.ajax({
+
+            url: '/Administration/SaveDepartmentFocusOut',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    $("#SaveDepartmentBtn").click(function ()
+    {
+        var obj = new Object();
+        obj.DepartmentID = $("#AddDepartmentID").val();
+        obj.DepartmentIDDesc = $("#AddDepartmentIDDesc").val();
+        $.ajax({
+
+            url: '/Administration/SaveDepartment',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                    $(".modal-backdrop").hide();
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+
+    })
+
+    function SaveDepartment() {
+        var model = new Array();
+
+        $("#table_department tbody tr").each(function () {
+            var row = $(this);
+
+            var db = {};
+
+            db.ID = row.find("TD").eq(1).find("#ID").val();
+            db.DepartmentID = row.find("TD").eq(1).find("#DepartmentID").val();
+            db.DepartmentIDDesc = row.find("TD").eq(2).find("#DepartmentIDDesc").val();
+            model.push(db);
+        })
+
+        $.ajax({
+
+            url: '/Administration/SaveDepartment',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    }
+
+
+    $(document).ready(function () {
+        debugger;
+        $('#MainDepartmentChck').click(function () {
+            debugger;
+            if ($(this).is(':checked'))
+                $('input[name="SubDeprmtnBox"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="SubDeprmtnBox"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="SubDeprmtnBox"].Subcheckbox').click(function () {
+            debugger;
+            if ($('input:checkbox[name="SubDeprmtnBox"].Subcheckbox').length == $('input:checkbox[name="SubDeprmtnBox"].Subcheckbox:checked').length) {
+                $('input[name="SubDeprmtnBox"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="SubDeprmtnBox"].SelectAll').prop("checked", false);
+            }
+        })
+    })
+
+    $("#NewDetailMoldDepart").click(function ()
+    {
+        $("#OldDetailMoldDepart").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+
+        $(".modal-backdrop").hide();
+    })
+
+    function DeleteSelectedDepartment() {
+        debugger;
+        //var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        //var MoldID = $("#MainMoldHidnID").val();
+        var selID = new Array();
+        var str = '';
+        $('input:checkbox[name=SubDeprmtnBox].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+            //if (selID == 0) {
+            //    $(this).closest("tr").remove();
+            //}
+        });
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+
+                    $.ajax({
+                        url: "/Administration/DeleteDepartment",
+                        type: "post",
+                        data: { str: str },
+                        success: function (data) {
+                            debugger;
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#home").html(data);
+                            })
+
+                            //window.location.href = '/DetailMoldInfo/Index';
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+    }
+
+    $('.DepartmentFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.DepartmentFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblDDDepartmentID.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Department.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    document.getElementById('table3').style.height = window.innerHeight - 211 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

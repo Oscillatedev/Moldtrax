@@ -1,0 +1,1284 @@
+﻿@model Moldtrax.Models.MaintenanceScheduleCommon
+@using Moldtrax.Models
+
+@{
+    double TotalCycle = 0;
+    if (ViewBag.CounterVal != null)
+    {
+        TotalCycle = ViewBag.CounterVal;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+}
+<style>
+    .highlight12 {
+        background-color: #aaa;
+    }
+
+    .table-con {
+        height: 300px;
+    }
+
+    .button_div input {
+        width: 100%;
+    }
+</style>
+<script>
+    debugger;
+</script>
+@*<br />*@
+<div class="row">
+    <div class="col-md-12 text-right btn_css">
+        <input type="button" class="add_btn" value="Add" id="NewAddMaintenanceBtn" />
+        <input type="hidden" id="OldMaintenanceBtn" data-target="#Modal_textareaMaintenanceSche" data-toggle="modal" class="add_btn" value="Add" />
+        <input type="hidden" id="SaveMaintenenanceSche" onclick="SaveMoldDetails()" />
+        <input type="hidden" id="SaveMainTrouble" onclick="SaveTroubleTracking()" />
+        <input type="button" class="delete_btn" onclick="DeleteSubMainentance()" value="Delete Action Item" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-4" style="padding-right: 0;">
+        <div class="card box_design">
+            <div class="card_body">
+                <div class="row">
+                    <div class="col-md-6" style="padding-right: 2px;">
+                        <label>Repair Status</label>
+                        <input type="hidden" value="@Model.MoldData.RepairStatus" id="RepairStatusVal" />
+                        <select class="form-control PropDis" id="RepairStatus" name="RepairStatus">
+                            <option></option>
+                            @foreach (var x in ViewBag.RepairStatusVal)
+                            {
+                                <option value="@x.Value">@x.Text</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="col-md-6" style="padding-left: 2px;">
+                        <label>Mold Location</label>
+                        <input type="hidden" value="@Model.MoldData.RepairStatusLocationId" id="RprVal" />
+                        <select id="RepairStatusLocationId" name="RepairStatusLocationId" class="form-control PropDis">
+                            <option></option>
+                            @foreach (var x in ViewBag.MoldLocation23)
+                            {
+                                <option value="@x.Value">@x.Text</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" style="padding-right: 2px;">
+                        <label>Yellow PM Frequency</label>
+                        <div class="input-group">
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldOutPressPMFreq)" id="MoldOutPressPMFreq" name="MoldOutPressPMFreq" class="form-control MoldFocusChange SaveMaintenence">
+                            <div class="input-group-append">
+                                <span class="input-group-text">cycles</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="padding-left: 2px;">
+                        <label>Red PM Frequency</label>
+                        <div class="input-group">
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldOutPressPMFreqRed)" id="MoldOutPressPMFreqRed" name="MoldOutPressPMFreqRed" class="form-control MoldFocusChange SaveMaintenence">
+                            <div class="input-group-append">
+                                <span class="input-group-text">cycles</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" style="padding-right: 2px;">
+                        <label>Yellow PM Cycle Count</label>
+                        <div class="input-group">
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldOutPressPMYellowCycles)" id="MoldOutPressPMYellowCycles" name="MoldOutPressPMYellowCycles" class="form-control MoldFocusChange">
+                            <div class="input-group-append">
+                                <span class="input-group-text">cycles</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6" style="padding-left: 2px;">
+                        <label>Red PM Cycle Count</label>
+                        <div class="input-group">
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldOutPressPMRedCycles)" id="MoldOutPressPMRedCycles" name="MoldOutPressPMRedCycles" class="form-control MoldFocusChange">
+                            <div class="input-group-append">
+                                <span class="input-group-text">cycles</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6" style="padding-right: 2px;">
+                        <label>In Press Service Freq</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldData.MoldInPressPMFreq" id="MoldInPressPMFreq" name="MoldInPressPMFreq" class="form-control MoldFocusChange SaveMaintenence">
+                    </div>
+                    <div class="col-md-6" style="padding-left: 2px;" id="">
+                        <label>Total Life Cycles</label>
+
+                        @if (Convert.ToInt32(Model.MoldData.MoldTotalCycles) >= Model.MoldData.MoldOutPressPMRedCycles)
+                        {
+                            //Red
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldTotalCycles)" class="form-control" id="TotalAvailableCycles" style="background: #ed1d22;font-weight:bold;color:white;">
+                        }
+
+                        else if (Convert.ToInt32(Model.MoldData.MoldTotalCycles) >= Model.MoldData.MoldOutPressPMYellowCycles)
+                        {
+                            //Yellow
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldTotalCycles)" class="form-control" id="TotalAvailableCycles" style="background: #fff101;font-weight:bold;">
+                        }
+
+                        else
+                        {
+                            //Green
+                            <input type="text" autocomplete="off" value="@String.Format("{0:n0}", Model.MoldData.MoldTotalCycles)" class="form-control" id="TotalAvailableCycles" style="background: #00ff00;font-weight:bold;">
+                        }
+
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="button_div btn_css">
+                            <input type="button" class="add_btn" value="Calculator" onclick="javascript:window.open('http://ostermiller.org/calc/calculator.html','calculator'+new Date().getTime(),'toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=yes,copyhistory=no,width=450,height=300')" />
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="button_div btn_css">
+                            <input type="button" class="del_btn" value="Reset PM Alert" id="ResetPMAlert" />
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card box_design" id="MaintenanceSubFormDiv">
+            <div class="card_body ">
+                <div class="table-con" id="table2">
+                    <table class="table table-bordered table-responsive" id="inner_table_maintain">
+                        <thead>
+                            <tr>
+                                <th class="th_ms1"><input type="checkbox" id="MaintenenaceChkAll" value=""></th>
+                                <th class="th_ms2">Date Noted</th>
+                                <th class="th_ms3">Time</th>
+                                <th class="th_ms4">Priority</th>
+                                <th class="th_ms5">Action Item</th>
+                                <th class="th_ms6">Cycles</th>
+                                <th class="th_ms7">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model.TbScheduleList)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" id="ChkMaintenance" name="ChckMainName" class="Subcheckbox" value="@x.SchID"></td>
+                                    <td>
+                                        <input type="hidden" value="@x.SchID" id="SchID" />
+                                        @if (x.schDate != null && x.schDate != DateTime.MinValue)
+                                        {
+                                            <input type="text" autocomplete="off" value="@Convert.ToDateTime(x.schDate).ToString("MM/dd/yyyy")" id="" name="schDate" class="form-control schDate Maintenencedt">
+                                        }
+
+                                        else
+                                        {
+                                            <input type="text" id="" autocomplete="off" name="schDate" class="form-control schDate Maintenencedt">
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (x.schTime != null)
+                                        {
+                                            <input type="text" autocomplete="off" value="@Convert.ToDateTime(x.schTime).ToString("HH:mm")" id="schTime" name="schTime" class="form-control CurrentSchTime ChangeSchTimeFormat MaintenanceFocusOutFunc">
+                                        }
+
+                                        else
+                                        {
+                                            <input type="text" id="schTime" autocomplete="off" name="schTime" class="form-control CurrentSchTime ChangeSchTimeFormat MaintenanceFocusOutFunc">
+                                        }
+                                    </td>
+                                    <td>
+                                        <input type="hidden" id="Priority" value="@x.schPriority" />
+                                        <select id="schPriority" name="schPriority" class="form-control MaintenanceFocusOutFunc OnChnageMainSch">
+                                            @for (int i = 1; i <= 9; i++)
+                                            {
+                                                <option>@i</option>
+                                            }
+                                        </select>
+                                    </td>
+                                    <td class="MaintenanceFocusOutFunc">
+                                        <textarea id="schActionItem" autocomplete="off" name="schActionItem" class="Trbleditable MaintenanceFocusOutFunc">@x.schActionItem</textarea>
+                                        @*<input type="text" value="@x.schActionItem" id="schActionItem" name="schActionItem" class="form-control Trbleditable" />*@
+                                    </td>
+                                    <td>
+                                        <input type="text" autocomplete="off" value="@string.Format("{0:n0}", x.schCycles)" id="schCycles" name="schCycles" class="form-control MaintenanceFocusOutFunc">
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.schStatus" id="StatusVal" />
+                                        <select class="form-control MaintenanceFocusOutFunc OnChnageMainSch" id="schStatus" name="schStatus">
+                                            @foreach (var s in ViewBag.StatusVal)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                        @*<input type="text" value="@x.schStatus" id="schStatus" name="schStatus" class="form-control">*@
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="Modal_textareaMaintenanceSche">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Maintenance Schedule</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="inner_table_maintain1">
+                    <thead>
+                        <tr>
+                            <th class="th_ms2">Date Noted</th>
+                            <th class="th_ms3">Time</th>
+                            <th class="th_ms4">Priority</th>
+                            <th class="th_ms5">Action Item</th>
+                            <th class="th_ms6">Cycles</th>
+                            <th class="th_ms7">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <input type="text" autocomplete="off" id="AddschDate" name="schDate" class="form-control">
+                            </td>
+                            <td>
+                                <input type="text" autocomplete="off" id="AddschTime" name="schTime" class="form-control">
+                            </td>
+                            <td>
+                                <select id="AddschPriority" name="schPriority" class="form-control">
+                                    @for (int i = 1; i <= 9; i++)
+                                    {
+                                        <option>@i</option>
+                                    }
+                                </select>
+                            </td>
+                            <td>
+                                <textarea id="AddschActionItem" autocomplete="off" name="schActionItem" class="Trbleditable"></textarea>
+                            </td>
+                            <td>
+                                <input type="text" value="" id="AddschCycles" autocomplete="off" name="schCycles" class="form-control">
+                            </td>
+                            <td>
+                                <select class="form-control" id="AddschStatus" name="schStatus">
+                                    @foreach (var s in ViewBag.StatusVal)
+                                    {
+                                        <option value="@s.Value">@s.Text</option>
+                                    }
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="SaveMaintenanceSc" class="add_btn" value="Save" />
+                <input type="button" class="del_btn" value="Close" data-dismiss="modal" />
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+
+<script>
+
+  
+
+    $(document).ready(function ()
+    {
+        $(".medium-editor-placeholder").attr("data-placeholder", "");
+    })
+
+
+    $("#AddschDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+    $(".schDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true,
+        onClose: function () {
+            debugger
+            $(this).closest("tr").attr('name', '1');
+        }
+    });
+
+    $.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+            return $('input', td).val();
+        });
+    };
+
+    $.fn.dataTable.ext.order['dom-select'] = function (settings, col) {
+        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+            return $('select', td).val();
+        });
+    }
+
+    $('#inner_table_maintain').DataTable({
+        paging: false,
+        searching: false,
+        bInfo: false,
+        columnDefs: [
+            {
+                targets: [1, 2, 3,5,6],
+                type: 'natural',
+                orderDataType: "dom-text", type: 'string'
+            }
+        ]
+    });
+
+    $(document).ready(function ()
+    {
+        var Status = $("#RepairStatusVal").val();
+        $("#RepairStatus").val(Status);
+        var Rpair = $("#RprVal").val();
+        $("#RepairStatusLocationId").val(Rpair);
+
+        $("#inner_table_maintain tbody tr:first").addClass('highlight12');
+
+        $("#inner_table_maintain tbody tr").click(function () {
+            var selected = $(this).hasClass("highlight12");
+            if (!selected)
+                $("#inner_table_maintain tbody tr").removeClass("highlight12");
+            $(this).addClass("highlight12");
+        })
+
+    })
+
+    $(".PropDis").change(function ()
+    {
+        SaveMoldDetails();
+    })
+
+    $(".SaveMaintenence").focusout(function ()
+    {
+        SaveMoldDetails();
+    })
+
+
+    $("#MoldInPressPMFreq").focusout(function ()
+    {
+        var data = addCommas($("#MoldInPressPMFreq").val());
+        $("#MoldInPressPMFreq").val(data);
+    })
+
+    $("#MoldOutPressPMFreq").focusout(function () {
+        var data = addCommas($("#MoldOutPressPMFreq").val());
+        $("#MoldOutPressPMFreq").val(data);
+    })
+
+    $("#MoldOutPressPMFreqRed").focusout(function () {
+        var data = addCommas($("#MoldOutPressPMFreqRed").val());
+        $("#MoldOutPressPMFreqRed").val(data);
+    })
+
+    $("#MoldOutPressPMYellowCycles").focusout(function () {
+        debugger;
+        var data = addCommas($("#MoldOutPressPMYellowCycles").val());
+        var YellowCycle = data.replace(/\,/g, '');
+        var RedCycle = $("#MoldOutPressPMRedCycles").val().replace(/\,/g, '');
+
+        if (RedCycle != "") {
+            if (parseInt(YellowCycle) > parseInt(RedCycle)) {
+
+                Swal.fire("Yellow Cycle Count cannot be greater than Red Cycle Count. Please change Red Cycle Count first.")
+                $("#MoldOutPressPMYellowCycles").val("");
+                return false;
+            }
+        }
+
+        $("#MoldOutPressPMYellowCycles").val(data);
+        debugger
+       var obj = new Object();
+
+        obj.MoldDataID = @Model.MoldData.MoldDataID;
+        obj.RepairStatus = $("#RepairStatus").val();
+        obj.RepairStatusLocationId = $("#RepairStatusLocationId").val();
+
+        //var MoldInPressPMFreq = $("#MoldInPressPMFreq").val().replace(/[$,]/g, '');
+        var MoldInPressPMFreq = $("#MoldInPressPMFreq").val();
+        $("#MoldInPressPMFreq").val(addCommas(MoldInPressPMFreq));
+        obj.MoldInPressPMFreq = MoldInPressPMFreq;
+
+        var MoldOutPressPMFreq = $("#MoldOutPressPMFreq").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreq").val(addCommas(MoldOutPressPMFreq));
+        obj.MoldOutPressPMFreq = MoldOutPressPMFreq;
+
+        var MoldOutPressPMFreqRed = $("#MoldOutPressPMFreqRed").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreqRed").val(addCommas(MoldOutPressPMFreqRed));
+        obj.MoldOutPressPMFreqRed = MoldOutPressPMFreqRed;
+
+        var MoldOutPressPMYellowCycles = $("#MoldOutPressPMYellowCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMYellowCycles").val(addCommas(MoldOutPressPMYellowCycles));
+        obj.MoldOutPressPMYellowCycles = MoldOutPressPMYellowCycles;
+
+        var MoldOutPressPMRedCycles = $("#MoldOutPressPMRedCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMRedCycles").val(addCommas(MoldOutPressPMRedCycles));
+        obj.MoldOutPressPMRedCycles = MoldOutPressPMRedCycles;
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveMoldFocusOutMaintenance',
+            type: 'Post',
+            data: obj,
+            success: function (data)
+            {
+                $("#MaintenanceMain").html(data);
+            },
+
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    $("#MoldOutPressPMRedCycles").focusout(function () {
+        debugger
+        var data = addCommas($("#MoldOutPressPMRedCycles").val());
+        var RedCycle = data.replace(/\,/g, '');
+        var YellowCycle = $("#MoldOutPressPMYellowCycles").val().replace(/\,/g, '');
+
+        if (parseInt(YellowCycle) > parseInt(RedCycle)) {
+
+            Swal.fire("Yellow Cycle Count cannot be greater than Red Cycle Count. Please change Red Cycle Count first.")
+             $("#MoldOutPressPMRedCycles").val("");
+                return false;
+            }
+
+        $("#MoldOutPressPMRedCycles").val(data);
+
+         var obj = new Object();
+
+        obj.MoldDataID = @Model.MoldData.MoldDataID;
+        obj.RepairStatus = $("#RepairStatus").val();
+        obj.RepairStatusLocationId = $("#RepairStatusLocationId").val();
+
+        //var MoldInPressPMFreq = $("#MoldInPressPMFreq").val().replace(/[$,]/g, '');
+        var MoldInPressPMFreq = $("#MoldInPressPMFreq").val();
+        $("#MoldInPressPMFreq").val(addCommas(MoldInPressPMFreq));
+        obj.MoldInPressPMFreq = MoldInPressPMFreq;
+
+        var MoldOutPressPMFreq = $("#MoldOutPressPMFreq").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreq").val(addCommas(MoldOutPressPMFreq));
+        obj.MoldOutPressPMFreq = MoldOutPressPMFreq;
+
+        var MoldOutPressPMFreqRed = $("#MoldOutPressPMFreqRed").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreqRed").val(addCommas(MoldOutPressPMFreqRed));
+        obj.MoldOutPressPMFreqRed = MoldOutPressPMFreqRed;
+
+        var MoldOutPressPMYellowCycles = $("#MoldOutPressPMYellowCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMYellowCycles").val(addCommas(MoldOutPressPMYellowCycles));
+        obj.MoldOutPressPMYellowCycles = MoldOutPressPMYellowCycles;
+
+        var MoldOutPressPMRedCycles = $("#MoldOutPressPMRedCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMRedCycles").val(addCommas(MoldOutPressPMRedCycles));
+        obj.MoldOutPressPMRedCycles = MoldOutPressPMRedCycles;
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveMoldFocusOutMaintenance',
+            type: 'Post',
+            data: obj,
+            success: function (data)
+            {
+                $("#MaintenanceMain").html(data);
+            },
+
+            error: function ()
+            {
+
+            }
+
+        })
+    })
+
+
+    //$(".MoldFocusChange").focusout(function ()
+    //{
+    //    SaveMoldDetails();
+    //})
+
+    $(".CurrentSchTime").dblclick(function ()
+    {
+        $(this).closest("tr").find('td:eq(2)').find("#schTime").val(GetCurrentTime());
+    })
+
+
+
+
+    $("#ResetPMAlert").click(function ()
+    {
+        Swal.fire({
+            title: 'MoldTrax',
+            text: "Do you Want to Reset the PM?",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.value)  {
+                $(".loader__wrap").show();
+                var MoldID = $("#MoldResinType").val();
+                //var CavityNo = $("#CavityTotal").val();
+                var obj = new Object();
+
+        obj.MoldDataID = @Model.MoldData.MoldDataID;
+        obj.RepairStatus = $("#RepairStatus").val();
+        obj.RepairStatusLocationId = $("#RepairStatusLocationId").val();
+
+        //var MoldInPressPMFreq = $("#MoldInPressPMFreq").val().replace(/[$,]/g, '');
+        var MoldInPressPMFreq = $("#MoldInPressPMFreq").val();
+        $("#MoldInPressPMFreq").val(addCommas(MoldInPressPMFreq));
+        obj.MoldInPressPMFreq = MoldInPressPMFreq;
+
+        var MoldOutPressPMFreq = $("#MoldOutPressPMFreq").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreq").val(addCommas(MoldOutPressPMFreq));
+        obj.MoldOutPressPMFreq = MoldOutPressPMFreq;
+
+        var MoldOutPressPMFreqRed = $("#MoldOutPressPMFreqRed").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreqRed").val(addCommas(MoldOutPressPMFreqRed));
+        obj.MoldOutPressPMFreqRed = MoldOutPressPMFreqRed;
+
+        var MoldOutPressPMYellowCycles = $("#MoldOutPressPMYellowCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMYellowCycles").val(addCommas(MoldOutPressPMYellowCycles));
+        obj.MoldOutPressPMYellowCycles = MoldOutPressPMYellowCycles;
+
+        var MoldOutPressPMRedCycles = $("#MoldOutPressPMRedCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMRedCycles").val(addCommas(MoldOutPressPMRedCycles));
+        obj.MoldOutPressPMRedCycles = MoldOutPressPMRedCycles;
+
+        $.ajax({
+            url: '/MaintenanceTracking/ResetPMAlert',
+            type: 'Post',
+            data: obj,
+            success: function (data)
+            {
+                $("#MaintenanceMain").html(data);
+            },
+
+            error: function ()
+            {
+
+            }
+
+        })
+            }
+            else {
+                //var dd = $("#CavityVal").val();
+                //$("#CavityTotal").val(dd);
+            }
+        })
+
+
+    })
+
+
+    $("#NewAddMaintenanceBtn").click(function ()
+    {
+        //$("#AddschTime").val(GetCurrentTime());
+        $(".medium-editor-placeholder").attr("data-placeholder", "")
+        $("#OldMaintenanceBtn").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+        $(".modal-backdrop").hide();
+    })
+
+
+
+    function convertTo24Hour(time) {
+        if (time == "12" || time == "12:00" || time == "12:0")
+        {
+            time = "12pm";
+        }
+        var momentObj = moment(time, ["h:mm A"])
+        return momentObj.format("HH:mm");
+    }
+
+    $(".OnChnageMainSch").change(function ()
+    {
+        $(this).closest("tr").attr('name', '1');
+    })
+
+
+    $(".MaintenanceFocusOutFunc").focusout(function () {
+        $(this).closest("tr").attr('name', '1');
+    })
+
+
+    function SaveTroubleTracking()
+    {
+        debugger;
+        var model = new Array();
+
+        $("#inner_table_maintain tbody tr").each(function () {
+            var row = $(this);
+
+            if ($(this).attr('name') == 1) {
+                var db = {};
+
+                //Tooling.MoldToolingID = row.find("TD").eq(0).find("#MoldTLID").val();
+                db.SchID = row.find("TD").eq(1).find("#SchID").val();
+                db.schDate = row.find("TD").eq(1).find("input[name='schDate']").val();
+
+                var schTime = convertTo24Hour(row.find("TD").eq(2).find("#schTime").val().toLowerCase());
+
+                if (SetTime != "Invalid date") {
+                    row.find("TD").eq(2).find("#schTime").val(schTime);
+                }
+                db.schTime = schTime;
+
+                db.schPriority = row.find("TD").eq(3).find("#schPriority").val();
+                db.schActionItem = row.find("TD").eq(4).find("#schActionItem").val();
+                db.schCycles = row.find("TD").eq(5).find("#schCycles").val().replace(/\,/g, '');
+                //$(this).closest("tr").find('td:eq(5)').find("#schCycles").val(addCommas(CycleCount));
+
+                db.schStatus = row.find("TD").eq(6).find("#schStatus").val();
+                //db.schMoldDataID = $("#MoldResinType").val();
+
+                model.push(db);
+            }
+        })
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/SaveTroubleList',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+
+    }
+
+    $(".ChangeSchTimeFormat").focusout(function ()
+    {
+        debugger
+        var schTime = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#schTime").val().toLowerCase());
+        if (SetTime != "Invalid date") {
+            $(this).closest("tr").find('td:eq(2)').find("#schTime").val(schTime);
+        }
+    })
+
+    //$(".MaintenanceFocusOutFunc").focusout(function ()
+    //{
+    //    var obj = new Object();
+    //    obj.SchID = $(this).closest("tr").find('td:eq(1)').find("#SchID").val();
+    //    obj.schDate = $(this).closest("tr").find('td:eq(1)').find("#schDate").val();
+
+    //    var schTime = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#schTime").val().toLowerCase());
+    //    if (SetTime != "Invalid date") {
+    //        $(this).closest("tr").find('td:eq(2)').find("#schTime").val(schTime);
+    //    }
+    //    obj.schTime = schTime
+
+    //    obj.schPriority = $(this).closest("tr").find('td:eq(3)').find("#schPriority").val();
+    //    obj.schActionItem = $(this).closest("tr").find('td:eq(4)').find("#schActionItem").val();
+    //    var CycleCount = $(this).closest("tr").find('td:eq(5)').find("#schCycles").val().replace(/\,/g, '');
+    //    $(this).closest("tr").find('td:eq(5)').find("#schCycles").val(addCommas(CycleCount));
+    //    obj.schCycles = CycleCount;
+    //    obj.schStatus = $(this).closest("tr").find('td:eq(6)').find("#schStatus").val();
+
+    //    $.ajax({
+
+    //        url: '/MaintenanceTracking/SaveTroubleTrackingFocusOut',
+    //        type: 'Post',
+    //        data: obj,
+    //        success: function () {
+
+
+    //        },
+    //        error: function () {
+
+    //        }
+    //    })
+    //})
+
+    $("#AddschTime").focusout(function ()
+    {
+        var schtime = $("#AddschTime").val().toLowerCase();
+        var SchTime = convertTo24Hour(schtime);
+
+        if (SchTime != "Invalid date") {
+            $("#AddschTime").val(SchTime);
+        }
+    })
+
+    function ConvertTimeInto24Format(Time) {
+        debugger
+        var time = Time;
+        var hours = Number(time.match(/^(\d+)/)[1]);
+        var minutes = Number(time.match(/:(\d+)/)[1]);
+        var AMPM = time.match(/\s(.*)$/)[1];
+        if (AMPM == "PM" && hours < 12) hours = hours + 12;
+        if (AMPM == "AM" && hours == 12) hours = hours - 12;
+        var sHours = hours.toString();
+        var sMinutes = minutes.toString();
+        if (hours < 10) sHours = "0" + sHours;
+        if (minutes < 10) sMinutes = "0" + sMinutes;
+        var FTime = (sHours + ":" + sMinutes);
+        return FTime;
+    }
+
+    $("#SaveMaintenanceSc").click(function ()
+    {
+        var obj = new Object();
+        obj.schDate = $("#AddschDate").val();
+        obj.schTime = $("#AddschTime").val();
+
+        obj.schPriority = $("#AddschPriority").val();
+        obj.schActionItem = $("#AddschActionItem").val();
+        obj.schCycles = $("#AddschCycles").val().replace(/\,/g, '');
+        obj.schStatus = $("#AddschStatus").val();
+        obj.schMoldDataID = $("#MoldResinType").val();
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/SaveTroubleTracking',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MaintenanceMain").html(data);
+                    $(".modal-backdrop").hide();
+                })
+
+                $(".modal-open").css("overflow", "visible");
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    function SaveMoldDetails()
+    {
+        var obj = new Object();
+
+        obj.MoldDataID = @Model.MoldData.MoldDataID;
+        obj.RepairStatus = $("#RepairStatus").val();
+        obj.RepairStatusLocationId = $("#RepairStatusLocationId").val();
+
+        //var MoldInPressPMFreq = $("#MoldInPressPMFreq").val().replace(/[$,]/g, '');
+        var MoldInPressPMFreq = $("#MoldInPressPMFreq").val();
+        $("#MoldInPressPMFreq").val(addCommas(MoldInPressPMFreq));
+        obj.MoldInPressPMFreq = MoldInPressPMFreq;
+
+        //var MoldOutPressPMFreq = $("#MoldOutPressPMFreq").val().replace(/[$,]/g, '');
+        //$("#MoldOutPressPMFreq").val(addCommas(MoldOutPressPMFreq));
+        //obj.MoldOutPressPMFreq = MoldOutPressPMFreq;
+
+        var MoldOutPressPMFreq = $("#MoldOutPressPMFreq").val();
+
+        if (MoldOutPressPMFreq != undefined) {
+            MoldOutPressPMFreq = MoldOutPressPMFreq.replace(/[$,]/g, '');
+        }
+
+        //var MoldOutPressPMFreq = $("#MoldOutPressPMFreq").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreq").val(addCommas(MoldOutPressPMFreq));
+        obj.MoldOutPressPMFreq = MoldOutPressPMFreq;
+
+
+        //var MoldOutPressPMFreqRed = $("#MoldOutPressPMFreqRed").val().replace(/[$,]/g, '');
+        //$("#MoldOutPressPMFreqRed").val(addCommas(MoldOutPressPMFreqRed));
+        //obj.MoldOutPressPMFreqRed = MoldOutPressPMFreqRed;
+
+        var MoldOutPressPMFreqRed = $("#MoldOutPressPMFreqRed").val();
+
+        if (MoldOutPressPMFreqRed != undefined) {
+            MoldOutPressPMFreqRed = MoldOutPressPMFreqRed.replace(/[$,]/g, '');
+        }
+
+        //var MoldOutPressPMFreqRed = $("#MoldOutPressPMFreqRed").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMFreqRed").val(addCommas(MoldOutPressPMFreqRed));
+        obj.MoldOutPressPMFreqRed = MoldOutPressPMFreqRed;
+
+        //var MoldOutPressPMYellowCycles = $("#MoldOutPressPMYellowCycles").val().replace(/[$,]/g, '');
+        //$("#MoldOutPressPMYellowCycles").val(addCommas(MoldOutPressPMYellowCycles));
+        //obj.MoldOutPressPMYellowCycles = MoldOutPressPMYellowCycles;
+
+        var MoldOutPressPMYellowCycles = $("#MoldOutPressPMYellowCycles").val();
+
+        if (MoldOutPressPMYellowCycles != undefined) {
+            MoldOutPressPMYellowCycles = MoldOutPressPMYellowCycles.replace(/[$,]/g, '');
+        }
+
+        //var MoldOutPressPMYellowCycles = $("#MoldOutPressPMYellowCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMYellowCycles").val(addCommas(MoldOutPressPMYellowCycles));
+        obj.MoldOutPressPMYellowCycles = MoldOutPressPMYellowCycles;
+
+        //var MoldOutPressPMRedCycles = $("#MoldOutPressPMRedCycles").val().replace(/[$,]/g, '');
+        //$("#MoldOutPressPMRedCycles").val(addCommas(MoldOutPressPMRedCycles));
+        //obj.MoldOutPressPMRedCycles = MoldOutPressPMRedCycles;
+
+        var MoldOutPressPMRedCycles = $("#MoldOutPressPMRedCycles").val();
+
+        if (MoldOutPressPMRedCycles != undefined) {
+            MoldOutPressPMRedCycles = MoldOutPressPMRedCycles.replace(/[$,]/g, '');
+        }
+
+        //var MoldOutPressPMRedCycles = $("#MoldOutPressPMRedCycles").val().replace(/[$,]/g, '');
+        $("#MoldOutPressPMRedCycles").val(addCommas(MoldOutPressPMRedCycles));
+        obj.MoldOutPressPMRedCycles = MoldOutPressPMRedCycles;
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveMoldMaintenance',
+            type: 'Post',
+            data: obj,
+            success: function ()
+            {
+
+            },
+
+            error: function ()
+            {
+
+            }
+
+        })
+
+    }
+
+
+     function AppendMaintenanceSubForm()
+    {
+         var htmlstring = "<tr><td><input type='checkbox' id='ChkMaintenance' name='ChckMainName' class='Subcheckbox' value='0'></td>";
+         htmlstring += "<td><input type='hidden' value='0' id='SchID' /><input type='date' min='1899-12-30' value='' id='schDate' name='schDate' class='form-control'></td>";
+        htmlstring += "<td><input type='text' value='' id='schTime' name='schTime' class='form-control'></td>";
+        htmlstring += "<td><select id='schPriority' class='form-control' name='schPriority'>@for (int i = 1; i <= 9; i++) {<option value='@i'>@i</option>}</select></td>";
+         htmlstring += "<td><textarea id='schActionItem' name='schActionItem' class='form-control Trbleditable'></textarea></td>";
+        htmlstring += "<td><input type='text' value='' id='schCycles' name='schCycles' class='form-control'></td>";
+        htmlstring += "<td><select class='form-control' id='schStatus' name='schStatus'>@foreach (var s in ViewBag.StatusVal){<option value='@s.Text'>@s.Text</option>}</select></td></tr>";
+
+         $("#inner_table_maintain tbody").append(htmlstring);
+
+         var ColorPickerExtension = MediumEditor.extensions.button.extend({
+             name: "colorPicker",
+             action: "applyForeColor",
+             aria: "color picker",
+             contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+             init: function () {
+                 this.button = this.document.createElement('button');
+                 this.button.classList.add('medium-editor-action');
+                 this.button.innerHTML = '<b>C</b>';
+                 initPicker(this.button);
+             }
+         });
+
+         var pickerExtension = new ColorPickerExtension();
+
+         function setColor(color) {
+             pickerExtension.base.importSelection(this.selectionState);
+             pickerExtension.document.execCommand("styleWithCSS", false, true);
+             pickerExtension.document.execCommand("foreColor", false, color);
+         }
+
+         function initPicker(element) {
+             $(element).spectrum({
+                 allowEmpty: true,
+                 color: "#f00",
+                 showInput: true,
+                 showAlpha: true,
+                 showPalette: true,
+                 showInitial: true,
+                 hideAfterPaletteSelect: false,
+                 preferredFormat: "hex3",
+                 change: function (color) {
+                     setColor(color);
+                 },
+                 hide: function (color) {
+                     //applyColor(color);
+                 },
+                 palette: [
+                     ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                     ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                     ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                     ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                     ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                     ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                     ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                     ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+                 ]
+             });
+         }
+         //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+         var editor = new MediumEditor('.Trbleditable', {
+             toolbar: {
+                 buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+             },
+             extensions: {
+                 'colorPicker': pickerExtension
+             }
+         });
+    }
+
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.Trbleditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+
+    $("#SaveMaintenanceSub").click(function ()
+    {
+            var model = new Array();
+
+            $("#inner_table_maintain tbody tr").each(function () {
+                var row = $(this);
+
+                var db = {};
+
+                //Tooling.MoldToolingID = row.find("TD").eq(0).find("#MoldTLID").val();
+                db.SchID = row.find("TD").eq(1).find("#SchID").val();
+                db.schDate = row.find("TD").eq(1).find("#schDate").val();
+                db.schTime = row.find("TD").eq(2).find("#schTime").val();
+
+                db.schPriority = row.find("TD").eq(3).find("#schPriority").val();
+                db.schActionItem = row.find("TD").eq(4).find("#schActionItem").val();
+                db.schCycles = row.find("TD").eq(5).find("#schCycles").val().replace(/\,/g, '');
+                db.schStatus = row.find("TD").eq(6).find("#schStatus").val();
+                db.schMoldDataID = $("#MoldResinType").val();
+
+                model.push(db);
+            })
+            $.ajax({
+
+                url: '/MaintenanceTracking/SaveTroubleTracking',
+                type: 'Post',
+                data: JSON.stringify(model),
+                contentType: 'application/json',
+                dataType: 'html',
+                success: function (data) {
+                    Swal.fire({
+                        text: 'Data saved Successfully.',
+                        type: "success"
+                    }).then(function () {
+                        $("#MaintenanceMain").html(data);
+                    })
+
+                },
+                error: function () {
+
+                }
+            })
+    })
+
+    function DeleteSubMainentance() {
+        //$(".loader__wrap").show();
+        var MoldID = $("#MoldResinType").val();
+
+        var selID = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=ChckMainName].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+            //if (selID == 0) {
+            //    $(this).closest("tr").remove();
+            //}
+        });
+
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/MaintenanceTracking/DeleteSubMainData",
+                        type: "post",
+                        data: { str: str, MoldID: MoldID },
+                        success: function (data) {
+                            debugger;
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#MaintenanceMain").html(data);
+                            })
+
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        debugger;
+    }
+
+    $(function () {
+        $("#inner_table_maintain tbody tr").each(function () {
+            var row = $(this);
+            var Trouble;
+            var Date;
+            Trouble = row.find("TD").eq(3).find("#Priority").val();
+            row.find("TD").eq(3).find("#schPriority").val(Trouble);
+
+            Date = row.find("TD").eq(1).find("#MoldToolingDateOrdered").val();
+            if (Date == '0001-01-01') {
+                row.find("TD").eq(1).find("#MoldToolingDateOrdered").val('');
+            }
+            //var newdate = Date.split(' ')[0].split("/").reverse().join("-");
+            var st = row.find("TD").eq(6).find("#StatusVal").val();
+            row.find("TD").eq(6).find("#schStatus").val(st);
+            //row.find("TD").eq(10).find("#MoldToolingDateOrdered").val(newdate);
+        })
+    })
+
+    $('.MoldFocusChange, .MaintenanceFocusOutFunc').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.MoldFocusChange').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblMoldData.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.MaintenanceSchedule.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+          });
+
+          $('.MaintenanceFocusOutFunc').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblSchedule.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.MaintenanceSchedule.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+    $(document).ready(function () {
+
+        $('#MaintenenaceChkAll').click(function () {
+            if ($(this).is(':checked'))
+                $('input[name="ChckMainName"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="ChckMainName"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="ChckMainName"].Subcheckbox').click(function () {
+            if ($('input:checkbox[name="ChckMainName"].Subcheckbox').length == $('input:checkbox[name="ChckMainName"].Subcheckbox:checked').length) {
+                $('input[name="ChckMainName"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="ChckMainName"].SelectAll').prop("checked", false);
+            }
+
+        })
+
+    })
+
+      if (@Permission == 4)
+    {
+        $("#DeleteSubMainBtn").hide();
+        $("#NewAddMaintenanceBtn").hide();
+        $(".Newadd_btn").show();
+        $(".MoldFocusChange, .Maintenencedt, .MaintenanceFocusOutFunc").attr("disabled", "disabled");
+         $("#RepairStatus, #schTime, #schPriority, #schActionItem, #schStatus, #RepairStatusLocationId").attr("disabled", "disabled");
+        $("#ResetPMAlert").hide();
+        $(".Trbleditable").attr("contenteditable", "false");
+        $(".SaveBtnMold").show();
+     }
+
+    else if (@Permission == 5)
+     {
+         $(".Trbleditable").attr("contentEditable", false);
+         $(".delete_btn").hide();
+         $("#ResetPMAlert").hide();
+         $(".add_btn").hide();
+         $(".MoldFocusChange, .Maintenencedt, .MaintenanceFocusOutFunc").attr("disabled", "disabled");
+         $("#RepairStatusLocationId, #RepairStatus, #schTime, #schPriority, #schActionItem, #schStatus").attr("disabled", "disabled");
+    }
+
+    else if (@Permission == 6)
+     {
+         //$(".delete_btn").hide();
+         $(".add_btn").hide();
+         $("#ResetPMAlert").hide();
+         $(".MoldFocusChange").attr("disabled", "disabled");
+         //$("#RepairStatusLocationId, #RepairStatus, #schTime, #schPriority, #schActionItem, #schStatus").attr("disabled", "disabled");
+         $(".SaveFocusOutMoldData").attr("disabled", "disabled");
+         $("#RepairStatus, #RepairStatusLocationId").attr("disabled", "disabled");
+         //$(".Trbleditable").attr("contentEditable", true);
+         $("#NewAddMaintenanceBtn, #SaveMaintenanceSc").show();
+         //$(".Trbleditable").attr("contenteditable", "false");
+         //$(".AddTrbeditContent").attr("contenteditable", "true");
+         //$(".MoldFocusChange, .Maintenencedt, .MaintenanceFocusOutFunc").attr("disabled", "disabled");
+         //$("#RepairStatusLocationId, #RepairStatus, #schTime, #schPriority, #schActionItem, #schStatus").attr("disabled", "disabled");
+    }
+
+</script>
+<script>
+    document.getElementById('table2').style.height = window.innerHeight - 434 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('table2').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>

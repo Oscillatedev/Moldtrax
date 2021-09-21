@@ -1,0 +1,60 @@
+﻿
+@{
+    ViewBag.Title = "CheckSheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .checksheet_lab {
+        margin-bottom: 0;
+        color: #d71c33;
+        font-size: 15px;
+        font-weight: 700;
+        display: inline-block;
+        margin-right: 10px;
+        line-height: 31px;
+        position: relative;
+        border-bottom: none;
+        font-family: 'Quicksand', sans-serif;
+    }
+</style>
+<div class="row">
+    <div class="col-md-5 col-lg-5 col-sm-7 col-12" style="display: -webkit-inline-box;margin-bottom: 7px;">
+        <label class="checksheet_lab">Select Mold:</label>
+        <select id="MoldIDChange" class="form-control">
+            <option disabled></option>
+            @foreach (var x in ViewBag.MoldList)
+            {
+                <option value="@x.Value">@x.Text</option>
+            }
+        </select>
+    </div>
+</div>
+
+<div id="CheckSheetHtml">
+    @Html.Action("GetCheckSheetData", "Administration")
+</div>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#navchecksheetitem').addClass('actives');
+    });
+
+    $("#MoldIDChange").change(function ()
+    {
+        var MID = $("#MoldIDChange").val();
+        $.ajax({
+            url: '/Administration/OnMoldChange?MID=' + MID,
+            type: 'Post',
+            success: function (data)
+            {
+                $("#CheckSheetHtml").html(data);
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+</script>

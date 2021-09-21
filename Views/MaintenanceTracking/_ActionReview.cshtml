@@ -1,0 +1,107 @@
+﻿@model IEnumerable<Moldtrax.Models.ActionReview>
+@{ 
+
+    int TotalCount = 0;
+    foreach (var x in Model)
+    {
+        TotalCount += 1;
+    }
+
+    Layout = null;
+}
+
+<style>
+    .table-con {
+        height: 300px;
+    }
+    thead th:first-child {
+        width: 70px;
+    }
+</style>
+@*<br>*@
+<div class="row">
+    <div class="col-md-12 text-right btn_css">
+        @*<input type="button" class="del_btn" value="Refresh" />*@
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_body ">
+                <div class="table-con" id="table2">
+                    <table class="table table-bordered table-responsive" id="inner_table_action">
+                        <thead>
+                            <tr>
+                                <th>Cav</th>
+                                <th>Date Noted</th>
+                                <th>Defects</th>
+                                <th>Tooling</th>
+                                <th>Corrective Action</th>
+                                <th>Date</th>
+                                <th>Rpr Hrs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        <label>@x.CavityNumber</label>
+                                    </td>
+                                    <td>
+                                        @if (x.DfctDate != DateTime.MinValue && x.DfctDate != null)
+                                        {
+                                            <label>@Convert.ToDateTime(x.DfctDate).ToShortDateString()</label>
+                                        }
+                                        else
+                                        {
+                                            <label></label>
+                                        }
+
+                                    </td>
+                                    <td>
+                                        <label>@x.TSDefects</label>
+                                    </td>
+                                    <td>
+                                        <label>@x.MoldToolDescrip</label>
+                                    </td>
+                                    <td>
+                                        <label>@x.TlCorrectiveAction</label>
+                                    </td>
+                                    <td>
+                                        @if (x.TSDate != DateTime.MinValue && x.TSDate != null)
+                                        {
+                                            <label>@Convert.ToDateTime(x.TSDate).ToShortDateString()</label>
+                                        }
+                                        else
+                                        {
+                                            <label></label>
+                                        }
+                                    </td>
+                                    <td>
+                                        <label>@x.TIRepairTime</label>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <label class="red_total">Total Count: @TotalCount</label>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('table2').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+    document.getElementById('table2').style.height = window.innerHeight - 454 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

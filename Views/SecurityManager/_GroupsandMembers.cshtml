@@ -1,0 +1,205 @@
+﻿
+
+<style>
+</style>
+<div class="card_inner_block">
+    <div class="row">
+        <div class="col-md-5">
+            <div class="card_header">
+                <h5>All Groups:</h5>
+            </div>
+            <div class="card_body  effect6">
+                <table class="table table-mold admin_ul" id="MemberTab">
+                    <tbody>
+                        @foreach (var x in ViewBag.GrpUser)
+                        {
+                            <tr>
+                                <td>@x.Text</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @*<ul class="admin_ul effect6">
+                    @foreach (var x in ViewBag.GrpUser)
+                    {
+                        <li value="@x.Text">@x.Text</li>
+                    }
+                </ul>*@
+            </div>
+        </div>
+        <div class="col-md-2 btn_css btn_fix">
+            <input type="button" class="add_btn" id="AddGroupstoMember" value="Add >>" />
+            <input type="button" class="del_btn" id="RemoveGroupstoMember" value="Remove <<" />
+            <input type="button" class="create_btn" id="SaveGroupBtn" value="Save" />
+        </div>
+        <div class="col-md-5">
+            <div class="card_header">
+                <h5>Member Of:</h5>
+            </div>
+            <div class="card_body effect6">
+
+                <table class="table table-mold admin_ul" id="MemberTab2">
+                    <tbody>
+                        @foreach (var x in ViewBag.MemberOf)
+                        {
+                            <tr>
+                                <td>@x.Text</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                @*<ul class="admin_ul effect6">
+                    @foreach (var x in ViewBag.MemberOf)
+                    {
+                        <li value="@x.Text">@x.Text</li>
+                    }
+                </ul>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#AddGroupstoMember").click(function () {
+        var Userid = $("#SelectedUser").val();
+        var str = $(".highlight").find("td").eq(0).html();
+        var html = "<tr class=''><td>" + str + "</td></tr>";
+        $("#MemberTab2 tbody").append(html);
+
+        $("#MemberTab2 tbody tr").addClass("highlight1");
+
+        //$.ajax({
+        //    url: '/SecurityManager/SaveGroupstoMembers?GroupsName=' + str + '&UserID=' + Userid,
+        //    type: 'Post',
+        //    success: function (data) {
+        //        if (data == "ok")
+        //        {
+        //            //$("#MemberTab2 tbody tr").removeClass("highlight1");
+
+        //            var html = "<tr class=''><td>" + str + "</td></tr>";
+        //            $("#MemberTab2 tbody").append(html);
+        //        }
+        //        else if (data == "error") {
+        //            Swal.fire("User is a member of this group already.");
+        //        }
+        //        else if (data == "NullEror") {
+        //            Swal.fire("Oops something went wrong.");
+        //        }
+        //    },
+        //    error: function () {
+
+        //    }
+        //})
+    })
+
+    $("#SaveGroupBtn").click(function () {
+        debugger;
+        var Userid = $("#SelectedUser").val();
+        var str = $(".highlight1").find("td").eq(0).html();
+
+        if (str == "undefined") {
+            str = "";
+        }
+
+        $.ajax({
+            url: '/SecurityManager/SaveGroupstoMembers?GroupsName=' + str + '&UserID=' + Userid,
+            type: 'Post',
+            success: function (data) {
+                if (data == "ok") {
+                    Swal.fire("Role has been assigned successfully.");
+                }
+                else if (data == "Del")
+                {
+                    Swal.fire("Role has been removed successfully.");
+                }
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    $("#RemoveGroupstoMember").click(function () {
+        var Userid = $("#SelectedUser").val();
+        var str = $(".highlight1").find("td").eq(0).html();
+
+        $(".highlight1").remove();
+
+        //$.ajax({
+        //    url: '/SecurityManager/DeleteGroupstoMembers?GroupsName=' + str + '&UserID=' + Userid,
+        //    type: 'Post',
+        //    success: function (data) {
+        //        if (data == "ok") {
+        //            $(".highlight1").remove();
+        //        }
+
+        //        else if (data == "NullEror") {
+        //            Swal.fire("Oops something went wrong.");
+        //        }
+        //    },
+        //    error: function () {
+
+        //    }
+        //})
+    })
+
+    $(document).ready(function () {
+        $('#MemberTab tbody tr:first').addClass('highlight');
+        $('#MemberTab2 tbody tr:first').addClass('highlight1');
+    });
+
+    $("#MemberTab tr").on('click', function () {
+        var selected = $(this).closest("tr").hasClass("highlight");
+        $("#MemberTab tbody tr").removeClass("highlight");
+        if (!selected)
+            $(this).closest("tr").addClass("highlight");
+    })
+
+    //$("#MemberTab tr").click(function () {
+    //    var selected = $(this).hasClass("highlight");
+    //    $("#MemberTab tr").removeClass("highlight");
+    //    if (!selected)
+    //        $(this).addClass("highlight");
+    //});
+
+    $("#MemberTab2").on('click', 'tr', function (e) {
+        var tr = $(this).closest('tr');
+        var selected = tr.hasClass("highlight1");
+        $("#MemberTab2 tbody tr").removeClass("highlight1");
+        if (!selected)
+            tr.addClass("highlight1");
+    })
+
+    //$(document).on('click', '#MemberTab2 tr', function (e)
+    //{
+    //    var tr = $(this).closest('tr');
+    //    var selected = tr.hasClass("highlight1");
+    //    $("#MemberTab2 tbody tr").removeClass("highlight1");
+    //    if (!selected)
+    //        tr.addClass("highlight1");
+    //})
+
+    //$("#MemberTab2 tr").on('click', '' function ()
+    //{
+    //    debugger;
+    //    var tr = $(this).closest('tr');
+    //    var selected = tr.hasClass("highlight1");
+    //    $("#MemberTab2 tbody tr").removeClass("highlight1");
+    //    if (!selected)
+    //        tr.addClass("highlight1");
+    //})
+
+
+
+
+
+
+    //$("#MemberTab2 tbody tr").click(function () {
+    //    var selected = $(this).hasClass("highlight1");
+    //    $("#MemberTab2 tbody tr").removeClass("highlight1");
+    //    if (!selected)
+    //        $(this).addClass("highlight1");
+    //});
+
+</script>

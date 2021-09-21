@@ -1,0 +1,281 @@
+﻿@model IEnumerable<Moldtrax.Models.tblCategory>
+@using Moldtrax.Models
+@{
+    ViewBag.Title = "Index";
+    Layout = null;
+    int Total = 0;
+    foreach (var x in Model)
+    {
+        Total += 1;
+    }
+}
+<style>
+    .modal-body .th_details2 {
+        width: auto;
+    }
+
+    #ErroMsg {
+        color: red;
+        font-weight: 600;
+        font-size: 12px;
+        text-align: center;
+        margin: 5px auto 7px auto;
+    }
+</style>
+<div class="card box_design">
+    <div class="c_head">
+        <div class="card_header">
+            <h5 class="main_top_head">Checksheet Category</h5>
+        </div>
+    </div>
+    <div class="card_body">
+        <div class="row">
+            <div class="col-md-6 btn_css">
+                @*<input type="button" class="add_btn" value="A-Z" id="AscendingOrder">
+                <input type="button" class="del_btn" value="Z-A" id="DescendingOrder">*@
+            </div>
+            <div class="col-md-6 text-right btn_css">
+                <input type="button" class="back_btn" value="Back" onclick="doUndo()" />
+                <input type="button" class="add_btn" value="Add" id="AddChecksheet"  data-toggle="modal" data-target="#Modal_textarea1" />
+                <input type="button" id="PopupChecksheet" style="display:none" data-toggle="modal" data-target="#MTChecksheetDataAction" />
+                <input type="button" onclick="DeleteChecksheetCate()" class="delete_btn" value="Delete" />
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card box_design">
+                    <div class="card_body table-con" id="table3">
+                        <table class="table table-bordered table-responsive" id="Checksheettable1">
+                            <thead>
+                                <tr>
+                                    <th class="th_detail1"><input type="checkbox" value="" id="MainChecksheetCatChck"></th>
+                                    <th class="th_details2">Category Name</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var x in Model)
+                                {
+                                    <tr>
+                                        <td><input type="checkbox" value="@x.CatID" name="SubChecksheetCatChck" class="Subcheckbox"></td>
+                                        <td>
+                                            <input type="hidden" id="ID" value="@x.CatID" />
+                                            <input type="text" autocomplete="off" value="@x.CategoryName" id="CategoryName" class="form-control CategoryNameFocusOut">
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <label class="red_total">Total: @Total</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="Modal_textarea1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            @*<div class="modal-header">
+                    <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+                </div>*@
+            <div class="modal-body">
+                <label>Category Name</label>
+                <input type="text" class="form-control" id="NewCat" />
+                <p style="display:none" id="ErroMsg">Category name is required.</p>
+                @*<select id="CopyMold">
+                    <option>Select Mold</option>
+                </select>*@
+                @*<br />*@
+                @*<div id="ShowTxtVal" class="editable"></div>*@
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="AddCheckCategory" class="add_btn">Save</button>
+                        <button class="del_btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    document.getElementById('table3').style.height = window.innerHeight - 145 + 'px';
+</script>
+
+<script>
+            $(".del_btn").click(function ()
+            {
+                $("#ErroMsg").hide();
+            })
+
+
+            $(".CategoryNameFocusOut").focusout(function ()
+            {
+                var obj = new Object();
+                obj.CatID = $(this).closest("tr").find('td:eq(1)').find("#ID").val();
+                obj.CategoryName = $(this).closest("tr").find('td:eq(1)').find("#CategoryName").val();
+                $.ajax({
+                    url: '/InspectCategory/SaveFocusout',
+                    type: 'Post',
+                    data: obj,
+                    success: function () { },
+                    error: function () { }
+                })
+            })
+
+
+            $(document).ready(function () {
+                debugger;
+                $('#MainChecksheetCatChck').click(function () {
+                    debugger;
+                    if ($(this).is(':checked'))
+                        $('input[name="SubChecksheetCatChck"].Subcheckbox').prop('checked', true)
+                    else
+                        $('input[name="SubChecksheetCatChck"].Subcheckbox').prop('checked', false)
+                });
+
+                $('input[name="SubChecksheetCatChck"].Subcheckbox').click(function () {
+                    debugger;
+                    if ($('input:checkbox[name="SubChecksheetCatChck"].Subcheckbox').length == $('input:checkbox[name="SubChecksheetCatChck"].Subcheckbox:checked').length) {
+                        $('input[name="SubChecksheetCatChck"].SelectAll').prop("checked", true);
+                    }
+                    else {
+                        $('input[name="SubChecksheetCatChck"].SelectAll').prop("checked", false);
+                    }
+                })
+            })
+
+            $("#AddCheckCategory").click(function ()
+    {
+        var Name = $("#NewCat").val();
+        if (Name == "")
+        {
+            $("#ErroMsg").show();
+            return false;
+        }
+
+        var obj = new Object();
+        obj.CategoryName = Name;
+
+        $.ajax({
+            url: '/InspectCategory/CreateCategory',
+            type: 'Post',
+            data: JSON.stringify(obj),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data)
+            {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Item has been successfully copied.',
+                    type: "success"
+                }).then(function () {
+                    $("#tblInspectCate").html(data);
+                    $(".modal-backdrop").hide();
+                })
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+            function DeleteChecksheetCate()
+            {
+                //var MID = $("#MoldIDChange").val();
+                var selID = new Array();
+                var str = '';
+                $('input:checkbox[name=SubChecksheetCatChck].Subcheckbox:checked').each(function () {
+                    if ($(this).prop('checked')) {
+                        var selID = $(this).val();
+                        if (selID == "on")
+                            selID = 0;
+                        if (selID > 0) {
+                            str += "" + selID + ",";
+                        }
+                        debugger;
+                    }
+                });
+
+                if (str == '') {
+                    //Swal.fire('Please select item.')
+                }
+
+                else {
+                    Swal.fire({
+                        title: 'Are you sure?',
+                        text: "You won't be able to revert this.",
+                        type: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it.'
+                    }).then((result) => {
+                        if (result.value) {
+                            $(".loader__wrap").show();
+
+                            $.ajax({
+                                url: "/InspectCategory/DeleteChecksheetCate",
+                                type: "post",
+                                data: { str: str },
+                                success: function (data) {
+                                    debugger;
+                                    //$("#TroubleShooter").html(data);
+                                    //$(".loader__wrap").hide();
+                                    Swal.fire({
+                                        title: 'Deleted',
+                                        text: 'Data has been deleted.',
+                                        type: "success"
+                                    }).then(function () {
+                                        $("#tblInspectCate").html(data);
+                                    })
+                                },
+                                error: function () {
+                                    //$(".loader__wrap").hide();
+                                }
+                            });
+                        }
+                    })
+                }
+            }
+
+
+
+      
+    $('.CategoryNameFocusOut').on('focusin', function () {
+            $(this).data('val', $(this).val());
+        });
+
+
+      $(function () {
+          $('.CategoryNameFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblCategory.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.CheckSheetCategory.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+</script>

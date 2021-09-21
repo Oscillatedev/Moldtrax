@@ -1,0 +1,84 @@
+﻿@using ReportViewerForMvc;
+
+@{
+    ViewBag.Title = "DefectTracking";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-right">
+    <button onclick="window.close()" class="back_btn">Back</button>
+</div>
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)
+
+@*<section class="main_sec">
+        <div class="width_100">
+            <div class="width_50">
+                <h3>Defect Tracking</h3>
+            </div>
+            <div class="width_50 text-right">
+                <h6>MoldTrax</h6>
+                <small>ISO-9010</small>
+            </div>
+        </div>
+        <div class="width_100">
+            <div class="width_60">
+                <p>Mold Name: *5912</p>
+                <p>Mold Desc: Ress-Nibble Rhq "A"</p>
+            </div>
+            <div class="width_40">
+                <p>Product Line: Ress</p>
+                <p>Product Part: 76-50110</p>
+            </div>
+        </div>
+        <div class="width_100">
+            <div class="widh_25">
+                <p><b>Start Date:</b> <span class="inline_span">4/9/2003</span></p>
+                <p><b>Stop Date:</b> <span class="inline_span">4/29/2003</span></p>
+            </div>
+            <div class="widh_25">
+                <p><b>Start Time:</b> <span class="inline_span">6:00</span></p>
+                <p><b>Stop Time:</b> <span class="inline_span">1:00</span></p>
+            </div>
+            <div class="widh_25">
+                <p><b>Config #1:</b> <span class="inline_span">Standard</span></p>
+                <p><b>Est. Time:</b> <span class="inline_span">19 Days, 19 Hours</span></p>
+                <p><b>Config #2:</b> <span class="inline_span"></span></p>
+            </div>
+            <div class="widh_25">
+                <p><b>Start By:</b> <span class="inline_span">PR-Jim Aster</span></p>
+                <p><b>Presste:</b> <span class="inline_span">17</span></p>
+            </div>
+        </div>
+        <div class="width_100">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Cavity #</th>
+                        <th>Cavity Poitione</th>
+                        <th>Defect Explanation</th>
+                        <th>Date Noted</th>
+                        <th>Time Noted</th>
+                        <th>Noted By</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="">N/A</td>
+                        <td class="">N/A</td>
+                        <td class="td_left">Wipedown</td>
+                        <td class="td_left">4/29/2002</td>
+                        <td class="td_right">1:00</td>
+                        <td class="td_left">TR-Steve Johnson</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6">Total: 2</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>*@
+@*<br>*@
+

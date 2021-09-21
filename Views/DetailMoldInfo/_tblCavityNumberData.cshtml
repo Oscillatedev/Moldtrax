@@ -1,0 +1,661 @@
+﻿@model IEnumerable<Moldtrax.Models.tblCavityNumber>
+@using Moldtrax.Models
+@{
+
+    int? CavityLocID = 0;
+
+
+    foreach (var x in Model)
+    {
+        CavityLocID = x.CavityLocationID;
+        break;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+}
+<style>
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        color: rgba(0, 0, 0, 0);
+        opacity: 1;
+        display: block;
+        background: url(http://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+        width: 20px;
+        height: 20px;
+        border-width: thin;
+        margin-top: 10px;
+        margin-right: -5px;
+    }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    .modal-body #AddCavityActive {
+        display: block;
+    }
+
+</style>
+
+<script>
+
+    $(".NewDT").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    })
+
+    $(function () {
+        $(".Cavdt").datepicker({
+            dateFormat: "mm/dd/yy",
+            changeMonth: true,
+            changeYear: true,
+            onClose: function ()
+            {
+                var obj = new Object();
+                obj.CavityNumberID = $(this).closest("tr").find('td:eq(1)').find("#CavityNumID").val();
+                obj.CavityLocationID = $(this).closest("tr").find('td:eq(2)').find("#CavityLocID").val();
+                var Active = 'false';
+                if ($(this).closest("tr").find('td:eq(1)').find("#CavityActive").prop("checked") == true) {
+                    Active = 'true';
+                }
+                obj.CavityActive = Active;
+                obj.CavityNumber = $(this).closest("tr").find('td:eq(2)').find("#CavityNumberID").val();
+                obj.CavityDateInstalled = $(this).closest("tr").find('td:eq(3)').find("input[name='CavityDateInstalled']").val();
+                obj.CavityDateRemoved = $(this).closest("tr").find('td:eq(4)').find("input[name='CavityDateRemoved']").val();
+                obj.CavityNotes = $(this).closest("tr").find('td:eq(5)').find("#CavityNotes").val();
+
+                $.ajax({
+
+                    url: '/DetailMoldInfo/EditCavityNumFocusOut',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    })
+</script>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card_header">
+            <h5>History of Active Cavity ID Numbers</h5>
+        </div>
+    </div>
+    <div class="col-md-6 btn_css text-right">
+        <input type="hidden" data-target="#Modal_textareatblCavity" id="OpenPopUp" data-toggle="modal" class="add_btn" value="Add" />
+        <input type="button" id="CreateActiveCavity" class="add_btn" value="Add" />
+        <input type="button" id="DeleteCavityID" class="del_btn" value="Delete Cavity ID's" />
+    </div>
+</div>
+<div class="table-con" id="table_cavlayout">
+    <table class="table table-bordered table-responsive" id="table_layout">
+        <thead>
+            <tr>
+                <th><input type='checkbox' class='SelectAll' id='CavityNumberCheckAll' value="0" name='checkname' /></th>
+                <th>Active</th>
+                <th>Cavity ID</th>
+                <th>Date Installed</th>
+                <th>Date Removed</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+            <tr>
+                <td> <input type="checkbox" value='@x.CavityNumberID' class="Subcheckbox" id="CavityNumberID" name="checknameCavity" /></td>
+                <td style="text-align:center;">
+                    <input type="hidden" id="ActiveCavity" value="@x.CavityActive" />
+                    <input type="hidden" id="CavityNumID" value="@x.CavityNumberID" />
+                    <input type="checkbox" value="@x.CavityActive" id="CavityActive" class="CallingFocusOut CavityActive LogUpdateLayout" name="CavityActive" />
+                </td>
+                <td class="layout_td_1">
+                    <input type="hidden" id="CavityLocID" value="@x.CavityLocationID" />
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOut CavityNumberID LogUpdateLayout" value="@x.CavityNumber" id="CavityNumberID" name="CavityNumberID" />
+                </td>
+                <td class="layout_td_2">
+                    @if (x.CavityDateInstalled != null && x.CavityDateInstalled != DateTime.MinValue)
+                    {
+                        <input type="text" autocomplete="off" class="form-control Cavdt CavityDateInstalled LogUpdateLayout" value="@(Convert.ToDateTime(x.CavityDateInstalled).ToString("MM/dd/yyyy"))" id="" name="CavityDateInstalled" />
+                    }
+                    else
+                    {
+                        <input type="text" autocomplete="off" class="form-control Cavdt CavityDateInstalled LogUpdateLayout" value="" id="" name="CavityDateInstalled" />
+                    }
+                </td>
+                <td class="layout_td_3">
+                    @if (x.CavityDateRemoved != null && x.CavityDateRemoved != DateTime.MinValue)
+                    {
+                        <input type="text" autocomplete="off" class="form-control Cavdt CavityDateRemoved LogUpdateLayout" value="@(Convert.ToDateTime(x.CavityDateRemoved).ToString("MM/dd/yyyy"))" id="" name="CavityDateRemoved" />
+                    }
+                    else
+                    {
+                        <input type="text" autocomplete="off" class="form-control Cavdt CavityDateRemoved LogUpdateLayout" value="" id="" name="CavityDateRemoved" />
+                    }
+                </td>
+                <td class="layout_td_4">
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOut CavityNotes LogUpdateLayout" value="@x.CavityNotes" id="CavityNotes" name="CavityNotes" />
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="modal fade" id="Modal_textareatblCavity">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Active Cavity ID Numbers</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="table_layout">
+                    <thead>
+                        <tr>
+                            <th>Active</th>
+                            <th>Cavity ID</th>
+                            <th>Date Installed</th>
+                            <th>Date Removed</th>
+                            <th>Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:center;">
+                                <input type="checkbox" value="" id="AddCavityActive" class="" name="CavityActive" />
+                            </td>
+                            <td class="layout_td_1">
+                                <input type="text" autocomplete="off" class="form-control" value="" id="AddCavityNumberID" name="CavityNumberID" />
+                            </td>
+                            <td class="layout_td_2">
+                                <input type="text" autocomplete="off" class="form-control NewDT" value="" id="AddCavityDateInstalled" name="CavityDateInstalled" />
+                            </td>
+                            <td class="layout_td_3">
+                                <input type="text" autocomplete="off" class="form-control NewDT" value="" id="AddCavityDateRemoved" name="CavityDateRemoved" />
+                            </td>
+                            <td class="layout_td_4">
+                                <input type="text" autocomplete="off" class="form-control" value="" id="AddCavityNotes" name="CavityNotes" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="SaveAddCavityNum" class="add_btn" value="Save" />
+                <input type="button" id="CloseTBLCavity" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+if (@Permission == 3)
+    {
+        //$("#DeletedAllMoldPosition, #DeleteCavityID").hide();
+        //$("#DeletedSelectedMoldPosition").hide();
+        //$("#AddMoldPosition").hide();
+        //$("#CreateActiveCavity").hide();
+        //$(".CallingFocusOut").attr("disabled", "disabled");
+        //$(".Cavdt").attr("disabled", "disabled");
+        //$(".CavityActive").attr("disabled", false);
+    }
+     else if (@Permission == 5 || @Permission == 4 || @Permission == 6)
+    {
+        $("#DeletedAllMoldPosition").hide();
+        $("#DeletedSelectedMoldPosition").hide();
+        $("#AddMoldPosition").hide();
+        $("#CreateActiveCavity, #DeleteCavityID").hide();
+         $(".CallingFocusOut").attr("disabled", "disabled");
+         $(".Cavdt").attr("disabled", "disabled");
+    }
+
+
+    
+      $(function () {
+          $('.LogUpdateLayout').on('change', function () {
+            debugger
+             $(this).closest("tr").attr('name', '1');
+
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblCavityNumber.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+            obj.OldColVal = $(this).data('val');
+            obj.DataKey = $("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.CavityLayout.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+
+    $(document).ready(function () {
+
+        $('#CavityNumberCheckAll').click(function () {
+            debugger;
+            if ($(this).is(':checked'))
+                $('input[name="checknameCavity"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="checknameCavity"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="checknameCavity"].Subcheckbox').click(function () {
+            debugger;
+            if ($('input:checkbox[name="checknameCavity"].Subcheckbox').length == $('input:checkbox[name="checknameCavity"].Subcheckbox:checked').length) {
+                $('input[name="checknameCavity"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="checknameCavity"].SelectAll').prop("checked", false);
+            }
+        })
+    })
+
+    $("#AddNewCavityBtn").click(function ()
+    {
+        $.ajax({
+            url: '/DetailMoldInfo/CreateTbLCavityNumber',
+            type: 'Post',
+            success: function (data)
+            {
+                $("#CavityNum").html(data);
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    $("#DeleteCavityID").click(function () {
+
+        var MoldID = $("#MainMoldHidnID").val();
+        var MoldposNum = $("#MoldPositionNum").val();
+        var selID = new Array();
+        var str = '';
+        $('input:checkbox[name=checknameCavity].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+        });
+
+        if (str == '') {
+            Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/DetailMoldInfo/DeleteCavityNumber",
+                        type: "post",
+                        data: { str: str },
+                        success: function (data) {
+                            debugger;
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#LayoutData tbody tr").each(function () {
+                                    var row = $(this);
+                                    var Trouble;
+                                    Trouble = row.find("TD").eq(0).find("#CavHidVal").text();
+                                    if (Trouble == MoldposNum) {
+                                        $(this).click();
+                                        NewCav = false;
+                                    }
+                                });
+                            })
+                        },
+                        error: function () {
+                        }
+                    });
+                }
+            })
+        }
+
+    });
+
+
+    $("#table_layout tbody tr").each(function ()
+    {
+        debugger;
+        var row = $(this);
+        var ds = row.find("TD").eq(1).find("#ActiveCavity").val();
+
+        if (row.find("TD").eq(1).find("#CavityActive").val() == "value") {
+
+            row.find("TD").eq(1).find("#CavityActive").prop("checked", true);
+        }
+
+        var Date = row.find("TD").eq(3).find("#CavityDateInstalled").val();
+        if (Date == '0001-01-01') {
+            row.find("TD").eq(3).find("#CavityDateInstalled").val('');
+        }
+
+        var Date1 = row.find("TD").eq(4).find("#CavityDateRemoved").val();
+        if (Date1 == '0001-01-01') {
+            row.find("TD").eq(4).find("#CavityDateRemoved").val('');
+        }
+    })
+
+     $("#DeletedSelectedMoldPosition").click(function ()
+    {
+       var CavityID = $("#MoldPositionID").val();
+         var MoldID = $("#MainMoldHidnID").val();
+        if (CavityID == 0) {
+            Swal.fire('Please select Mold')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value)
+                {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/DetailMoldInfo/DeleteSelectedMoldPosition?ID=" + CavityID + "&MoldID=" + MoldID,
+                        type: "post",
+                        success: function (data) {
+                            Swal.fire(
+                                'Deleted',
+                                'Data has been deleted.',
+                                'success'
+                            ).then()
+                            {
+                                $("#MoldTb").html(data);
+                            }
+                        },
+                        error: function () {
+                        }
+                    });
+                }
+            })
+        }
+    })
+
+
+    $("#CreateActiveCavity").click(function ()
+    {
+        debugger;
+        var MoldPosition = $("#LayoutData").find('.active').find("#CavHidVal").text();
+
+        $("#OpenPopUp").click();
+        $("#AddCavityNumberID").val(MoldPosition);
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+
+        $(".modal-backdrop").hide();
+    })
+
+    $("#SaveAddCavityNum").click(function () {
+        debugger;
+        var obj = new Object();
+        var MoldID = $("#MainMoldHidnID").val();
+        var SelectedPosition = $("#MoldPositionNum").val();
+        var CavityNumber = $("#AddCavityNumberID").val();
+        obj.CavityNumberID = 0;
+
+        var CavLocID = $("#LayoutData").find('.active').find("#CavityLoc").val();
+
+        obj.CavityLocationID = CavLocID;
+
+        var Active = 'false';
+        if ($("#AddCavityActive").prop("checked") == true) {
+            Active = 'true';
+        }
+
+        obj.CavityActive = Active;
+
+        obj.CavityNumber = $("#AddCavityNumberID").val();
+        obj.CavityDateInstalled = $("#AddCavityDateInstalled").val();
+        obj.CavityDateRemoved = $("#AddCavityDateRemoved").val();
+        obj.CavityNotes = $("#AddCavityNotes").val();
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/EditCavityNum?MoldID=' + MoldID + '&CavityNum=' + CavityNumber,
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data);
+                    $(".modal-backdrop").hide();
+                    $("#LayoutData tbody tr").each(function () {
+                        var row = $(this);
+                        var Trouble;
+                        Trouble = row.find("TD").eq(0).find("#CavHidVal").text();
+                        if (Trouble == SelectedPosition) {
+                            $(this).click();
+                        }
+                    });
+
+                    $(".modal-open").css("overflow", "visible");
+                })
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $(document).ready(function ()
+    {
+        $("tbody").on("change blur", ".CallingFocusOut", function () {
+            debugger;
+            $('.CallingFocusOut').unbind('focusout');
+            $(document).on('focusout', '.CallingFocusOut', function () {
+            });
+            var obj = new Object();
+            obj.CavityNumberID = $(this).closest("tr").find('td:eq(1)').find("#CavityNumID").val();
+            obj.CavityLocationID = $(this).closest("tr").find('td:eq(2)').find("#CavityLocID").val();
+            var Active = 'false';
+            if($(this).closest("tr").find('td:eq(1)').find("#CavityActive").prop("checked") == true) {
+                Active = 'true';
+            }
+            obj.CavityActive = Active;
+            obj.CavityNumber = $(this).closest("tr").find('td:eq(2)').find("#CavityNumberID").val();
+            obj.CavityDateInstalled = $(this).closest("tr").find('td:eq(3)').find("input[name='CavityDateInstalled']").val();
+            obj.CavityDateRemoved = $(this).closest("tr").find('td:eq(4)').find("input[name='CavityDateRemoved']").val();
+            obj.CavityNotes = $(this).closest("tr").find('td:eq(5)').find("#CavityNotes").val();
+
+            $.ajax({
+
+                url: '/DetailMoldInfo/EditCavityNumFocusOut',
+                type: 'Post',
+                data: obj,
+                success: function () {
+                },
+                error: function () {
+
+                }
+            })
+        });
+
+    })
+
+    $("#CreateCavityNum").click(function ()
+    {
+        var htmlstring = "<tr><td style='text-align:center;'><input type='hidden' id='ActiveCavity' value='' /><input type='hidden' id='CavityNumID' value='0' /><input type='checkbox' value='' id='AddCavityActive' name='CavityActive' class='AddCallingFocusOut' /></td>";
+        htmlstring += "<td class='layout_td_1'><input type='hidden' id='CavityLocID' value='@CavityLocID' /><input type='text' class='form-control AddCallingFocusOut' value='' id='AddCavityNumberID' name='CavityNumberID' /></td>";
+        htmlstring += "<td class='layout_td_2' ><input type='date' class='form-control AddCallingFocusOut' value='' id='AddCavityDateInstalled' name='CavityDateInstalled' /></td>";
+        htmlstring += "<td class='layout_td_3'><input type='date' class='form-control AddCallingFocusOut' value='' id='AddCavityDateRemoved' name='CavityDateRemoved' /></td>";
+        htmlstring += "<td class='layout_td_4' ><input type='text' class='form-control AddCallingFocusOut' value='' id='AddCavityNotes' name='CavityNotes' /></td></tr>";
+        $("#table_layout tbody").append(htmlstring);
+    })
+
+
+
+    $(".AddCallingFocusOut").focusout(function ()
+    {
+        debugger;
+        var obj = new Object();
+        var MoldID = $("#MainMoldHidnID").val();
+        obj.CavityNumberID = $("#AddCavityNumID").val();
+
+        var CavLocID = $("#LayoutData").find('.active').find("#CavHidVal").text();
+
+        var newCavLocID;
+        $("#LayoutData tbody tr").each(function () {
+            var row = $(this);
+            var Trouble;
+            Trouble = row.find("TD").eq(0).find("#CavHidVal").text();
+            if (Trouble == $("#AddCavityNumID").val()) {
+                newCavLocID = row.find("TD").eq(0).find("#CavityLoc").val();
+            }
+        });
+
+        obj.CavityLocationID = newCavLocID;
+
+        var Active = 'false';
+        if ($("#AddCavityActive").prop("checked") == true) {
+            Active = 'true';
+        }
+
+        obj.CavityActive = Active;
+
+        obj.CavityNumber = $("#AddCavityNumberID").val();
+        obj.CavityDateInstalled = $("#AddCavityDateInstalled").val();
+        obj.CavityDateRemoved = $("#AddCavityDateRemoved").val();
+        obj.CavityNotes = $("#AddCavityNotes").val();
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/EditCavityNum?MoldID=' + MoldID,
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data);
+                    $(".modal-backdrop").hide();
+
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+    function SaveCavityNo() {
+        debugger;
+        var model = new Array();
+
+        $("#table_layout tbody tr").each(function () {
+            var row = $(this);
+
+            var Layout = {};
+
+            Layout.CavityNumberID = row.find("TD").eq(0).find("#CavityNumID").val();
+            Layout.CavityLocationID = row.find("TD").eq(1).find("#CavityLocID").val();
+
+            var Active = 'false';
+            if (row.find("TD").eq(0).find("#CavityActive").prop("checked") == true)
+            {
+                Active = 'true';
+            }
+
+            Layout.CavityActive = Active;
+
+            Layout.CavityNumber = row.find("TD").eq(1).find("#CavityNumberID").val();
+            Layout.CavityDateInstalled = row.find("TD").eq(2).find("#CavityDateInstalled").val();
+            Layout.CavityDateRemoved = row.find("TD").eq(3).find("#CavityDateRemoved").val();
+            Layout.CavityNotes = row.find("TD").eq(4).find("#CavityNotes").val();
+
+            model.push(Layout);
+        })
+
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/EditCavityNum',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+
+    }
+
+
+</script>
+<script>
+    document.getElementById('table_cavlayout').style.height = window.innerHeight - 210 + 'px';
+</script>
+<script>
+    document.getElementById('table_cavlayout').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>

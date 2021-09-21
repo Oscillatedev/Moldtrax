@@ -1,0 +1,931 @@
+﻿@model IEnumerable<Moldtrax.Models.tblMoldTooling>
+@using Moldtrax.Models
+
+
+@{
+    int Userid = 0;
+    int TotalCount = 0;
+
+    foreach (var x in Model)
+    {
+        TotalCount += 1;
+    }
+
+    HttpCookie nameCookie = Request.Cookies["SelectedMoldID"];
+    string name = nameCookie != null ? nameCookie.Value.Split('=')[1] : "undefined";
+    if (name != "undefined")
+    {
+        Userid = Convert.ToInt32(name);
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+}
+<style>
+    .MyFile {
+        visibility: hidden;
+    }
+
+    .editor_div .editable.medium-editor-element {
+        display: block;
+        width: 100%;
+        padding: 4px;
+        /*font-size: 13px;*/
+        line-height: 1.42857143;
+        color: #000;
+        background-color: #fff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out.15s,box-shadow ease-in-out .15s;
+        /* margin-bottom: 5px; */
+        overflow-y: auto;
+        height: 109px;
+        text-align: left;
+        word-break: break-word;
+    }
+    /* width */
+    .editor_div .editable::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .editor_div .editable::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .editor_div .editable::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        .editor_div .editable::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    input[type="date"]::-webkit-inner-spin-button {
+        display: none;
+        -webkit-appearance: none;
+    }
+
+    .modal-dialog {
+        top: 0;
+        right: 0;
+    }
+
+    .Datetd {
+        min-width: 82px !important;
+    }
+
+</style>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+<div class="row">
+    <div id="BtnDiv" class="col-md-12 text-right btn_css">
+        <a class="add_btn" href="~/DropdownTemplateFormat/ToolingData.xlsx"><i class="fas fa-download"></i> Download Template</a>
+        <button id="UploadTooling" class="delete_btn"><i class="fas fa-upload"></i> Upload Data</button>
+        <input type="hidden" class="add_btn" value="Upload Template" id="MainBtnUploadtemplate" data-toggle="modal" data-target="#UploadTemplate" />
+        <input type="button" id="AddTooling" class="add_btn" onclick="CreateTooling()" value="Add" />
+        <button type="button" class="create_btn" id="CopyToolingBtn" data-toggle="modal" data-target="#Modal_textarea1">Copy</button>
+        <input type="hidden" id="EditTooling" onclick="EditTooling()" class="edit_btn" value="Save" />
+        <input type="button" id="DeleteTooling" onclick="DeleteSelectedTooling()" class="delete_btn" value="Delete" />
+    </div>
+</div>
+
+@*<br>*@
+<div id="ToolingHtml">
+    <div class="table-con" id="table">
+        <table class="table table-responsive table-bordered table-condensed table-striped" id="table_trouble">
+            <thead>
+                <tr>
+                    <th><input type='checkbox' class='SelectAll' id='Toolingcheckall' value="0" name='checkname' /></th>
+                    <th class="table_first_div">@Moldtrax.Resources.Resource.Type </th>
+                    <th class="table_sec_div">@Moldtrax.Resources.Resource.Description </th>
+                    <th class="td_width_mid">@Moldtrax.Resources.Resource.Location</th>
+                    <th class="td_width_mid">@Moldtrax.Resources.Resource.Part</th>
+                    <th class="td_width_mid">@Moldtrax.Resources.Resource.Detail</th>
+                    <th class="td_width_mid">@Moldtrax.Resources.Resource.Vendor</th>
+                    <th class="td_width_mid">@Moldtrax.Resources.Resource.Cost</th>
+                    <th class="td_width_mid2">@Moldtrax.Resources.Resource.PartsonHand</th>
+                    <th class="td_width_mid2">@Moldtrax.Resources.Resource.ReorderLevel</th>
+                    <th class="td_width_order">@Moldtrax.Resources.Resource.Ordered</th>
+                    <th class="td_date_div">@Moldtrax.Resources.Resource.DateOrdered</th>
+                    <th class="td_receive">@Moldtrax.Resources.Resource.Received</th>
+                    <th class="td_btn">&nbsp;</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var x in Model)
+                {
+                <tr>
+                    <td>
+                        <input type="checkbox" value='@x.MoldToolingID' class="Subcheckbox" id="MoldTLID" name="checknameTool" />
+                    </td>
+                    <td>
+                        <div>
+                            <div class="w-100">
+                                <input type="hidden" id="MoldDataID" name="MoldDataID" value="@Userid" />
+                                <input type="hidden" id="RealMoldToolingType" value="@x.MoldToolingType" />
+                                <select id="MoldToolingType" name="MoldToolingType" class="CallingFocusOut MoldToolingType">
+                                    <option></option>
+                                    @foreach (var i in ViewBag.MoldTooling)
+                                    {
+                                        <option value="@i.Value">@i.Text</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="w-100">
+                            <div id="UpdatedImg">
+                                <div id="Editor1" class="editor_div editor1c CallingFocusOut">
+                                    <textarea rows="6" autocomplete="off" id="MoldToolDescrip" name="MoldToolDescrip" class="MoldToolDes editable">@x.MoldToolDescrip</textarea>
+                                    <button style="display:none;" id="Showtxtbtn" data-target="#Modal_textarea" data-toggle="modal"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolingLocation" autocomplete="off" name="MoldToolingLocation" class="textarea-editor CallingFocusOut">@x.Location</textarea>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="w-100">
+
+                            <div id="UpdatedImg">
+                                <div class="editor_div">
+                                    <textarea rows="6" autocomplete="off" id="MoldToolingPartNumber" name="MoldToolingPartNumber" class="textarea-editor CallingFocusOut">@x.MoldToolingPartNumber</textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolingPrintNumber" autocomplete="off" name="MoldToolingPrintNumber" class="textarea-editor CallingFocusOut">@x.MoldToolingPrintNumber</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolingVendor" name="MoldToolingVendor" autocomplete="off" class="textarea-editor CallingFocusOut">@x.MoldToolingVendor</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolCost" autocomplete="off" name="MoldToolCost" class="textarea-editor MoldToolCostFocusOut CallingFocusOut"> @String.Format("{0:C0}", x.MoldToolCost)</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolingPartsOnHand" autocomplete="off" name="MoldToolingPartsOnHand" class="textarea-editor CallingFocusOut">@x.MoldToolingPartsOnHand</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolingReorderLevel" autocomplete="off" name="MoldToolingReorderLevel" class="textarea-editor CallingFocusOut">@x.MoldToolingReorderLevel</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" id="MoldToolingNumOrdered" autocomplete="off" name="MoldToolingNumOrdered" class="textarea-editor CallingFocusOut">@x.MoldToolingNumOrdered</textarea>
+                        </div>
+                    </td>
+                    <td class="Datetd">
+                        <div class="editor_div">
+
+                            @if (x.MoldToolingDateOrdered != null && x.MoldToolingDateOrdered != DateTime.MinValue)
+                            {
+                                <input type="text" autocomplete="off" id="" class="form-control MoldToolingDateOrdered CallingFocusOut" name="MoldToolingDateOrdered" value="@(Convert.ToDateTime(x.MoldToolingDateOrdered).ToString("MM/dd/yyyy") )" />
+                            }
+                            else
+                            {
+                                <input type="text" id="" autocomplete="off" class="form-control MoldToolingDateOrdered CallingFocusOut" name="MoldToolingDateOrdered" value="" />
+                            }
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <textarea rows="6" autocomplete="off" id="MoldToolingNumReceived" name="MoldToolingNumReceived" class="textarea-editor CallingFocusOut">@x.MoldToolingNumReceived</textarea>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="editor_div">
+                            <button id="Addpartsbtn" class="recived_btn">Add Parts <br> Received</button>
+                        </div>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <label class="red_total">Total Count: @TotalCount</label>
+</div>
+
+<div class="modal" id="Modal_textarea">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea autocomplete = "off" class="textarea-editor2" id="ShowTxtVal"></textarea>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveTxtbtn" class="add_btn">Save</button>
+                        <button class="del_btn">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="Modal_textarea1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-body">
+                <label>Select Mold</label>
+                <select id="CopyMold">
+                    <option>Select Mold</option>
+                    @foreach (var x in ViewBag.MoldConfigList)
+                    {
+                        <option value="@x.Value">@x.Text</option>
+                    }
+                </select>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveCopyMold" class="add_btn">Save</button>
+                        <button class="del_btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="UploadTemplate">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Upload Template</h4>
+            </div>
+            <div class="modal-body">
+                <form id="ImportToolingFile" method="post" enctype="multipart/form-data">
+                    <div class="row">
+                        <div class="form-group top_margin col-md-12">
+                            <lable class="update_label"><b>Excel File: </b></lable>
+                            <input type="file" id="postedFile" name="postedFile" />
+                        </div>
+                        <div class="btn_css col-md-12 text-right p_top">
+                            <button type="submit" class="add_btn" id="Submit" name="Submit"><i style="display:none;" id="Spinner" class="fa fa-spinner fa-spin"></i> Upload</button>
+                            <button type="button" class="del_btn" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    $('.textarea-editor2').summernote(
+        {
+            toolbar: [
+                ['style', ['style']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['link','picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 500,
+            popover: {
+                link:[]
+            },
+            // set editor height
+            minHeight: null,             // set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true
+            //fontSizes: ['8', '9', '10', '11', '12', '14', '18', '24', '36', '48', '64', '82', '150']
+            // set focus to editable area after initializing summernote
+        });
+    $('.note-editable').css('font-size', '12px');
+
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+
+<script>
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.editable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+    if (@Permission == 2 || @Permission == 3 )  
+    {
+        $("#DeleteTooling").hide();
+    }
+    else if (@Permission == 5 || @Permission == 4 || @Permission == 6)
+    {
+        $(".delete_btn, .add_btn").hide();
+        $("#MoldToolingPartNumber, #MoldToolingType, #MoldToolingLocation, #Editor1, #MoldToolingPrintNumber, #MoldToolingVendor, #MoldToolCost, #MoldToolingPartsOnHand, #MoldToolingReorderLevel, #MoldToolingNumOrdered, #MoldToolingNumReceived").prop('disabled', true)
+        $(".MoldToolingDateOrdered").attr('disabled', 'disabled');
+        //$('.editor_div').css('pointer-events', 'none');
+        $("#Addpartsbtn, #AddTooling, #CopyToolingBtn").hide();
+        $(".MoldToolDes, .note-editable").attr('contenteditable', false);
+        $("#SaveTxtbtn, #DownloadToolTempl").hide();
+    }
+
+
+    $("#UploadTooling").click(function () {
+        $("#MainBtnUploadtemplate").click();
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+
+        $(".modal-backdrop").hide();
+    })
+
+    $("#ImportToolingFile").submit(function (e) {
+        
+        $("#Spinner").show();
+        e.preventDefault();
+        var MainMoldID = $("#MainMoldHidnID").val();
+
+        var fd = new FormData();
+        var files = $('#postedFile')[0].files[0];
+        fd.append('postedFile', files);
+        $(".loader__wrap").show();
+        $.ajax({
+            url: '/DetailMoldInfo/ExportToolingData?MID=' + MainMoldID,
+            type: 'Post',
+            data: fd,
+            dataType: 'html',
+            contentType: false,
+            processData: false,
+            success: function (data) {
+                $(".del_btn").click();
+                $("#MoldTb").html(data);
+            },
+            error: function () {
+            }
+        })
+    })
+
+    $(".MoldToolingDateOrdered").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true,
+        onClose: function () {
+            $(this).closest("tr").attr('name', '1');
+        }
+    });
+
+    $(".MoldToolingType").change(function ()
+    {
+        $(this).closest("tr").attr('name', '1');
+    })
+
+    $('.CallingFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+
+     $(function () {
+         $('.CallingFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblMoldTooling.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Tooling.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+         });
+
+         $('.MoldToolDes').on('focusin', function () {
+             $(this).data('val', $(this).val());
+         });
+
+         $('.MoldToolDes').on('change', function () {
+             debugger
+             $(this).closest("tr").attr('name', '1');
+
+            var obj = new Object();
+             obj.TableName = '@GetDBTableName.tblMoldTooling.ToString()';
+
+             var row = $(this).closest("tr");
+             var Desc = row.find("td:eq(2)").find("#Editor1").html();
+             var NewDesc = $.parseHTML(Desc);
+             
+
+             obj.NewColVal = NewDesc[1].innerHTML;
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Tooling.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+         });
+
+         
+    });
+
+
+      @*$("#table_trouble").on('focusout', '.CallingFocusOut', function ()
+      {
+          debugger
+          $(this).closest("tr").attr('name', '1');
+
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblMoldTooling.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+            obj.OldColVal = $(this).data('val');
+            obj.DataKey = $("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Tooling.ToString()';
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Get',
+                    data: { obj: obj },
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+       })*@
+
+
+    $(".MoldToolCostFocusOut").focusout(function ()
+    {
+        var Cost = $(this).closest("tr").find('td:eq(7)').find("#MoldToolCost").val().replace(/[$,]/g, '');
+        $(this).closest("tr").find('td:eq(7)').find("#MoldToolCost").val('$'+addCommas(Cost));
+    })
+
+    //document.getElementById('table').addEventListener("scroll", function () {
+    //    var translate = "translate(0," + this.scrollTop + "px)";
+    //    var myElements = this.querySelectorAll("thead");
+    //    //myElements.style.border = '2px solid red';
+    //    for (var i = 0; i < myElements.length; i++) {
+    //        myElements[i].style.transform = translate;
+    //    }
+    //});
+   
+</script>
+<script>
+
+    function addCommas(x) {
+        var parts = x.toString().split(".");
+        parts[0] =  parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+        return parts.join(".");
+    }
+
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+
+
+    $(".editor1c").dblclick(function () {
+        $(this).closest("tr").attr('name', '1');
+        $(".editable").attr('data-placeholder', '');
+        //$(".modal-header").html('MoldTrax');
+        var row = $(this);
+        var dd = $(this).closest("tr").find("td:eq(2)").find("#Editor1").html();
+        var newdata = $.parseHTML(dd);
+        $("#Showtxtbtn").click();
+        //$("#ShowTxtVal").attr('data-placeholder', '');
+        $(".note-editable").html(newdata[1].innerHTML);
+        $(this).closest("tr").find("td:eq(2)").find("#MoldToolDescrip").attr('name', 'NewDDID');
+        $(this).closest("tr").find("td:eq(2)").find(".editable").attr('name', 'NewDDID2');
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else
+        {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+
+    $("#SaveTxtbtn").click(function () {
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+        $(".modal-backdrop").hide();
+        $(".popover-content").hide();
+    });
+
+
+
+    $(".del_btn").click(function () {
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+        $(".modal-backdrop").hide();
+
+    });
+
+    function CreateTooling() {
+        $(".editable").attr('data-placeholder', '');
+        $.ajax({
+            url: '/DetailMoldInfo/CreateTooling',
+            type: 'Get',
+            success: function (data) {
+                $("#ToolingHtml").html(data);
+                $(".editable").attr('data-placeholder', '');
+                $("#BtnDiv").hide();
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    function formatDate(date) {
+        var d = new Date(date),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate(),
+            year = d.getFullYear();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [year, month, day].join('-');
+    }
+
+
+    function EditTooling() {
+
+        var model = new Array();
+
+        $("#table_trouble tbody tr").each(function () {
+            var row = $(this);
+
+            if ($(this).attr('name') == 1)
+            {
+                var Tooling = {};
+
+                Tooling.MoldToolingID = row.find("TD").eq(0).find("#MoldTLID").val();
+                Tooling.MoldToolingType = row.find("TD").eq(1).find("#MoldToolingType").val();
+
+                var Desc = row.find("td:eq(2)").find("#Editor1").html();
+                var NewDesc = $.parseHTML(Desc);
+                Tooling.MoldToolDescrip = NewDesc[1].innerHTML;
+
+                Tooling.Location = row.find("TD").eq(3).find("#MoldToolingLocation").val();
+                Tooling.MoldToolingPartNumber = row.find("TD").eq(4).find("#MoldToolingPartNumber").val();
+                Tooling.MoldToolingPrintNumber = row.find("TD").eq(5).find("#MoldToolingPrintNumber").val();
+                Tooling.MoldToolingVendor = row.find("TD").eq(6).find("#MoldToolingVendor").val();
+                Tooling.MoldToolCost = row.find("TD").eq(7).find("#MoldToolCost").val().replace(/[$,]/g, '');
+                Tooling.MoldToolingPartsOnHand = parseInt(row.find("TD").eq(8).find("#MoldToolingPartsOnHand").val());
+                Tooling.MoldToolingReorderLevel = row.find("TD").eq(9).find("#MoldToolingReorderLevel").val();
+                Tooling.MoldToolingNumOrdered = row.find("TD").eq(10).find("#MoldToolingNumOrdered").val();
+                Tooling.MoldToolingDateOrdered = row.find("TD").eq(11).find("input[name='MoldToolingDateOrdered']").val();
+                Tooling.MoldToolingNumReceived = row.find("TD").eq(12).find("#MoldToolingNumReceived").val();
+                model.push(Tooling);
+            }
+        })
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/SaveToolingList',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    $("#SaveCopyMold").click(function () {
+        var MoldID = $("#CopyMold").val();
+        var MainMoldID = $("#MainMoldHidnID").val();
+        var model = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checknameTool].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var row = $(this).closest('tr');
+                var Tooling = {};
+                Tooling.MoldToolingType = row.find("TD").eq(1).find("#MoldToolingType").val();
+                Tooling.MoldToolDescrip = row.find("TD").eq(2).find("#MoldToolDescrip").val();
+
+                Tooling.Location = row.find("TD").eq(3).find("#MoldToolingLocation").val();
+                Tooling.MoldToolingPartNumber = row.find("TD").eq(4).find("#MoldToolingPartNumber").val();
+                Tooling.MoldToolingPrintNumber = row.find("TD").eq(5).find("#MoldToolingPrintNumber").val();
+                Tooling.MoldToolingVendor = row.find("TD").eq(6).find("#MoldToolingVendor").val();
+                var Tool = row.find("TD").eq(7).find("#MoldToolCost").val();
+                Tooling.MoldToolCost = Tool == null || Tool == '' ? '' : Tool.replace(/[$,]/g, '');
+                Tooling.MoldToolingPartsOnHand = parseInt(row.find("TD").eq(8).find("#MoldToolingPartsOnHand").val());
+                Tooling.MoldToolingReorderLevel = row.find("TD").eq(9).find("#MoldToolingReorderLevel").val();
+                Tooling.MoldToolingNumOrdered = row.find("TD").eq(10).find("#MoldToolingNumOrdered").val();
+                Tooling.MoldToolingDateOrdered = row.find("TD").eq(11).find("input[name='MoldToolingDateOrdered']").val();
+                Tooling.MoldToolingNumReceived = row.find("TD").eq(12).find("#MoldToolingNumReceived").val();
+                Tooling.MoldDataID = MoldID;
+
+                model.push(Tooling);
+            }
+        });
+
+        if (model.length == 0)
+        {
+            return false;
+        }
+
+        $.ajax({
+
+            url: '/DetailMoldInfo/CopyToolingMold?MainMoldID=' + MainMoldID,
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Item has been successfully copied.',
+                    type: "success"
+                }).then(function () {
+                    $("#MoldTb").html(data);
+                    $(".modal-backdrop").hide();
+                })
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    $(function () {
+        $("#table_trouble tbody tr").each(function () {
+            
+            var row = $(this);
+            var Trouble;
+            var Date;
+            Trouble = row.find("TD").eq(1).find("#RealMoldToolingType").val();
+            Date = row.find("TD").eq(10).find("#MoldToolingDateOrdered").val();
+            if (Date == '0001-01-01') {
+                row.find("TD").eq(11).find("#MoldToolingDateOrdered").val('');
+            }
+            //var newdate = Date.split(' ')[0].split("/").reverse().join("-");
+            row.find("TD").eq(1).find("#MoldToolingType").val(Trouble);
+            //row.find("TD").eq(10).find("#MoldToolingDateOrdered").val(newdate);
+        })
+    })
+
+
+    $(document).ready(function () {
+
+        $('#Toolingcheckall').click(function () {
+            
+            if ($(this).is(':checked'))
+                $('input[name="checknameTool"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="checknameTool"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="checknameTool"].Subcheckbox').click(function () {
+            
+            if ($('input:checkbox[name="checknameTool"].Subcheckbox').length == $('input:checkbox[name="checknameTool"].Subcheckbox:checked').length) {
+                $('input[name="checknameTool"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="checknameTool"].SelectAll').prop("checked", false);
+            }
+
+        })
+
+    })
+
+   
+
+    function DeleteSelectedTooling() {
+        
+
+        //$(".loader__wrap").show();
+        var MoldID = $("#MainMoldHidnID").val();
+
+        var selID = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checknameTool].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                
+            }
+        });
+
+        if (str == '') {
+            Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    $.ajax({
+                        url: "/DetailMoldInfo/DeleteTooling",
+                        type: "post",
+                        data: { str: str, MoldID: MoldID },
+                        success: function (data) {
+                            
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#MoldTb").html(data);
+                            })
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        
+    }
+
+
+    $(".recived_btn").click(function () {
+        
+        var row = $(this).closest("tr");
+
+        var PartsonHand = parseFloat(row.find("td").eq(8).find("#MoldToolingPartsOnHand").val());
+        var Received = parseFloat(row.find("td").eq(12).find("#MoldToolingNumReceived").val());
+
+        row.find("td").eq(8).find("#MoldToolingPartsOnHand").val(parseFloat(PartsonHand + Received).toFixed(2));
+        row.find("td").eq(12).find("#MoldToolingNumReceived").val(0);
+    })
+</script>
+<script>
+    document.getElementById('table').style.height = window.innerHeight - 196 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

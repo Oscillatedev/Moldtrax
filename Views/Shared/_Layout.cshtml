@@ -1,0 +1,1179 @@
+﻿@using Microsoft.AspNet.Identity
+@using System.Configuration;
+@{
+    string LoginUserName = "";
+    HttpCookie nameCookie = Request.Cookies["LoginMainUser"];
+    string name = nameCookie != null ? nameCookie.Value.Split('=')[1] : "undefined";
+    if (name != "undefined")
+    {
+        LoginUserName = name;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Buffer = true;
+        Response.Redirect("~/Account/Login");
+    }
+
+    Session["PreviousTab"] = "DetailMoldInfo";
+
+    int CID = 0;
+
+    if (!string.IsNullOrWhiteSpace(Session["CompanyID"].ToString()))
+    {
+        CID = Convert.ToInt32(Session["CompanyID"]);
+    }
+
+    int RoleID = 2;
+
+    if (!string.IsNullOrWhiteSpace(Session["RoleID"].ToString()))
+    {
+        RoleID = Convert.ToInt32(Session["RoleID"]);
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MoldTrax</title>
+    <link rel="icon" type="image/png" href="/images/logo_small.png" />
+    <link href="~/jquery files/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="~/jquery files/jquery.min.js"></script>
+    <script src="~/jquery files/popper.min.js"></script>
+    <script src="~/jquery files/bootstrap.min.js"></script>
+    <link href="~/jquery files/css1.css" rel="stylesheet" />
+    <link href="~/jquery files/css2.css" rel="stylesheet" />
+    <link href="~/jquery files/css3.css" rel="stylesheet" />
+    <link href="~/Content/Site.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.unobtrusive-ajax.js"></script>
+    <link href="~/Content/style.css" rel="stylesheet" />
+    <script src="~/jquery files/all.js"></script>
+    <script src="~/Content/js/feather.js"></script>
+    <link href="~/jquery files/css.css" rel="stylesheet" />
+    <script src="~/jquery files/b3514468b8.js"></script>
+    <script src="~/Scripts/toastr.js"></script>
+    <script src="~/Scripts/toastr.min.js"></script>
+    <link href="~/Content/toastr.min.css" rel="stylesheet" />
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <script src="~/jquery files/sweetalert2@8.js"></script>
+    <link href="~/Content/Datatable/dataTables.bootstrap4.min.css" rel="stylesheet" />
+    <script src="~/Scripts/DatatableJs/dataTables.bootstrap4.min.js"></script>
+    <script src="~/Scripts/DatatableJs/jquery.dataTables.min.js"></script>
+
+    <link rel="https://code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <script src="https://code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+    <script src="~/Scripts/select2/dist/js/select2.js"></script>
+    <link href="~/Scripts/select2/dist/css/select2.css" rel="stylesheet" />
+
+    <link href="~/Content/scroller.dataTables.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://use.typekit.net/sxl2hik.css">
+    <script src="~/Scripts/moment.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/webshim/1.12.4/extras/modernizr-custom.js"></script>
+    <!-- polyfiller file to detect and load polyfills -->
+    <script src="https://cdn.jsdelivr.net/webshim/1.12.4/polyfiller.js"></script>
+    <script>
+        webshims.setOptions('waitReady', false);
+        webshims.setOptions('forms-ext', { types: 'date' });
+        webshims.polyfill('forms forms-ext');
+    </script>
+</head>
+<body>
+    <div class="wrapper">
+        <input type="hidden" id="MainCompanyID" value="@CID" />
+
+        <!-- Sidebar  -->
+        <nav id="sidebar">
+            <div class="sidebar-header" id="logo_header">
+                @*<h3>Moldtrax</h3>*@
+                <a href="#"><img src="~/Content/images/logo.png" /></a>
+                <strong><img class="small_logo" src="~/images/logo_small.png" /></strong>
+            </div>
+            <ul class="list-unstyled components sidebar_list" id="active_id">
+                <li name="1" id="DetailMoldInfo">
+                    <a href="#" onclick="CallMainSideFunc('DetailMoldInfo')" name="DetailMoldInfo" class="active_btn" id="navDetail">
+                        <i data-feather="file-text" data-toggle="tooltip" title="Detail Mold Information"></i>
+                        <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.DetailMoldInformation </span>
+                    </a>
+                </li>
+                <li id="MaintenanceTracking">
+                    <a href="#" onclick="CallMainSideFunc('MaintenanceTracking')" name="MaintenanceTracking" class="" id="navMaint">
+                        <i data-feather="compass" data-toggle="tooltip" title="Maintenance Tracking"></i>
+                        <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.MaintenanceTracking</span>
+                    </a>
+                </li>
+                <li id="MasterSchedule">
+                    <a href="#" onclick="CallMainSideFunc('MasterSchedule')" name="MasterSchedule" class="" id="navMaster">
+                        <i data-feather="calendar" data-toggle="tooltip" title="Master Schedule"></i>
+                        <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.MasterSchedule</span>
+                    </a>
+                </li>
+
+                @if (RoleID == 1)
+                {
+                    <li id="OrgInfo">
+                        <a href="#" onclick="CallMainSideFunc('OrganisationInfo')" name="OrganisationInfo" class="" id="navOrg">
+                            <i data-feather="calendar" data-toggle="tooltip" title="Organization Information"></i>
+                            <span class="slide_no">&nbsp; Organization Information</span>
+                        </a>
+                    </li>
+                }
+
+                @if (Permission == 1)
+                {
+                    <li id="CompanyInformation">
+                        <a href="#" onclick="CallMainSideFunc('CompanyInformation')" name="CompanyInformation" class="" id="navCompany">
+                            <i data-feather="trello" data-toggle="tooltip" title="Company Information"></i>
+                            <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.CompanyInformation </span>
+                        </a>
+                    </li>
+
+                    <li id="Administration">
+                        <a href="#" class="dropdown-toggle" id="navAdmin">
+                            <i data-feather="user" data-toggle="tooltip" title="Administration"></i>
+                            <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.Administration </span>
+                        </a>
+                        <ul class="list-unstyled collapse" id="sub_menu">
+                            @*<li>
+                        <a href="/MaintenanceAlertStat/GetPMALertReport" class="active_btn">
+                            <i data-feather="clipboard" data-toggle="tooltip" title="PM ALert Report"></i>
+                            <span class="slide_no">&nbsp; PM Alert Report</span>
+                        </a>
+                    </li>*@
+
+                            <li>
+                                <a href="#" onclick="CallMainSideFunc('SecurityManager')" name="SecurityManager" id="navSecurity" class="">
+                                    <i data-feather="shield" data-toggle="tooltip" title="Security Manager"></i>
+                                    <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.SecurityManager </span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="dropdown-toggle" data-toggle="collapse" id="AdminSubMenu" aria-expanded="true">
+                                    <i data-feather="list" data-toggle="tooltip" title="All Drop Down Lists"></i>
+                                    <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.AllDropDownLists </span>
+                                </a>
+                                <ul class="list-unstyled collapse" id="inner_sub_menu">
+                                    <li>
+                                        <a href="#" onclick="CallMainSideFunc('DetailMoldList')" name="DetailMoldList" id="navDetailMold" class="">
+                                            <i data-feather="chevron-right" data-toggle="tooltip" title="Detail Mold Lists"></i>
+                                            <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.DetailMoldLists </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="CallMainSideFunc('MaintenanceTrackingLists')" name="MaintenanceTrackingLists" id="navMaintenancetrac" class="">
+                                            <i data-feather="chevron-right" data-toggle="tooltip" title="Maintenance Tracking Lists"></i>
+                                            <span class="slide_no">&nbsp; Maintenance Tracking Lists</span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="CallMainSideFunc('ChecksheetCategory')" name="ChecksheetCategory" id="navchecksheet" class="">
+                                            <i data-feather="chevron-right" data-toggle="tooltip" title="Checksheet Category"></i>
+                                            <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.ChecksheetCategory </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="CallMainSideFunc('ChecksheetItems')" name="ChecksheetItems" id="navchecksheetitem" class="">
+                                            <i data-feather="chevron-right" data-toggle="tooltip" title="Checksheet Items"></i>
+                                            <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.ChecksheetItems </span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="CallMainSideFunc('AuditLogs')"  name="AuditLog" id="navAuditLog" class="">
+                                            <i data-feather="chevron-right" data-toggle="tooltip" title="Audit Logs"></i>
+                                            <span class="slide_no">&nbsp; Audit Logs</span>
+                                        </a>
+                                    </li>
+
+
+                                </ul>
+                            </li>
+                            @*<li>
+                                <a href="#" onclick="CallMainSideFunc('EnterLicenseCode')" class="">
+                                    <i data-feather="package" data-toggle="tooltip" title="Enter License Code"></i>
+                                    <span class="slide_no">&nbsp; Enter License Code</span>
+                                </a>
+                            </li>*@
+                        </ul>
+                    </li>
+                }
+
+                @*<li>
+            <a href="/MaintenanceAlertStat/Index" class="active_btn" id="navAlert">
+                <i data-feather="bell" data-toggle="tooltip" title="Maintenance Alert Stats"></i>
+                <span class="slide_no">&nbsp; Maintenance Alert Stats</span>
+            </a>
+        </li>*@
+                <li id="MoldPerformanceDashboard">
+                    <a href="#" onclick="CallMainSideFunc('MoldPerformanceDashboard')" name="MoldPerformanceDashboard" class="" id="navPerform">
+                        <i data-feather="home" data-toggle="tooltip" title="Mold Performance Dashboard"></i>
+                        <span class="slide_no">&nbsp;@Moldtrax.Resources.Resource.MoldPerformanceDashboard </span>
+                    </a>
+                </li>
+
+                @if (Permission == 1)
+                {
+                    <li id="MaintenanceEfficiencyDashboard">
+                        <a href="#" onclick="CallMainSideFunc('MaintenanceEfficiencyDashboard')" name="MaintenanceEfficiencyDashboard" class="" id="navMaintain">
+                            <i data-feather="sliders" data-toggle="tooltip" title="Maintenance Efficiency Dashboard"></i>
+                            <span class="slide_no">&nbsp; Maintenance Efficiency Dashboard</span>
+                        </a>
+                    </li>
+                }
+
+                <li id="PMAlertReport">
+                    @*<a href="/MaintenanceAlertStat/GetPMALertReport" class="active_btn">
+                <i data-feather="clipboard" data-toggle="tooltip" title="PM ALert Report"></i>
+                <span class="slide_no">&nbsp; PM Alert Report</span>
+            </a>*@
+                    <a href="#" onclick="CallMainSideFunc('PMAlertReport')" name="PMAlertReport" id="navAlert" class="">
+                        <i data-feather="clipboard" data-toggle="tooltip" title="PM ALert Report"></i>
+                        <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.PMAlertReport </span>
+                    </a>
+                </li>
+                <li>
+                    <a href="~/MTUserGuide.pdf" target="_blank" class="" id="navGuide">
+                        <i data-feather="user-check" data-toggle="tooltip" title="User Guide"></i>
+                        <span class="slide_no">&nbsp; User Guide</span>
+                    </a>
+                </li>
+                <li id="Reports">
+                    <a href="#" onclick="CallMainSideFunc('Reports')" name="Reports" class="" id="navReport">
+                        <i data-feather="clipboard" data-toggle="tooltip" title="Reports"></i>
+                        <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.Reports </span>
+                    </a>
+                </li>
+                <li id="Checksheet">
+                    <a href="#" onclick="CallMainSideFunc('Checksheet')" name="Checksheet" class="" id="checkout_main">
+                        <i data-feather="clipboard" data-toggle="tooltip" title="Chechout"></i>
+                        <span class="slide_no">&nbsp; @Moldtrax.Resources.Resource.Checksheet </span>
+                    </a>
+                </li>
+                <li>
+                        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+                        {
+                            <a href="javascript:document.getElementById('logoutForm').submit()" onclick="LogoutFunc()" class="active_btn">
+                                <i data-feather="power" data-toggle="tooltip" title="Exit"></i>
+                                <span class="slide_no">&nbsp; Exit</span>
+                            </a>
+                        }
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Page Content  -->
+        <div id="content">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light" id="main_nav1">
+                <div class="container-fluid">
+                    <button type="button" id="sidebarCollapse" class="btn btn-info">
+                        <i data-feather="more-horizontal"></i>
+                    </button>
+                    <ul class="navbar-left">
+                        <li class="right_side_li">
+                            <div id="MainTitleName" class="dropdown-primary">
+
+                            </div>
+                        </li>
+                    </ul>
+
+                    <ul style="width: 80%;display: inline-flex;">
+                        <li style="width: 100%;list-style: none;display: inline-flex;">
+                            <div class="dropdown-primary" style="width: 100%;  display: inline-block;">
+                                <div style="margin-top: 2px;    display: inline-block;width: 100%;" id="HeaderTop">
+                                    @if (RoleID == 1)
+                                    {
+                                        <div style="width: 50%; margin-right: 0px; float: right;    display: inline-block;">
+                                            <div style="width: 45%; margin-left: 9px; text-align: right;    margin-right: 0px;     display: inline;  font-weight: 600;">Select Company:</div>
+                                            <select id="MainCompDrop" onchange="LoadByCompany()" class="form-control" style="width: 70%; display: inline-block; margin-left: 2%;">
+                                                @foreach (var s in ViewBag.Companylist)
+                                                {
+                                                    <option value="@s.Value">@s.Text</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    }
+
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+
+                    @*<span><strong>OrgAdmin</strong></span>*@
+
+                    <span><strong>@LoginUserName</strong></span>
+
+                    @*<div style="padding:5px">
+
+                        @{
+                            foreach (var i in Moldtrax.Models.LanguageManager.AvailableLanguages)
+                            {
+                                @Html.ActionLink(i.LanguageFullName, "ChangeLanguage", "Account", new { lang = i.LanguageCultureName }, null) <text> </text>
+                            }
+                        }
+                    </div>*@
+                </div>
+            </nav>
+            <div class="pcoded-inner-content">
+                <div class="main-body">
+                    <div class="page-wrapper">
+                        <div class="page-body report_body">
+                            <div class="row report_row">
+                                <div class="col-md-12 report_col">
+                                    @RenderBody()
+                                    @*<footer>
+                                            <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
+                                        </footer>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    @Html.ActionLink("Application name", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
+                </div>
+                <div class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <li>@Html.ActionLink("Mold Info", "Index", "DetailMoldInfo")</li>
+                        <li>@Html.ActionLink("About", "About", "Home")</li>
+                        <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                    </ul>
+                    @Html.Partial("_LoginPartial")
+                </div>
+            </div>
+        </div>*@
+    @*buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif",*@
+
+    <script>
+        $(document).ready(function () {
+            var CID = @CID;
+
+            if (CID != null)
+            {
+                $("#MainCompDrop").val(CID);
+            }
+
+            $('#sidebarCollapse').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+
+            var IsOpen = sessionStorage.getItem("MenuOpen");
+
+            IsOpen = IsOpen == null ? 0 : IsOpen;
+
+            if (IsOpen == 0) {
+                $("#sub_menu").slideUp();
+            }
+            else
+            {
+                $("#sub_menu").slideDown();
+            }
+
+            var SubMenuisOpen = sessionStorage.getItem("SubMenuOpen");
+
+            SubMenuisOpen = SubMenuisOpen == null ? 0 : SubMenuisOpen;
+
+            if (SubMenuisOpen == 0) {
+                $("#inner_sub_menu").slideUp();
+            }
+            else {
+                $("#inner_sub_menu").slideDown();
+            }
+
+        });
+
+        function doUndo() {
+            document.execCommand('undo', false, null);
+        }
+
+        function GetCurrentTime() {
+            debugger
+            var currentDateTime = new Date();
+            var hours = currentDateTime.getHours();
+            var minutes = currentDateTime.getMinutes();
+            var ampm = hours >= 12 ? 'pm' : 'am';
+            var formattedTime = hours + ":" + minutes + ampm;
+            return formattedTime;
+        }
+
+
+        function LogoutFunc()
+        {
+            sessionStorage.setItem("SubMenuOpen", 1);
+            sessionStorage.setItem("MenuOpen", 1);
+            sessionStorage.removeItem("MenuOpen");
+            sessionStorage.removeItem("SubMenuOpen");
+        }
+
+        //$('#navAdmin a[href="#name"]').tab('show');
+
+
+        $("#navAdmin").click(function ()
+        {
+            var IsOpen = sessionStorage.getItem("MenuOpen");
+
+            if (IsOpen == 0)
+            {
+                $("#sub_menu").slideDown(500);
+                sessionStorage.setItem("MenuOpen", 1);
+            }
+            else
+            {
+                $("#sub_menu").slideUp(500);
+                sessionStorage.setItem("MenuOpen", 0);
+            }
+        })
+
+
+        $("#AdminSubMenu").click(function ()
+        {
+            var IsOpen = sessionStorage.getItem("SubMenuOpen");
+
+            if (IsOpen == 0) {
+                $("#inner_sub_menu").slideDown(500);
+                sessionStorage.setItem("SubMenuOpen", 1);
+            }
+            else {
+                $("#inner_sub_menu").slideUp(500);
+                sessionStorage.setItem("SubMenuOpen", 0);
+            }
+        })
+
+        //$("#navAdmin").click(function () {
+        //    $("#sub_menu").clickToggle(function () {
+        //        alert('open');
+        //        sessionStorage.setItem("MenuOpen", 1);
+
+        //    }, function () {
+        //        alert('close');
+
+        //        sessionStorage.setItem("MenuOpen", 0);
+        //    });
+        //});
+
+        //(function ($) {
+        //    $.fn.clickToggle = function (func1, func2) {
+        //        var funcs = [func1, func2];
+        //        this.data('toggleclicked', 0);
+        //        this.click(function () {
+        //            var data = $(this).data();
+        //            var tc = data.toggleclicked;
+        //            $.proxy(funcs[tc], this)();
+        //            data.toggleclicked = (tc + 1) % 2;
+        //        });
+        //        return this;
+        //    };
+        //}(jQuery));
+
+        //function LoadByCompany()
+        //{
+        //    var Url = "";
+        //    var CurrentTab = "DetailMoldInfo";
+        //    var CID = $("#MainCompDrop").val();
+
+        //    $.ajax({
+        //        url: '/Account/UpdateSession?CID=' + CID,
+        //        type: 'Post',
+        //        success: function (data)
+        //        {
+
+        //        },
+        //        error: function ()
+        //        {
+
+        //        }
+        //    })
+
+
+        //     $('.sidebar_list li').each(function (i) {
+
+        //         var vv = $(this).attr('name');
+        //         if (vv == '1')
+        //         {
+        //            CurrentTab = $(this).attr('id');
+        //         }
+        //     });
+
+        //    if (CurrentTab == "DetailMoldInfo") {
+        //        Url = "/DetailMoldInfo/Index?CID=" + CID;
+        //    }
+        //    else if (CurrentTab == "MaintenanceTracking") {
+        //        Url = "/MaintenanceTracking/Index?CID=" + CID;
+        //    }
+        //    else if (CurrentTab == "MasterSchedule") {
+        //        Url = "/MasterSchedule/index?CID=" + CID;
+        //    }
+        //    else if (CurrentTab == "CompanyInformation") {
+        //        Url = "/CompanyInfo/index?CID=" + CID;
+        //    }
+        //    else if (CurrentTab == "SecurityManager") {
+        //        Url = "/Administration/index";
+        //    }
+        //    else if (CurrentTab == "DetailMoldList") {
+        //        Url = "/Administration/DetailMoldLists?CID=" + CID;
+        //    }
+        //    else if (CurrentTab == "MaintenanceTrackingLists") {
+        //        Url = "/Administration/MaintenanceTrackingLists";
+        //    }
+        //    else if (CurrentTab == "ChecksheetCategory") {
+        //        Url = "/InspectCategory/Index";
+        //    }
+        //    else if (CurrentTab == "ChecksheetItems") {
+        //        Url = "/Administration/CheckSheet";
+        //    }
+        //    else if (CurrentTab == "EnterLicenseCode") {
+        //        Url = "/Administration/EnterLicenseCode";
+        //    }
+        //    else if (CurrentTab == "MoldPerformanceDashboard") {
+        //        Url = "/MoldPerformanceDashboard/Index";
+        //    }
+        //    else if (CurrentTab == "MaintenanceEfficiencyDashboard") {
+        //        Url = "/MaintenanceEfficiencyDashboard/Index";
+        //    }
+        //    else if (CurrentTab == "PMAlertReport") {
+        //        Url = "/MaintenanceAlertStat/Index";
+        //    }
+        //    else if (CurrentTab == "Reports") {
+        //        Url = "/Report/Index";
+        //    }
+
+        //    else {
+        //        Url = "/Checksheet/Index";
+        //    }
+
+        //    window.location.href = Url;
+        //}
+
+
+        function LoadByCompany()
+        {
+            //var CurrentTab = "DetailMoldInfo";
+
+            //if (sessionStorage.getItem('CurrentOpenTab') != null) {
+            //    CurrentTab = sessionStorage.getItem('CurrentOpenTab');
+            //}
+
+            var CurrentTab = $("#active_id li").find(".actives").attr("name");
+
+            var CID = $("#MainCompDrop").val();
+
+            sessionStorage.setItem("CompanyID", CID);
+            // $('.sidebar_list li').each(function (i) {
+
+            //     var vv = $(this).attr('name');
+            //     if (vv == '1')
+            //     {
+            //        CurrentTab = $(this).attr('id');
+            //     }
+            //});
+
+
+            $.ajax({
+                url: '/Account/UpdateSession?CID=' + CID,
+                type: 'Post',
+                async: false,
+                success: function ()
+                {
+
+                },
+                error: function ()
+                {
+
+                }
+            })
+
+
+            //if (sessionStorage.getItem('PreviousTab') == null) {
+            //    sessionStorage.setItem("PreviousTab", "DetailMoldInfo")
+            //}
+
+            //var PreviousTab = sessionStorage.getItem('PreviousTab');
+
+            var Url = ""
+            var ControllerName = "";
+
+            if (CurrentTab == "DetailMoldInfo") {
+
+                ControllerName = "DetailMoldInfo";
+
+                var MoldactiveTab = $(".MainMoldNav li").find(".active");
+                var DetailMoldName = MoldactiveTab.attr('id');
+
+                $.ajax({
+                    url: '/DetailMoldInfo/MoldGetData',
+                    type: 'post',
+                    async: false,
+                    success: function (data)
+                    {
+                        $("#MainMoldDiv").html(data);
+
+                        var MoldID = $("#MainMoldList tbody tr").attr("id"); 
+                        //var MoldID = $("#MainMoldHidnID").val();
+                        $("#MainMoldHidnID").val(MoldID);
+
+                        var FuncName = "";
+
+                        if (DetailMoldName == 'Mold') {
+                            Url = "/DetailMoldInfo/MoldDetails?ID=" + MoldID;
+                        }
+
+                        else if (DetailMoldName == "Tooling") {
+                            Url = "/DetailMoldInfo/ToolingGetData?ID=" + MoldID;
+                        }
+
+                        else if (DetailMoldName == "Layout") {
+                            Url = "/DetailMoldInfo/GetLayoutData?ID=" + MoldID;
+                        }
+
+                        else if (DetailMoldName == "IMLMap") {
+                            Url = "/DetailMoldinfo/IMLImageLoad?ID=" + MoldID;
+                        }
+
+                        else if (DetailMoldName == "TroubleShooter") {
+                            Url = "/DetailMoldInfo/TroubleShooterGetData?ID=" + MoldID;
+                        }
+
+                        else if (DetailMoldName == "TechTips") {
+                            Url = "/DetailMoldInfo/GetTechTips?ID=" + MoldID;
+                        }
+
+                        else if (DetailMoldName == "Notes") {
+                            Url = "/DetailMoldInfo/GetNotesList?ID=" + MoldID;
+                        }
+
+                        else {
+                            Url = "/DetailMoldInfo/GetServicingData?ID=" + MoldID;
+                        }
+
+                    },
+                    error: function ()
+                    {
+
+                    }
+                })
+            }
+
+
+            else if (CurrentTab == "MaintenanceTracking") {
+                var MoldID = "0";
+                var MaintenanceactiveTab = $(".nav-tabs li").find(".active");
+                var Maintenancename = MaintenanceactiveTab.attr('id');
+                ControllerName = "MaintenanceTracking";
+
+                $.ajax({
+                    url: '/MaintenanceTracking/CompanyChangeMaintenanceTrack',
+                    type: 'Post',
+                    async: false,
+                    success: function (data)
+                    {
+                        var htmlstring = "";
+
+                        $("#MoldResinType").empty();
+
+                        $.each(data , function (i, h) {
+                            htmlstring += "<option value='" + h.MoldDataID + "'> " + h.MoldName + "</option>"
+                        });
+
+                        $("#MoldResinType").append(htmlstring);
+
+                        $('#MoldResinType').val($('#MoldResinType option:eq(0)').val()).trigger('change');
+
+                        //MoldID = $("#MoldResinType").val();
+
+                        //var SetID = $("#table_maintain").find(".highlight").find("td").eq(1).find("#SetIDVal").val();
+
+                        //if (Maintenancename == "MaintenanceSche") {
+                        //    Url = "/MaintenanceTracking/MaintenanceScheduleGetData?MoldID=" + MoldID + "&MOLDChange=1";
+                        //}
+
+                        //else if (Maintenancename == "MaintenanceIns") {
+                        //    Url = "/MaintenanceTracking/MaintenanceInstructionGetData?SetID=" + SetID + "&MoldID=" + MoldID + "&MOLDChange=1";
+                        //}
+
+                        //else if (Maintenancename == "DefectTask") {
+                        //    Url = "/MaintenanceTracking/GetDefecttTaskData?SetID=" + SetID + "&MoldID=" + MoldID + "&MOLDChange=1";
+                        //}
+
+                        //else if (Maintenancename == "CorrectiveAction") {
+                        //    Url = "/MaintenanceTracking/GetCorrectiveData?SetID=" + SetID + "&MoldID=" + MoldID + "&MOLDChange=1";
+                        //}
+
+                        //else if (Maintenancename == "ActionReview") {
+                        //    Url = "/MaintenanceTracking/ActionReviewGetData?MoldID=" + MoldID + "&SetID=" + SetID + "&MOLDChange=1";
+                        //}
+                        //else if (Maintenancename == "TrbleShooter") {
+                        //    Url = "/MaintenanceTracking/TroubleShooterGetData?ID=" + MoldID + "&MOLDChange=1";
+                        //}
+                        //else if (Maintenancename == "ToolingList") {
+                        //    Url = "/MaintenanceTracking/ToolingGetData?ID=" + MoldID + "&MOLDChange=1";
+                        //}
+                        //else if (Maintenancename == "TechTipsMain") {
+                        //    Url = "/MaintenanceTracking/GetTechTips?ID=" + MoldID + "&MOLDChange=1";
+                        //    var sd = $(".MainTechTipsNavTab li").find(".active");
+                        //    sss = sd.attr('id');
+                        //}
+                        //else {
+                        //    FuncName = "GetLayoutData";
+                        //    Url = "/MaintenanceTracking/GetLayoutData?ID=" + MoldID + "&MOLDChange=1";
+                        //}
+
+                        //$("#MainMoldTab").html(data.MoldDataView);
+                        //$("#MoldResinType").html(data);
+                    },
+                    error: function ()
+                    {
+
+                    }
+                })
+
+               
+            }
+
+            else if (CurrentTab == "MasterSchedule") {
+                Url = "/MasterSchedule/GetData?CID=" + CID;
+            }
+            else if (CurrentTab == "CompanyInformation") {
+
+                var CompanyName = "";
+
+                $('.MainCompany li').each(function (i) {
+                    if ($(this).attr('name') == 1) {
+                        CompanyName = $(this).attr('id');
+                    }
+                });
+
+                if (CompanyName == "ManagingComp") {
+                    Url = "/CompanyInfo/ManagingCompanyGetData";
+                }
+                else if (CompanyName == "Customer") {
+                    Url = "/CompanyInfo/GetCustomerList";
+                }
+
+                else if (CompanyName == "Vendors") {
+                    Url = "/CompanyInfo/GetVendorList";
+                }
+
+                else if (CompanyName == "Employees") {
+                    Url = "/CompanyInfo/GetEmployeeList";
+                }
+
+                else {
+                    Url = "/CompanyInfo/GetDocumentCompany";
+                }
+                //Url = "/CompanyInfo/index?CID=" + CID;
+            }
+            else if (CurrentTab == "SecurityManager") {
+                Url = "/SecurityManager/CallByCompnay";
+            }
+            else if (CurrentTab == "DetailMoldList") {
+
+                var MaintenanceactiveTab = $(".nav-tabs li").find(".active");
+                var OpenTab = MaintenanceactiveTab.attr('id');
+
+
+                if (OpenTab == "BaseStyle") {
+                    Url = "/Administration/GetBaseData";
+                }
+                else if (OpenTab == "Department") {
+                    Url = "/Administration/GetDepartment";
+                }
+
+                else if (OpenTab == "Product") {
+                    Url = "/Administration/GetProduct";
+                }
+                else if (OpenTab == "ProductPart") {
+                    Url = "/Administration/GetProductPart";
+                }
+                else if (OpenTab == "ResinType") {
+                    Url = "/Administration/GetResinType";
+                }
+
+                else if (OpenTab == "RunnerType") {
+                    Url = "/Administration/GetRunnerType";
+                }
+
+                else if (OpenTab == "ToolingType") {
+                    Url = "/Administration/GetToolingType";
+                }
+
+                else if (OpenTab == "TSGuide") {
+                    Url = "/Administration/GetTSGuideType";
+                }
+                else if (OpenTab == "Factors") {
+                    Url = "/Administration/GetFactors"
+                }
+                else {
+                    Url = "/Administration/GetTechTips";
+                }
+            }
+            else if (CurrentTab == "MaintenanceTrackingLists") {
+
+                var MaintenanceactiveTab = $(".nav-tabs li").find(".active");
+                var OpenTab = MaintenanceactiveTab.attr('id');
+
+
+                if (OpenTab == "MoldConfig") {
+                    Url = "/Administration/GetMoldConfig";
+                }
+
+                else if (OpenTab == "MoldConfig2") {
+                    Url = "/Administration/GetMoldConfig2";
+                }
+
+                else if (OpenTab == "StopReason") {
+                    Url = "/Administration/GetStopReason";
+                }
+
+                else if (OpenTab == "CorreciveActionType") {
+                    Url = "/Administration/GetCorrectiveActionType";
+
+                }
+
+                else if (OpenTab == "CorreciveAction") {
+                    Url = "/Administration/GetCorrectiveAction";
+                }
+
+                else if (OpenTab == "MaintenanceScheduleStatus") {
+                    Url = "/Administration/GetMaintenanceSchedule";
+                }
+
+                else if (OpenTab == "RepairStatus") {
+                    Url = "/Administration/GetRepairStatus";
+                }
+
+                else {
+                    Url = "/Administration/GetRepairLocation";
+                }
+            }
+            else if (CurrentTab == "ChecksheetCategory") {
+                Url = "/InspectCategory/GetInspectData";
+            }
+            else if (CurrentTab == "ChecksheetItems") {
+                Url = "/Administration/GetCheckSheetDataByCompany";
+            }
+            else if (CurrentTab == "EnterLicenseCode") {
+                Url = "/Administration/EnterLicenseCode";
+            }
+            else if (CurrentTab == "MoldPerformanceDashboard") {
+
+                window.location.href = "/MoldPerformanceDashboard/Index"; 
+                //Url = "/MoldPerformanceDashboard/GetMoldList";
+            }
+            else if (CurrentTab == "MaintenanceEfficiencyDashboard") {
+                window.location.href = "/MaintenanceEfficiencyDashboard/Index";
+
+                //Url = "/MaintenanceEfficiencyDashboard/Index";
+            }
+            else if (CurrentTab == "PMAlertReport") {
+                window.location.href = "/MaintenanceAlertStat/Index";
+            }
+            else if (CurrentTab == "Reports") {
+                window.location.href = "/Report/Index";
+            }
+            else {
+                  window.location.href = "/Checksheet/Index";
+            }
+
+            jQuery.ajaxSettings.traditional = true;
+
+            if (Url != "") {
+
+                $.ajax({
+                    url: Url,
+                    type: 'Post',
+                    async: false,
+                    success: function (data) {
+                        var nn = "";
+                        if (CurrentTab == "DetailMoldInfo") {
+                            $("#MoldTb").html(data);
+                            $(".editable").attr('data-placeholder', '');
+                            $(".medium-editor-element").attr('data-placeholder', '');
+                        }
+
+                        else if (CurrentTab == "MaintenanceTracking") {
+                            $('.nav-link').not('.active').removeClass('disabled');
+                            $("#MainMoldTab").html(data.MoldData);
+                            $("#MaintenanceMain").html(data.OtherInfo);
+                            $(".editable").attr('data-placeholder', '');
+                            $(".medium-editor-placeholder").attr("data-placeholder", "");
+                            if (name == "TechTipsMain") {
+                                $("#" + sss + "")[0].click();
+                            }
+                        }
+
+                        else if (CurrentTab == "MasterSchedule") {
+                            $("#MasterHtml").html(data);
+                        }
+
+                        else if (CurrentTab == "CompanyInformation") {
+                            $("#home").html(data);
+                        }
+
+                        else if (CurrentTab == "SecurityManager") {
+                            $("#ShowUserList").html(data.MoldData);
+                            $("#ShowGroupsMeme").html(data.Tblgroupview);
+                        }
+
+                        else if (CurrentTab == "DetailMoldList") {
+                            $("#home").html(data);
+                        }
+                        else if (CurrentTab == "MaintenanceTrackingLists") {
+                            $("#home").html(data);
+                        }
+                        else if (CurrentTab == "ChecksheetCategory") {
+                            $("#tblInspectCate").html(data);
+                        }
+                        else if (CurrentTab == "ChecksheetItems") {
+                            $("#MoldIDChange").empty();
+
+                            var Htmlstring = "";
+                            Htmlstring += "<option disabled></option>"
+                            //$.each(function (Moldlist , i, h) {
+                            //    Htmlstring += "<option value='" + h.MoldDataID + "'>" + h.Name + "</option>";
+                            //});
+
+                            $.each(data.Molddata, function (i, h) {
+                                Htmlstring += "<option value='" + h.MoldDataID + "'>" + h.Name + "</option>";
+                            });
+
+                            $("#MoldIDChange").append(Htmlstring);
+                            $("#CheckSheetHtml").html(data.ChecksheetDiv);
+                        }
+
+                        else if (CurrentTab == "MoldPerformanceDashboard") {
+                            var Htmlstring = "<option value='0'>--Show All--</option>";
+                            $("#MoldID").empty();
+                            $.each(data, function (i, h) {
+                                Htmlstring += "<option value='" + h.Value + "'>" + h.Text + "</option>"
+                            })
+                            $("#MoldID").append(Htmlstring);
+                        }
+
+                        else if (CurrentTab == "") {
+
+                        }
+                    },
+
+                    error: function () {
+
+                    }
+                })
+            }
+        }
+
+        function CallMainSideFunc(str)
+        {
+            var Newstr = str;
+            sessionStorage.setItem("CurrentOpenTab", Newstr);
+
+            //if (sessionStorage.getItem('CurrentOpenTab') == null) {
+            //    sessionStorage.setItem("CurrentOpenTab", str)
+            //}
+
+            var PreviousTab = sessionStorage.getItem('PreviousTab');
+
+            if (PreviousTab == "DetailMoldInfo") {
+                var MoldactiveTab = $(".MainMoldNav li").find(".active");
+                var DetailMoldName = MoldactiveTab.attr('id');
+
+                if (DetailMoldName == "Mold") {
+                    $("#SaveBtnMoldDetails").click();
+                }
+                else if (DetailMoldName == "Tooling") {
+                    $("#EditTooling").click();
+                }
+                else if (DetailMoldName == "TroubleShooter") {
+                    $("#EditTroubleShtr").click();
+                }
+                else if (DetailMoldName == "TechTips") {
+                    $("#SavetechTips").click();
+                }
+                else if (DetailMoldName == "Servicing") {
+                    $("#SaveServicingData").click();
+                }
+                else if (DetailMoldName == "Notes") {
+                    $("#SaveNotesBtn").click();
+                }
+            }
+            else if (PreviousTab == "MaintenanceTracking")
+            {
+                var MaintenanceactiveTab = $(".nav-tabs li").find(".active");
+                var Maintenancename = MaintenanceactiveTab.attr('id');
+
+                $("#SaveMainMoldData").click();
+
+                if (Maintenancename == "MaintenanceSche") {
+                    $("#SaveMaintenenanceSche").click();
+                    $("#SaveMainTrouble").click();
+                }
+                else if (Maintenancename == "MaintenanceIns") {
+                    $("#SaveMainInstruction").click();
+                }
+                else if (Maintenancename == "DefectTask") {
+                    $("#SaveDefecttaskBtn").click();
+                }
+                else if (Maintenancename == "CorrectiveAction") {
+                    $("#SaveCorrectiveActionbtn").click();
+                }
+                else if (Maintenancename == "TrbleShooter") {
+                    $("#SaveTroubleMaineBtn").click();
+                }
+                else if (Maintenancename == "ToolingList") {
+                    $("#SaveMainToolingBtn").click();
+                }
+                else if (Maintenancename == "TechTipsMain") {
+                    $("#SaveMaintenanceTechTipbtn").click();
+                }
+            }
+
+            var Url = ""
+            if (str == "DetailMoldInfo") {
+                Url = "/DetailMoldInfo/Index";
+            }
+            else if (str == "MaintenanceTracking") {
+                Url = "/MaintenanceTracking/index";
+            }
+            else if (str == "MasterSchedule") {
+                Url = "/MasterSchedule/index";
+            }
+            else if (str == "CompanyInformation") {
+                Url = "/CompanyInfo/index";
+            }
+            else if (str == "SecurityManager") {
+                Url = "/Administration/index";
+            }
+            else if (str == "OrganisationInfo")
+            {
+                Url = "/Administration/OrganisationInfo";
+            }
+            else if (str == "DetailMoldList") {
+                Url = "/Administration/DetailMoldLists";
+            }
+            else if (str == "MaintenanceTrackingLists") {
+                Url = "/Administration/MaintenanceTrackingLists";
+            }
+            else if (str == "ChecksheetCategory") {
+                Url = "/InspectCategory/Index";
+            }
+            else if (str == "ChecksheetItems") {
+                Url = "/Administration/CheckSheet";
+            }
+            else if (str == "EnterLicenseCode") {
+                Url = "/Administration/EnterLicenseCode";
+            }
+            else if (str == "MoldPerformanceDashboard") {
+                Url = "/MoldPerformanceDashboard/Index";
+            }
+            else if (str == "MaintenanceEfficiencyDashboard") {
+                Url = "/MaintenanceEfficiencyDashboard/Index";
+            }
+            else if (str == "PMAlertReport") {
+                Url = "/MaintenanceAlertStat/Index";
+            }
+            else if (str == "AuditLogs")
+            {
+                Url = "/AuditLog/Index";
+            }
+            else if (str == "Reports") {
+                Url = "/Report/Index";
+            }
+            else
+            {
+                Url = "/Checksheet/Index";
+            }
+
+            $('.sidebar_list li').each(function (i) {
+                $(this).attr('name', '');
+            });
+
+            sessionStorage.setItem("PreviousTab", str);
+
+            $('.sidebar_list li').each(function (i) {
+                var vv = $(this).attr('id');
+                if (vv == str) {
+                    $(this).attr('name', '1');
+                }
+            });
+
+            window.location.href = Url;
+        }
+
+
+        //$(function () {
+        //    $(".Datepicker").datepicker({
+        //        dateFormat: 'mm/dd/yy',
+        //        showOn: "both",
+        //        buttonImage: "/Content/images/calendar.gif",
+        //        buttonImageOnly: true
+        //    });
+        //});
+
+        function addCommas(x) {
+            if (x != undefined) {
+                var parts = x.toString().split(".");
+                parts[0] = parts[0].replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "$1,");
+                return parts.join(".");
+            }
+        }
+
+        //document.getElementById('table').addEventListener("scroll", function () {
+        //    var translate = "translate(0," + this.scrollTop + "px)";
+        //    var myElements = this.querySelectorAll("thead");
+        //    //myElements.style.border = '2px solid red';
+        //    for (var i = 0; i < myElements.length; i++) {
+        //        myElements[i].style.transform = translate;
+        //    }
+        //});
+    </script>
+    <script>
+        //$(document).ready(function () {
+        //    $('[data-toggle="tooltip"]').tooltip();
+        //});
+    </script>
+    <script>
+        feather.replace()
+    </script>
+
+    @*<script>
+        var header = document.getElementById("active_id");
+        var btns = header.getElementsByClassName("active_btn");
+        for (var i = 0; i < btns.length; i++) {
+            btns[i].addEventListener("click", function () {
+                var current = document.getElementsByClassName("actives");
+                current[0].className = current[0].className.replace(" actives", "");
+                this.className += " actives";
+            });
+        }
+    </script>*@
+
+
+    <script>
+        //document.getElementById('table_cavlayout').addEventListener("scroll", function () {
+        //    var translate = "translate(0," + this.scrollTop + "px)";
+        //    var myElements = this.querySelectorAll("thead");
+        //    //myElements.style.border = '2px solid red';
+        //    for (var i = 0; i < myElements.length; i++) {
+        //        myElements[i].style.transform = translate;
+        //    }
+        //});
+    </script>
+</body>
+</html>

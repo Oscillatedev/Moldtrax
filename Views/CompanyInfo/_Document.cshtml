@@ -1,0 +1,189 @@
+﻿@model Moldtrax.Models.tblCompany
+@using Moldtrax.Models
+
+@*<br>*@
+<form id="SaveCompanyDocFrm">
+    <div class="row">
+        <div class="col-md-12 text-right btn_css">
+            @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Enter Company's Document Control Number for Reports: <span class="head_h5_span">(i.e. SOP or ISO Numbers)</span></h5>
+                </div>
+                <div class="card_body">
+                    <input type="hidden" value="@Model.CompanyID" id="CompanyID" name="CompanyID" />
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Repair Sheet</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNRepairSheet" id="CompanyCNRepairSheet" name="CompanyCNRepairSheet" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Maintain Timeline</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNToolingExp" id="CompanyCNToolingExp" name="CompanyCNToolingExp" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Defect Cost Analysis</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNRepairCosts" id="CompanyCNRepairCosts" name="CompanyCNRepairCosts" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Defect Tracking</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNBlockedDefects" id="CompanyCNBlockedDefects" name="CompanyCNBlockedDefects" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Total Time Run</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNTotalTimeRun" id="CompanyCNTotalTimeRun" name="CompanyCNTotalTimeRun" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>IML Sheet</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNILM" id="CompanyCNILM" name="CompanyCNILM" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>TroubleShooters Guide</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNTroubleShoot" id="CompanyCNTroubleShoot" name="CompanyCNTroubleShoot" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Tech Tips</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNTechTips" id="CompanyCNTechTips" name="CompanyCNTechTips" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>List of Tooling</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNTooliong" id="CompanyCNTooliong" name="CompanyCNTooliong" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Last Shot Inspection</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.CompanyCNLastShot" id="CompanyCNLastShot" name="CompanyCNLastShot" class="form-control DocumentFocutout">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+<script>
+
+
+    $(".DocumentFocutout").focusout(function ()
+    {
+        var data = $("#SaveCompanyDocFrm").serialize();
+
+        $.ajax({
+            url: '/CompanyInfo/SaveDoc',
+            type: 'Post',
+            data: data,
+            success: function () {
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $("#SaveCompanyDocFrm").submit(function (e)
+    {
+        e.preventDefault();
+        var data = $("#SaveCompanyDocFrm").serialize(); 
+
+        $.ajax({
+            url: '/CompanyInfo/SaveDoc',
+            type: 'Post',
+            data: data,
+            success: function ()
+            {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                })
+            },
+            error: function ()
+            {
+
+            }
+        })
+
+    })
+
+    $('.DocumentFocutout').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.DocumentFocutout').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblMoldData.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.DocumentControlNum.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+</script>

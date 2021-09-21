@@ -1,0 +1,395 @@
+﻿@model IEnumerable<Moldtrax.Models.tblDDRepairStatusLocation>
+    @using Moldtrax.Models
+@{
+    int Total = 0;
+    foreach (var x in Model)
+    {
+        Total += 1;
+    }
+}
+<style>
+    .table-con {
+        height: 540px;
+    }
+</style>
+@*<br>*@
+<div class="row">
+    <div class="col-md-6 btn_css">
+        <input type="button" class="add_btn" value="A-Z" id="RepairLocationAscOrder" />
+        <input type="button" class="del_btn" value="Z-A" id="RepairLocationDescOrder" />
+    </div>
+
+        <div class="col-md-6 text-right btn_css">
+            <input type="button" class="back_btn" value="Back" onclick="doUndo()" />
+            <input type="button" class="add_btn" value="Add" id="NewRepairLocation" />
+            <input type="hidden" class="add_btn" value="Add" id="OldRepairLocation" data-toggle="modal" data-target="#MTRepairLocation" />
+            @*<input type="button" onclick="SaveRepairLocation()" class="edit_btn" value="Save" />*@
+            <input type="button" onclick="DeleteRepairLocation()" class="delete_btn" value="Delete" />
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card box_design">
+                <div class="card_body table-con" id="table3">
+                    <table class="table table-bordered table-responsive" id="repair_location">
+                        <thead>
+                            <tr>
+                                <th class="th_detail1"><input type="checkbox" id="MainRepairLocationChck" value=""></th>
+                                <th class="th_detail2">Location</th>
+                                <th class="th_detail3">Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" name="SubRepairLocationChck" class="Subcheckbox" value="@x.ID"></td>
+                                    <td>
+                                        <input type="hidden" id="ID" value="@x.ID" />
+                                        <input type="text" autocomplete="off" value="@x.RepairStatusLocation" id="RepairStatusLocation" class="form-control RepairLocationFocusOut">
+                                    </td>
+                                    <td>
+                                        <input type="text" autocomplete="off" value="@x.RepairStatusLocationDescrip" id="RepairStatusLocationDescrip" class="form-control RepairLocationFocusOut">
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                <label class="red_total">Total: @Total</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="MTRepairLocation">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Create Repair Location</h4>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-responsive" id="repair_location">
+                        <thead>
+                            <tr>
+                                <th class="th_detail2">Location</th>
+                                <th class="th_detail3">Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" autocomplete="off" value="" id="AddRepairStatusLocation" class="form-control">
+                                </td>
+                                <td>
+                                    <input type="text" autocomplete="off" value="" id="AddRepairStatusLocationDescrip" class="form-control">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="modal-footer btn_css">
+                    <input type="button" class="add_btn" id="RepairLocationSave" value="Save" />
+                    <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    @*<div class="modal fade" id="MTRepairLocation">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Create Repair Location</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Location</label>
+                                <input type="text" value="" id="AddRepairStatusLocation" class="form-control">
+                            </div>
+                            <div class="col-md-12">
+                                <label>Explanation</label>
+                                <input type="text" value="" id="AddRepairStatusLocationDescrip" class="form-control">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer btn_css">
+                        <input type="button" class="add_btn" id="RepairLocationSave" value="Save" />
+                        <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+                    </div>
+
+                </div>
+            </div>
+        </div>*@
+    <script>
+        document.getElementById('table3').addEventListener("scroll", function () {
+            var translate = "translate(0," + this.scrollTop + "px)";
+            var myElements = this.querySelectorAll("thead");
+            //myElements.style.border = '2px solid red';
+            for (var i = 0; i < myElements.length; i++) {
+                myElements[i].style.transform = translate;
+            }
+        });
+    </script>
+    <script>
+        $("#RepairLocationAscOrder").click(function () {
+            $.ajax({
+                url: '/Administration/RepairLocationAscedingOrder',
+                type: 'Post',
+                success: function (data) {
+                    $("#home").html(data);
+                },
+                error: function () {
+
+                }
+            })
+        })
+
+        $("#RepairLocationDescOrder").click(function () {
+            $.ajax({
+                url: '/Administration/RepairLocationDescndingOrder',
+                type: 'Post',
+                success: function (data) {
+                    $("#home").html(data);
+                },
+                error: function () {
+
+                }
+
+            })
+        })
+
+        $("#NewRepairLocation").click(function () {
+            $("#OldRepairLocation").click();
+            $('.modal-dialog').draggable({
+                "handle": ".modal-header"
+            });
+            $(".modal-backdrop").hide();
+
+        })
+
+        function AddRepairLocation() {
+            var htmlstring = "<tr><td><input type='checkbox' value='0'></td>";
+            htmlstring += "<td><input type = 'text' value='' id='RepairStatusLocation' name = 'RepairStatusLocation' class='form-control' ></td>";
+            htmlstring += "<td><input type='text' value='' id='RepairStatusLocationDescrip' name='RepairStatusLocationDescrip' class='form-control'></td></tr>";
+            $("#repair_location tbody").append(htmlstring);
+        }
+
+        $(".RepairLocationFocusOut").focusout(function () {
+
+            var obj = new Object();
+            obj.ID = $(this).closest("tr").find('td:eq(1)').find("#ID").val();
+            obj.RepairStatusLocation = $(this).closest("tr").find('td:eq(1)').find("#RepairStatusLocation").val();
+            obj.RepairStatusLocationDescrip = $(this).closest("tr").find('td:eq(2)').find("#RepairStatusLocationDescrip").val();
+
+            $.ajax({
+
+                url: '/Administration/SaveRepairLocationFocusOut',
+                type: 'Post',
+                data: obj,
+                success: function (data) {
+
+                },
+                error: function () {
+
+                }
+            })
+
+        })
+
+        $("#RepairLocationSave").click(function () {
+            var obj = new Object();
+            obj.RepairStatusLocation = $("#AddRepairStatusLocation").val();
+            obj.RepairStatusLocationDescrip = $("#AddRepairStatusLocationDescrip").val();
+
+            $.ajax({
+
+                url: '/Administration/SaveRepairLocation',
+                type: 'Post',
+                data: obj,
+                success: function (data) {
+                    Swal.fire({
+                        title: "Success",
+                        text: 'Data saved successfully.',
+                        type: "success"
+                    }).then(function () {
+                        $("#home").html(data);
+                        $(".modal-backdrop").hide();
+
+                    })
+                },
+                error: function () {
+
+                }
+            })
+        })
+
+        function SaveRepairLocation() {
+            var model = new Array();
+
+            $("#repair_location tbody tr").each(function () {
+                var row = $(this);
+
+                var db = {};
+                db.ID = row.find("TD").eq(1).find("#ID").val();
+                db.RepairStatusLocation = row.find("TD").eq(1).find("#RepairStatusLocation").val();
+                db.RepairStatusLocationDescrip = row.find("TD").eq(2).find("#RepairStatusLocationDescrip").val();
+                model.push(db);
+            })
+
+            $.ajax({
+
+                url: '/Administration/SaveRepairLocation',
+                type: 'Post',
+                data: JSON.stringify(model),
+                contentType: 'application/json',
+                dataType: 'html',
+                success: function (data) {
+                    Swal.fire({
+                        title: "Success",
+                        text: 'Data saved successfully.',
+                        type: "success"
+                    }).then(function () {
+                        $("#home").html(data);
+                    })
+                },
+                error: function () {
+
+                }
+            })
+
+        }
+
+
+
+
+        $(document).ready(function () {
+            debugger;
+            $('#MainRepairLocationChck').click(function () {
+                debugger;
+                if ($(this).is(':checked'))
+                    $('input[name="SubRepairLocationChck"].Subcheckbox').prop('checked', true)
+                else
+                    $('input[name="SubRepairLocationChck"].Subcheckbox').prop('checked', false)
+            });
+
+            $('input[name="SubRepairLocationChck"].Subcheckbox').click(function () {
+                debugger;
+                if ($('input:checkbox[name="SubRepairLocationChck"].Subcheckbox').length == $('input:checkbox[name="SubRepairLocationChck"].Subcheckbox:checked').length) {
+                    $('input[name="SubRepairLocationChck"].SelectAll').prop("checked", true);
+                }
+                else {
+                    $('input[name="SubRepairLocationChck"].SelectAll').prop("checked", false);
+                }
+            })
+        })
+
+
+        function DeleteRepairLocation() {
+            debugger;
+            //var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+            //var MoldID = $("#MainMoldHidnID").val();
+            var selID = new Array();
+            var str = '';
+            $('input:checkbox[name=SubRepairLocationChck].Subcheckbox:checked').each(function () {
+                if ($(this).prop('checked')) {
+                    var selID = $(this).val();
+                    if (selID == "on")
+                        selID = 0;
+                    if (selID > 0) {
+                        str += "" + selID + ",";
+                    }
+                    debugger;
+                }
+                //if (selID == 0) {
+                //    $(this).closest("tr").remove();
+                //}
+            });
+
+            if (str == '') {
+                //Swal.fire('Please select item.')
+            }
+
+            else {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this.",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it.'
+                }).then((result) => {
+                    if (result.value) {
+                        $(".loader__wrap").show();
+
+                        $.ajax({
+                            url: "/Administration/DeleteRepairLocation",
+                            type: "post",
+                            data: { str: str },
+                            success: function (data) {
+                                debugger;
+                                //$("#TroubleShooter").html(data);
+                                //$(".loader__wrap").hide();
+                                Swal.fire({
+                                    title: 'Deleted',
+                                    text: 'Data has been deleted.',
+                                    type: "success"
+                                }).then(function () {
+                                    $("#home").html(data);
+                                })
+
+                                //window.location.href = '/DetailMoldInfo/Index';
+                            },
+                            error: function () {
+                                //$(".loader__wrap").hide();
+                            }
+                        });
+                    }
+                })
+            }
+            debugger;
+        }
+
+        
+        $('.RepairLocationFocusOut').on('focusin', function () {
+            $(this).data('val', $(this).val());
+        });
+
+
+      $(function () {
+          $('.RepairLocationFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblDDRepairStatusLocation.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.RepairLocation.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+    </script>
+    <script>
+        document.getElementById('table3').style.height = window.innerHeight - 211 + 'px';
+        //window.onresize = autoResizeDiv;
+    </script>

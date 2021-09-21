@@ -1,0 +1,11 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<input type="hidden" id="OrderbyVal" value="Asc" />
+<script src="~/Scripts/jquery.table2excel.js"></script>
+<div id="MasterHtml">
+    @Html.Action("GetData")
+</div>

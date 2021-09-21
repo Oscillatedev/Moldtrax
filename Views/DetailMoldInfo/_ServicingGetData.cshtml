@@ -1,0 +1,290 @@
+﻿@model Moldtrax.Models.tblMoldData
+@using Moldtrax.Models
+@{ 
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+}
+
+<style>
+    label {
+    width: 25%!important;
+}
+    .form-control {
+    width: 75%!important;
+}
+    .form-control, select, textarea {
+        margin-bottom: 0px;
+    }
+    #ServicingForm label {
+        margin-bottom: 0px;
+    }
+</style>
+@*<br />*@
+<form id="ServicingForm">
+    <div class="row">
+        <div class="col-md-12 text-right btn_css">
+            <input type="hidden" id="SaveServicingData" />
+            <input type="button" class="create_btn" id="CopyServicingBtn" data-toggle="modal" data-target="#Modal_Servicing1" value="Copy" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-12">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>In-Press Servicing Instructions for IML Report Headings</h5>
+                </div>
+                <div class="card_body">
+                    <input type="hidden" value="@Model.MoldDataID" name="MoldDataID" id="MoldDataID" />
+
+                    <div>
+                        <label>Service Item 1</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService01" id="MoldService01" name="MoldService01" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 2</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService02" id="MoldService02" name="MoldService02" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 3</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService03" id="MoldService03" name="MoldService03" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 4</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService04" id="MoldService04" name="MoldService04" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 5</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService05" id="MoldService05" name="MoldService05" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 6</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService06" id="MoldService06" name="MoldService06" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 7</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService07" id="MoldService07" name="MoldService07" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 8</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService08" id="MoldService08" name="MoldService08" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 9</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService09" id="MoldService09" name="MoldService09" class="form-control CallingServicingFocusOut">
+                    </div>
+                    <div>
+                        <label>Service Item 10</label>
+                        <input type="text" autocomplete="off" value="@Model.MoldService10" id="MoldService10" name="MoldService10" class="form-control CallingServicingFocusOut">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-6 col-12">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Product Defect Items for IML Report Headings</h5>
+                </div>
+                <div class="card_body">
+                    <label>Defect Item 1</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect01" id="MoldDefect01" name="MoldDefect01" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 2</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect02" id="MoldDefect02" name="MoldDefect02" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 3</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect03" id="MoldDefect03" name="MoldDefect03" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 4</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect04" id="MoldDefect04" name="MoldDefect04" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 5</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect05" id="MoldDefect05" name="MoldDefect05" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 6</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect06" id="MoldDefect06" name="MoldDefect06" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 7</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect07" name="MoldDefect07" id="MoldDefect07" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 8</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect08" id="MoldDefect08" name="MoldDefect08" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 9</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect09" id="MoldDefect09" name="MoldDefect09" class="form-control CallingServicingFocusOut">
+
+                    <label>Defect Item 10</label>
+                    <input type="text" autocomplete="off" value="@Model.MoldDefect10" id="MoldDefect10" name="MoldDefect10" class="form-control CallingServicingFocusOut">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="">
+        <div class="">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Reason Pulled for IML Report Headings</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <label>Pull Item 1</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled01" id="MoldReasonPulled01" name="MoldReasonPulled01" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 2</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled02" id="MoldReasonPulled02" name="MoldReasonPulled02" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 3</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled03" id="MoldReasonPulled03" name="MoldReasonPulled03" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 4</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled04" id="MoldReasonPulled04" name="MoldReasonPulled04" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 5</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled05" id="MoldReasonPulled05" name="MoldReasonPulled05" class="form-control CallingServicingFocusOut">
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <label>Pull Item 6</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled06" id="MoldReasonPulled06" name="MoldReasonPulled06" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 7</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled07" id="MoldReasonPulled07" name="MoldReasonPulled07" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 8</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled08" id="MoldReasonPulled08" name="MoldReasonPulled08" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 9</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled09" id="MoldReasonPulled09" name="MoldReasonPulled09" class="form-control CallingServicingFocusOut">
+
+                            <label>Pull Item 10</label>
+                            <input type="text" autocomplete="off" value="@Model.MoldReasonPulled10" id="MoldReasonPulled10" name="MoldReasonPulled10" class="form-control CallingServicingFocusOut">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+<div class="modal" id="Modal_Servicing1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            @*<div class="modal-header">
+                    <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+                </div>*@
+            <div class="modal-body">
+                <label>Select Mold</label>
+                <select id="CopyMold">
+                    <option>Select Mold</option>
+                    @foreach (var x in ViewBag.MoldConfigList)
+                    {
+                        <option value="@x.Value">@x.Text</option>
+                    }
+                </select>
+                <br />
+                @*<div id="ShowTxtVal" class="editable"></div>*@
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveCopyMoldServicing" class="add_btn">Save</button>
+                        <button class="del_btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+      if(@Permission == 4 || @Permission == 5 || @Permission == 6)
+     {
+         $(".CallingServicingFocusOut").attr("disabled", "disabled");
+         $("#CopyServicingBtn").hide();
+     }
+
+    $("#SaveCopyMoldServicing").click(function ()
+    {
+        var MoldID = $("#CopyMold").val();
+        var data = $("#ServicingForm").serialize();
+        $.ajax({
+            url: '/DetailMoldInfo/SaveCopyServicing?MID=' + MoldID,
+            type: 'Post',
+            data: data,
+            success: function () {
+                Swal.fire({
+                    title: 'Success',
+                    text: 'Item has been successfully copied.',
+                    type: "success"
+                }).then(function () {
+                    $(".modal").hide();
+                    $(".modal-backdrop").hide();
+                });
+            },
+
+            error: function () {
+                //Swal.fire('Oops something went wrong.');
+            }
+        })
+    })
+
+    $("#SaveServicingData").click(function ()
+    {
+        debugger;
+        var data = $("#ServicingForm").serialize();
+        $.ajax({
+            url: '/DetailMoldInfo/SaveServicing',
+            type: 'Post',
+            data: data,
+            success: function () {
+            },
+
+            error: function () {
+            }
+        })
+    })
+
+    $('.CallingServicingFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.CallingServicingFocusOut').on('change', function () {
+              debugger
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblMoldData.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Servicing.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+
+</script>

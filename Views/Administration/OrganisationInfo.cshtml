@@ -1,0 +1,361 @@
+﻿@model Moldtrax.Models.tblOrganisation
+@using Moldtrax.Models
+
+@{
+    ViewBag.Title = "OrganisationInfo";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12" id="CustDet">
+        <form id="OrganisationDetailFrm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card_header m-0">
+                        <h5 class="main_top_head">@Model.OrgName</h5>
+                    </div>
+                </div>
+                @*<div id="ComBtnDiv" class="col-md-6 text-right btn_css">
+                    @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />
+                    <input type="button" class="add_btn" value="Add" id="AddCompBtn" />
+                    @*<input type="submit" class="edit_btn" value="Save" />
+                    <input type="button" class="delete_btn" onclick="DeleteCompany(@Model.OrgID)" value="Delete Selected Company" />
+                </div>*@
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card box_design" id="cust_info">
+                        <div class="card_header">
+                            <h5>Organization Name</h5>
+                        </div>
+                        @*<input type="hidden" id="CompanyID" name="CompanyID" value="@Model.TBLCompany.CompanyID" />*@
+                        <input type="hidden" value="@Model.OrgID" id="OrgID" name="OrgID" />
+                        <div class="card_body">
+                            <label>Name</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgName" id="OrgName" name="OrgName" class="form-control tblOrgMainFunc">
+
+                            <label>Address</label>
+                            <textarea autocomplete="off" class="form-control tblOrgMainFunc" id="OrgAddress" name="OrgAddress" rows="2">@Model.OrgAddress</textarea>
+
+                            <label>City</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgCity" id="OrgCity" name="OrgCity" class="form-control tblOrgMainFunc">
+
+                            <label>State/Prov</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgState" id="OrgState" name="OrgState" class="form-control tblOrgMainFunc">
+
+                            <label>Zip Code</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgZipCode" id="OrgZipCode" name="OrgZipCode" class="form-control tblOrgMainFunc">
+
+                            <label>Country</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgCountry" id="OrgCountry" name="OrgCountry" class="form-control tblOrgMainFunc">
+
+                            <label>Organization 800</label>
+                            <input type="text" autocomplete="off" value="@Model.Org800" id="Org800" name="Org800" class="form-control tblOrgMainFunc">
+
+                            <label>Main Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgMainPhone" id="OrgMainPhone" name="OrgMainPhone" class="form-control tblOrgMainFunc">
+
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.OrgFax" id="OrgFax" name="OrgFax" class="form-control tblOrgMainFunc">
+                        </div>
+                    </div>
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Organization Notes</h5>
+                        </div>
+                        <div class="card_body">
+                            <textarea autocomplete="off" class="form-control tblOrgMainFunc" id="OrgNotes" name="OrgNotes" style="height: 196px;">@Model.OrgNotes</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>First Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Website</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgWebsite" id="OrgWebsite" name="OrgWebsite" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Email</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgEmail" id="OrgEmail" name="OrgEmail" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>FTP Site</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgFTPsite" id="OrgFTPsite" name="OrgFTPsite" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Total Time Run</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNTotalTimeRun" id="OrgCNTotalTimeRun" name="OrgCNTotalTimeRun" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Cav Eff</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNCavEff" id="OrgCNCavEff" name="OrgCNCavEff" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Blocked Defects</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNBlockedDefects" id="OrgCNBlockedDefects" name="OrgCNBlockedDefects" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Second Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Repair Costs</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNRepairCosts" id="OrgCNRepairCosts" name="OrgCNRepairCosts" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Tooling Exp</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNToolingExp" id="OrgCNToolingExp" name="OrgCNToolingExp" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Repairs Hours </label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" id="OrgCNRepairHrs" name="OrgCNRepairHrs" value="@Model.OrgCNRepairHrs" autocomplete="off" class="form-control">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Reason Pulled</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNReasonPulled" id="OrgCNReasonPulled" name="OrgCNReasonPulled" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN In Press Repair</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNInPressRpr" id="OrgCNInPressRpr" name="OrgCNInPressRpr" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Repair Sheet</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNRepairSheet" id="OrgCNRepairSheet" name="OrgCNRepairSheet" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Third Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Troubleshoot</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNTroubleShoot" id="OrgCNTroubleShoot" name="OrgCNTroubleShoot" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Tech Tips</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNTechTips" id="OrgCNTechTips" name="OrgCNTechTips" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN Tooling</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNTooliong" id="OrgCNTooliong" name="OrgCNTooliong" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN RoverSheet</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNRoverSheet" id="OrgCNRoverSheet" name="OrgCNRoverSheet" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CNILM</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNILM" id="OrgCNILM" name="OrgCNILM" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>CN LastShot</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgCNLastShot" id="OrgCNLastShot" name="OrgCNLastShot" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Organization Reg</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgReg" id="OrgReg" name="OrgReg" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <label>Serial Number</label>
+                                </div>
+                                <div class="col-md-8">
+                                    <input type="text" autocomplete="off" value="@Model.OrgSerialNumber" id="OrgSerialNumber" name="OrgSerialNumber" class="form-control tblOrgMainFunc">
+                                </div>
+                            </div>
+                                <div class="col-md-12 w_30">
+                                    @*<label>CN LastShot</label>*@
+                                    @*<input type="text" autocomplete="off" value="@Model.CompanyCNLastShot" id="CustCont3Mobile" name="CustCont3Mobile" class="form-control tblOrgMainFunc">*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(".tblOrgMainFunc").focusout(function ()
+    {
+        debugger;
+        //var obj = $("#OrganisationDetailFrm").serialize();
+
+        var obj = new Object();
+        obj.OrgID = $('#OrgID').val();
+        obj.OrgName = $('#OrgName').val();
+        obj.OrgAddress = $('#OrgAddress').val();
+        obj.OrgCity = $('#OrgCity').val();
+        obj.OrgState = $('#OrgState').val();
+        obj.OrgZipCode = $('#OrgZipCode').val();
+        obj.OrgCountry = $('#OrgCountry').val();
+        obj.Org800 = $('#Org800').val();
+        obj.OrgMainPhone = $('#OrgMainPhone').val();
+        obj.OrgFax = $('#OrgFax').val();
+        obj.OrgWebsite = $('#OrgWebsite').val();
+        obj.OrgEmail = $('#OrgEmail').val();
+        obj.OrgFTPsite = $('#OrgFTPsite').val();
+        obj.OrgNotes = $('#OrgNotes').val();
+        obj.OrgCNTotalTimeRun = $('#OrgCNTotalTimeRun').val();
+        obj.OrgCNCavEff = $('#OrgCNCavEff').val();
+        obj.OrgCNBlockedDefects = $('#OrgCNBlockedDefects').val();
+        obj.OrgCNRepairCosts = $('#OrgCNRepairCosts').val();
+        obj.OrgCNToolingExp = $('#OrgCNToolingExp').val();
+        obj.OrgCNRepairHrs = $('#OrgCNRepairHrs').val();
+        obj.OrgCNReasonPulled = $('#OrgCNReasonPulled').val();
+        obj.OrgCNDefectbyPress = $('#OrgCNDefectbyPress').val();
+        obj.OrgCNInPressRpr = $('#OrgCNInPressRpr').val();
+        obj.OrgCNRepairSheet = $('#OrgCNRepairSheet').val();
+        obj.OrgCNTroubleShoot = $('#OrgCNTroubleShoot').val();
+        obj.OrgCNTechTips = $('#OrgCNTechTips').val();
+        obj.OrgCNTooliong = $('#OrgCNTooliong').val();
+        obj.OrgCNRoverSheet = $('#OrgCNRoverSheet').val();
+        obj.OrgCNRepairStatus = $('#OrgCNRepairStatus').val();
+        obj.OrgCNILM = $('#OrgCNILM').val();
+        obj.OrgCNLastShot = $('#OrgCNLastShot').val();
+        obj.OrgReg = $('#OrgReg').val();
+        obj.OrgSerialNumber = $('#OrgSerialNumber').val();
+
+        jQuery.ajaxSettings.traditional = true;
+
+        $.ajax({
+            url: '/Administration/SaveOrganisation',
+            type: 'Get',
+            data: obj,
+            success: function ()
+            {
+
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    $('.tblOrgMainFunc').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.tblOrgMainFunc').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblOrganisation.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Organization.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        $('#navOrg').addClass('actives');
+    });
+</script>

@@ -1,0 +1,59 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="moldtrax_head">
+                <div class="h5_dif">
+                    <h5><span>MoldTrax</span></h5>
+                </div>
+            </div>
+            <div class="card_body">
+                <div class="card_inner_block mid_block">
+                    <div class="para_text">
+                        <p>This a full version of MoldTrax</p>
+                        <p>It has not been registered.</p>
+                        <p>Only <span class="red">0</span> days left in the trial period.</p>
+                        <h4 class="red">EXPIRED</h4>
+                        <p class="p_small">To obtain a license number, click on the link below.</p>
+                        <a href="#" class="a_link">www.moldtrax.com</a>
+                        <p>Enter the license number and click the Register button.</p>
+                    </div>
+                    <div class="para_box">
+                        <div class="w-30"></div>
+                        <div class="w-10">
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="w-10">
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="w-10">
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="w-10">
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="w-10">
+                            <input type="text" class="form-control" />
+                        </div>
+                        <div class="w-30"></div>
+                    </div>
+                    <div class="para_btn btn_css">
+                        <input type="button" class="add_btn" value="Register" />
+                        <input type="button" class="create_btn" value="Continue Trial" />
+                        <input type="button" class="del_btn" value="Cancel" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#navAdmin').addClass('actives');
+    });
+</script>

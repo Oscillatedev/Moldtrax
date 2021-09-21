@@ -1,0 +1,186 @@
+﻿@model Moldtrax.Models.tblEmployees
+<style>
+    .input-group.emp_width {
+    width: 70%;
+}
+</style>
+<form id="EmployeeSbFrm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card_header m-0">
+                <h5 class="main_top_head">@Model.FirstName @Model.LastName</h5>
+            </div>
+        </div>
+        <div class="col-md-6 text-right btn_css">
+            <input type="button" class="add_btn" value="Add" onclick="AddEmployee()" />
+            <input type="submit" class="create_btn" value="Save" />
+            <input type="button" class="delete_btn" onclick="DeleteEmployee(@Model.EmployeeID)" value="Delete Selected Customer" />
+        </div>
+    </div>
+    
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card box_design emp_info">
+                <div class="card_header">
+                    <h5>Employee Name & Address</h5>
+                </div>
+                <input type="hidden" value="@Model.EmployeeID" id="EmployeeID" name="EmployeeID" />
+                <input type="hidden" value="@Model.CompanyID" id="CompanyID" name="CompanyID" />
+                <div class="card_body">
+                    <label>First Name</label>
+                    <input type="text" autocomplete="off" value="@Model.FirstName" id="FirstName" name="FirstName" class="form-control">
+
+                    <label>Last Name</label>
+                    <input type="text" autocomplete="off" value="@Model.LastName" id="LastName" name="LastName" class="form-control">
+
+                    <label>Address</label>
+                    <textarea class="form-control" autocomplete="off" id="EmplAddress" name="EmplAddress" rows="3">@Model.EmplAddress</textarea>
+
+                    <label>City</label>
+                    <input type="text" autocomplete="off" id="EmplCity" name="EmplCity" value="@Model.EmplCity" class="form-control">
+
+                    <label>State/Prov</label>
+                    <input type="text" autocomplete="off" value="@Model.EmplState" id="EmplState" name="EmplState" class="form-control">
+
+                    <label>Zip/Postal</label>
+                    <input type="text" autocomplete="off" value="@Model.EmplZip" id="EmplZip" name="EmplZip" class="form-control">
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card box_design emp_info">
+                <div class="card_header">
+                    <h5>Employee Phone & Hire Info</h5>
+                </div>
+                <div class="card_body">
+                            <label>Work Phone</label>
+                            <input autocomplete="off" value="@Model.WorkPhone" id="WorkPhone" name="WorkPhone" type="text" class="form-control">
+                            <label>Employee Number</label>
+                            <input type="text" autocomplete="off" value="@Model.EmployeeNumber" id="EmployeeNumber" name="EmployeeNumber" class="form-control">
+                    <label>Home Phone</label>
+                    <input type="text" value="@Model.HomePhone" autocomplete="off" id="HomePhone" name="HomePhone" class="form-control">
+                    <label>Email Address</label>
+                    <input type="text" autocomplete="off" value="@Model.EmailName" id="EmailName" name="EmailName" class="form-control">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <label style="width: 41%;">Department</label>
+                            <input style="width: 59%;" autocomplete="off" type="text" value="@Model.DepartmentID" id="DepartmentID" name="DepartmentID" class="form-control">
+                        </div>
+                        <div class="col-md-3 shift_time">
+                            <label>Shift</label>
+                            <input type="text" autocomplete="off" value="@Model.Shift" id="Shift" name="Shift" class="form-control">
+                        </div>
+                    </div>
+                    <label>Office Location</label>
+                    <input type="text" autocomplete="off" value="@Model.OfficeLocation" id="OfficeLocation" name="OfficeLocation" class="form-control">
+                    <label>Job Description</label>
+                    <input type="text" autocomplete="off" value="@Model.EmplJobDescrip" id="EmplJobDescrip" name="EmplJobDescrip" class="form-control">
+                            <label>Hire Date</label>
+                            <input type="hidden" value="@Model.EmplHireDate" id="EmplDate" />
+                            <input type="date" autocomplete="off" value="@Convert.ToDateTime(Model.EmplHireDate).ToString("yyyy-MM-dd")" id="EmplHireDate" name="EmplHireDate" class="form-control">
+                            <label>Chargeout Rate</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="text" autocomplete="off" value="@string.Format("{0:0.##}",Model.EmplHourlyRate)" id="EmplHourlyRate" name="EmplHourlyRate" class="form-control">
+                    </div>
+                            
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Employee Notes</h5>
+                </div>
+                <div class="card_body ">
+                    <textarea autocomplete="off" class="form-control" id="Notes" name="Notes" style="height: 111px;">@Model.Notes</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+    $(document).ready(function ()
+    {
+
+        $("#EmployeeName").html('@Model.FirstName @Model.LastName');
+        var data = $("#EmplDate").val(); 
+        if (data == '0001-01-01') {
+            $("#EmplHireDate").val('');
+        }
+
+
+    })
+
+
+    
+
+
+    $("#EmployeeSbFrm").submit(function (e) {
+        var data = $("#EmployeeSbFrm").serialize();
+
+        e.preventDefault();
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveEmployeeDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    window.location.href = "/CompanyInfo/Index";
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    function AddEmployee() {
+        $.ajax({
+            url: '/CompanyInfo/EmployeeDetail?VenID=-1',
+            type: 'Post',
+            success: function (data) {
+                $("#EmpListDiv").html(data);
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+
+
+    function DeleteEmployee(ID) {
+        $.ajax({
+            url: '/CompanyInfo/EmployeeDelete?CustID=' + ID,
+            type: 'Post',
+            success: function (data) {
+                Swal.fire({
+                    title: "Deleted!",
+                    text: 'Data has been deleted.',
+                    type: "success"
+                }).then(function () {
+                    window.location.href = "/CompanyInfo/Index";
+                })
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+</script>

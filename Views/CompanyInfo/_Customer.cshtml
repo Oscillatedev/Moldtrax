@@ -1,0 +1,446 @@
+﻿@model Moldtrax.Models.TblCustomerMain
+@using Moldtrax.Models
+@{ 
+    int Total = 0;
+    foreach (var x in Model.TblCustomerList)
+    {
+        Total += 1;
+    }
+}
+
+<style>
+    .table-con {
+        overflow-y: auto;
+        height: 580px;
+    }
+    .w_35 label {
+    width: 35%;
+    float: left;
+}
+.w_35 .form-control {
+    width: 65%;
+    float: left;
+}
+.w_15 label {
+    width: 16.5%;
+    float: left;
+}
+.w_15 .form-control {
+    width: 83.5%;
+    float: left;
+}
+    .w_30 label {
+        width: 32%;
+        float: left;
+        line-height: 26px;
+    }
+.w_30 .form-control {
+    width: 68%;
+    float: left;
+}
+    .w_35 label, .w_15 label {
+        line-height: 28px;
+    }
+</style>
+@*<br>*@
+<div class="row">
+    <div class="col-md-2 m-10">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Select Customer</h5>
+            </div>
+            <div class="card_body table_layout_left table-con" id="table">
+                <table class="table table-mold table table-responsive">
+                    <tbody>
+                        @foreach (var x in Model.TblCustomerList)
+                        {
+                            <tr onclick="CallCustomerDetails(@x.CustomerID, this)">
+                                <td>
+                                    <label>@x.CustomerName</label>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <label class="red_total">Total Customers: @Total</label>
+        </div>
+    </div>
+    <div class="col-md-10" id="CustDet">
+        <form id="CustomerDetailFrm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card_header m-0">
+                        <h5 class="main_top_head">@Model.TBLCustomer.CustomerName</h5>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right btn_css">
+                    @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+                    <input type="button" class="add_btn" value="Add" onclick="AddCustomer()" />
+                    @*<input type="submit" class="edit_btn" value="Save" />*@
+                    <input type="button" class="delete_btn" onclick="DeleteCustomer(@Model.TBLCustomer.CustomerID)" value="Delete Selected Customer" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card box_design" id="cust_info">
+                        <div class="card_header">
+                            <h5>Customer Name & Address</h5>
+                        </div>
+                        <input type="hidden" id="CustomerID" name="CustomerID" value="@Model.TBLCustomer.CustomerID" />
+                        <input type="hidden" value="@Model.TBLCustomer.CompanyID" id="CompanyID" name="CompanyID" />
+                        <div class="card_body">
+                            <label>Name</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerName" id="CustomerName" name="CustomerName" class="form-control">
+
+                            <label>Address</label>
+                            <textarea autocomplete="off" class="form-control CallSaveFocusOutFunc" id="CustomerAddress" name="CustomerAddress" rows="2">@Model.TBLCustomer.CustomerAddress</textarea>
+
+                            <label>City</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerCity" id="CustomerCity" name="CustomerCity" class="form-control CallSaveFocusOutFunc">
+
+                            <label>State/Prov</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerState" id="CustomerState" name="CustomerState" class="form-control CallSaveFocusOutFunc">
+
+                            <label>Zip/Postal</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerZipCode" id="CustomerZipCode" name="CustomerZipCode" class="form-control CallSaveFocusOutFunc">
+
+                            <label>Country</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerCountry" id="CustomerCountry" name="CustomerCountry" class="form-control CallSaveFocusOutFunc">
+
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerMainPhone" id="CustomerMainPhone" name="CustomerMainPhone" class="form-control CallSaveFocusOutFunc">
+
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerFax" id="CustomerFax" name="CustomerFax" class="form-control CallSaveFocusOutFunc">
+
+                            <label>Web Site</label>
+                            <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustomerWebsite" id="CustomerWebsite" name="CustomerWebsite" class="form-control CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Customer Notes</h5>
+                        </div>
+                        <div class="card_body ">
+                            <textarea autocomplete="off" class="form-control CallSaveFocusOutFunc" id="CustCustNotes" name="CustCustNotes" style="height: 96px;">@Model.TBLCustomer.CustCustNotes</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>First Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>First Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont1FirstName" id="CustCont1FirstName" name="CustCont1FirstName" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Last Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont1LastName" id="CustCont1LastName" name="CustCont1LastName" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>E-Mail</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont1EMail" id="CustCont1EMail" name="CustCont1EMail" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Fax</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont1Fax" id="CustCont1Fax" name="CustCont1Fax" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>Phone</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont1Phone" id="CustCont1Phone" name="CustCont1Phone" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                
+                                <div class="col-md-6 w_35">
+                                    <label>Mobile</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont1Mobile" id="CustCont1Mobile" name="CustCont1Mobile" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Second Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>First Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont2FirstName" id="CustCont2FirstName" name="CustCont2FirstName" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Last Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont2LastName" id="CustCont2LastName" name="CustCont2LastName" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>E-Mail</label>
+                                    <input type="text" autocomplete="off" class="form-control">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Fax</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont2Fax" id="CustCont2Fax" name="CustCont2Fax" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>Phone</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont2Phone" id="CustCont2Phone" name="CustCont2Phone" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                
+                                <div class="col-md-6 w_35">
+                                    <label>Mobile</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont2Mobile" id="CustCont2Mobile" name="CustCont2Mobile" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Third Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>First Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont3FirstName" id="CustCont3FirstName" name="CustCont3FirstName" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Last Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont3LastName" id="CustCont3LastName" name="CustCont3LastName" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-12 w_15">
+                                    <label>E-Mail</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont3EMail" id="CustCont3EMail" name="CustCont3EMail" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 w_30">
+                                    <label>Phone</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont3Phone" id="CustCont3Phone" name="CustCont3Phone" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-4 w_30">
+                                    <label>Fax</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont3Fax" id="CustCont3Fax" name="CustCont3Fax" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                                <div class="col-md-4 w_30">
+                                    <label>Mobile</label>
+                                    <input type="text" autocomplete="off" value="@Model.TBLCustomer.CustCont3Mobile" id="CustCont3Mobile" name="CustCont3Mobile" class="form-control CallSaveFocusOutFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    //$(function () {
+    //    $('#CustomerMainPhone, #CustomerFax,#CustCont1Mobile,#CustCont2Mobile,#CustCont3Mobile, #CustCont1Phone, #CustCont1Fax, #CustCont2Phone, #CustCont2Fax, #CustCont3Phone, #CustCont3Fax').keydown(function (e) {
+    //        var key = e.charCode || e.keyCode || 0;
+    //        $text = $(this);
+    //        if (key !== 8 && key !== 9) {
+    //            if ($text.val().length === 3) {
+    //                $text.val($text.val() + '.');
+    //            }
+    //            if ($text.val().length === 7) {
+    //                $text.val($text.val() + '.');
+    //            }
+
+    //        }
+
+    //        return (key == 8 || key == 9 || key == 46 || (key >= 48 && key <= 57) || (key >= 96 && key <= 105));
+    //    })
+    //});
+
+
+
+    function CallCustomerDetails(ID, e) {
+        var id = 0;
+        $('.table-mold tr').each(function () {
+            $(this).removeClass('active');
+        });
+
+        //$(e).addClass('active');
+        id = $("table tr").index(e);
+
+        $.ajax({
+            url: '/CompanyInfo/CustomerDetail?CustID=' + ID,
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+                $(".table-mold tr").eq(id).addClass('active');
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    $("#CustomerName").focusout(function () {
+        debugger;
+        var data = $("#CustomerDetailFrm").serialize();
+        $.ajax({
+
+            url: '/CompanyInfo/SaveCustomerDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                    $("#home").html(data);
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $("#CustomerDetailFrm").submit(function (e) {
+        var data = $("#CustomerDetailFrm").serialize();
+
+        e.preventDefault();
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveCustomerDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+    $(".CallSaveFocusOutFunc").focusout(function ()
+    {
+        var data = $("#CustomerDetailFrm").serialize();
+        $.ajax({
+
+            url: '/CompanyInfo/SaveFocusOutCustomerDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    function AddCustomer() {
+        $.ajax({
+            url: '/CompanyInfo/CustomerDetail?CustID=-1',
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+                $("input").attr('disabled', 'disabled');
+                $("#CustomerAddress, #CustCustNotes").attr("disabled", 'disabled');
+                $("#CustomerName").removeAttr('disabled');
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+
+
+    function DeleteCustomer(ID) {
+        debugger;
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $(".loader__wrap").show();
+
+                $.ajax({
+                    url: '/CompanyInfo/CustomerDelete?CustID=' + ID,
+                    type: 'Post',
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: 'Data has been deleted.',
+                            type: "success"
+                        }).then(function () {
+                            $("#home").html(data);
+                        })
+                    },
+
+                    error: function () {
+
+                    }
+                })
+            }
+        })
+    }
+
+    $('.CallSaveFocusOutFunc').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.CallSaveFocusOutFunc').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblCustomer.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Customer.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+</script>
+<script>
+    document.getElementById('table').style.height = window.innerHeight - 168 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

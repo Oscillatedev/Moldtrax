@@ -1,0 +1,510 @@
+﻿@model Moldtrax.Models.tblCompanyMain
+@using Moldtrax.Models
+@{
+    int Total = 0;
+    foreach (var x in Model.TBLCompaniesList)
+    {
+        Total += 1;
+    }
+}
+
+<style>
+    .table-con {
+        overflow-y: auto;
+        height: 580px;
+    }
+
+    .w_35 label {
+        width: 35%;
+        float: left;
+    }
+
+    .w_35 .form-control {
+        width: 65%;
+        float: left;
+    }
+
+    .w_15 label {
+        width: 16.5%;
+        float: left;
+    }
+
+    .w_15 .form-control {
+        width: 83.5%;
+        float: left;
+    }
+
+    .w_30 label {
+        width: 32%;
+        float: left;
+        line-height: 26px;
+    }
+
+    .w_30 .form-control {
+        width: 68%;
+        float: left;
+    }
+
+    .w_35 label, .w_15 label {
+        line-height: 28px;
+    }
+</style>
+@*<br>*@
+<div class="row">
+    <div class="col-md-2 m-10">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Select Company</h5>
+            </div>
+            <div class="card_body table_layout_left table-con" id="table">
+                <table class="table table-mold table table-responsive">
+                    <tbody>
+                        @foreach (var x in Model.TBLCompaniesList)
+                        {
+                            <tr onclick="CallCompanyDetails(@x.CompanyID, this)">
+                                <td>
+                                    <label>@x.CompanyName</label>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <label class="red_total">Total Company: @Total</label>
+        </div>
+    </div>
+        <div class="col-md-10" id="CustDet">
+            <form id="CustomerDetailFrm">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card_header m-0">
+                            <h5 class="main_top_head">@Model.TBLCompany.CompanyName</h5>
+                        </div>
+                    </div>
+                    <div id="ComBtnDiv" class="col-md-6 text-right btn_css">
+                        @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+                        <input type="button" class="add_btn" value="Add" id="AddCompBtn" />
+                        @*<input type="submit" class="edit_btn" value="Save" />*@
+                        <input type="button" class="delete_btn" onclick="DeleteCompany(@Model.TBLCompany.CompanyID)" value="Delete Selected Company" />
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card box_design" id="cust_info">
+                            <div class="card_header">
+                                <h5>Company Name</h5>
+                            </div>
+                            @*<input type="hidden" id="CompanyID" name="CompanyID" value="@Model.TBLCompany.CompanyID" />*@
+                            <input type="hidden" value="@Model.TBLCompany.CompanyID" id="CompanyID" name="CompanyID" />
+                            <div class="card_body">
+                                <label>Name</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyName" id="CompanyName" name="CompanyName" class="form-control tblCompMainFunc">
+
+                                <label>Address</label>
+                                <textarea autocomplete="off" class="form-control tblCompMainFunc" id="CompanyAddress" name="CompanyAddress" rows="2">@Model.TBLCompany.CompanyAddress</textarea>
+
+                                <label>City</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCity" id="CompanyCity" name="CompanyCity" class="form-control tblCompMainFunc">
+
+                                <label>State/Prov</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyState" id="CompanyState" name="CompanyState" class="form-control tblCompMainFunc">
+
+                                <label>Zip Code</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyZipCode" id="CompanyZipCode" name="CompanyZipCode" class="form-control tblCompMainFunc">
+
+                                <label>Country</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCountry" id="CompanyCountry" name="CompanyCountry" class="form-control tblCompMainFunc">
+
+                                <label>Company 800</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.Company800" id="Company800" name="Company800" class="form-control tblCompMainFunc">
+
+                                <label>Main Phone</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyMainPhone" id="CompanyMainPhone" name="CompanyMainPhone" class="form-control tblCompMainFunc">
+
+                                <label>Fax</label>
+                                <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyFax" id="CompanyFax" name="CompanyFax" class="form-control tblCompMainFunc">
+                            </div>
+                        </div>
+                        <div class="card box_design">
+                            <div class="card_header">
+                                <h5>Company Notes</h5>
+                            </div>
+                            <div class="card_body ">
+                                <textarea autocomplete="off" class="form-control tblCompMainFunc" id="CompanyNotes" name="CompanyNotes" style="height: 196px;">@Model.TBLCompany.CompanyNotes</textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card box_design">
+                            <div class="card_header">
+                                <h5>First Contact</h5>
+                            </div>
+                            <div class="card_body">
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>Website</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyWebsite" id="CompanyWebsite" name="CompanyWebsite" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>Email</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyEmail" id="CompanyEmail" name="CompanyEmail" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>FTP Site</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyFTPsite" id="CompanyFTPsite" name="CompanyFTPsite" class="form-control tblCompMainFunc">
+                                    </div>
+                                </div>
+                           
+
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Total Time Run</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNTotalTimeRun" id="CompanyCNTotalTimeRun" name="CompanyCNTotalTimeRun" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Cav Eff</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNCavEff" id="CompanyCNCavEff" name="CompanyCNCavEff" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Blocked Defects</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNBlockedDefects" id="CompanyCNBlockedDefects" name="CompanyCNBlockedDefects" class="form-control tblCompMainFunc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card box_design">
+                            <div class="card_header">
+                                <h5>Second Contact</h5>
+                            </div>
+                            <div class="card_body">
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Repair Costs</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNRepairCosts" id="CompanyCNRepairCosts" name="CompanyCNRepairCosts" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Tooling Exp</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNToolingExp" id="CompanyCNToolingExp" name="CompanyCNToolingExp" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Repairs Hours </label>
+                                        <input type="text" id="CompanyCNRepairHrs" name="CompanyCNRepairHrs" value="@Model.TBLCompany.CompanyCNRepairHrs" autocomplete="off" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Reason Pulled</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNReasonPulled" id="CompanyCNReasonPulled" name="CompanyCNReasonPulled" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN In Press Repair</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNInPressRpr" id="CompanyCNInPressRpr" name="CompanyCNInPressRpr" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Repair Sheet</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNRepairSheet" id="CompanyCNRepairSheet" name="CompanyCNRepairSheet" class="form-control tblCompMainFunc">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card box_design">
+                            <div class="card_header">
+                                <h5>Third Contact</h5>
+                            </div>
+                            <div class="card_body">
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Troubleshoot</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNTroubleShoot" id="CompanyCNTroubleShoot" name="CompanyCNTroubleShoot" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Tech Tips</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNTechTips" id="CompanyCNTechTips" name="CompanyCNTechTips" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN Tooling</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNTooliong" id="CompanyCNTooliong" name="CompanyCNTooliong" class="form-control tblCompMainFunc">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>CN RoverSheet</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNRoverSheet" id="CompanyCNRoverSheet" name="CompanyCNRoverSheet" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CNILM</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNILM" id="CompanyCNILM" name="CompanyCNILM" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>CN LastShot</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyCNLastShot" id="CompanyCNLastShot" name="CompanyCNLastShot" class="form-control tblCompMainFunc">
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-12 w_30">
+                                        <label>Company Reg</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanyReg" id="CompanyReg" name="CompanyReg" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        <label>Serial Number</label>
+                                        <input type="text" autocomplete="off" value="@Model.TBLCompany.CompanySerialNumber" id="CompanySerialNumber" name="CompanySerialNumber" class="form-control tblCompMainFunc">
+                                    </div>
+                                    <div class="col-md-12 w_30">
+                                        @*<label>CN LastShot</label>*@
+                                        @*<input type="text" autocomplete="off" value="@Model.CompanyCNLastShot" id="CustCont3Mobile" name="CustCont3Mobile" class="form-control tblCompMainFunc">*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+</div>
+
+<script>
+
+    $(document).ready(function ()
+    {
+        if ('@ViewBag.IsOrgorCom') {
+            $("#ComBtnDiv").show();
+        }
+        else
+        {
+            $("#ComBtnDiv").hide();
+        }
+
+    })
+
+
+    $("#AddCompBtn").click(function ()
+    {
+        $(".tblCompMainFunc").val('');
+        $(".tblCompMainFunc").attr('disabled', 'disabled');
+        $("#CompanyName").removeAttr("disabled");
+        $("#CompanyID").val('0');
+    })
+
+
+    //$(".tblCompMainFunc").change(function ()
+    //{
+    //    tblCompMainFunc();
+    //})
+
+    //$("#AddCompBtn").on('click', function () {
+    //    alert("called");
+    //})
+
+
+    function CallCompanyDetails(CID, e)
+    {
+
+        var id = 0;
+        $('.table-mold tr').each(function () {
+            $(this).removeClass('active');
+        });
+
+        //$(e).addClass('active');
+        id = $("table tr").index(e);
+
+        $.ajax({
+            url: '/CompanyInfo/GetCompanyDetails?CID=' + CID,
+            type: 'Post',
+            success: function (data)
+            {
+                $("#CompanyID").val(data.CompanyID);
+                $("#CompanyName").val(data.CompanyName);
+                $("#CompanyAddress").val(data.CompanyAddress);
+                $("#CompanyCity").val(data.CompanyID);
+                $("#CompanyState").val(data.CompanyState);
+                $("#CompanyZipCode").val(data.CompanyZipCode);
+                $("#CompanyCountry").val(data.CompanyCountry);
+                $("#Company800").val(data.Company800);
+                $("#CompanyMainPhone").val(data.CompanyMainPhone);
+                $("#CompanyFax").val(data.CompanyFax);
+                $("#CompanyWebsite").val(data.CompanyWebsite);
+                $("#CompanyEmail").val(data.CompanyEmail);
+                $("#CompanyFTPsite").val(data.CompanyFTPsite);
+                $("#CompanyNotes").val(data.CompanyNotes);
+                $("#CompanyCNTotalTimeRun").val(data.CompanyCNTotalTimeRun);
+                $("#CompanyCNCavEff").val(data.CompanyCNCavEff);
+                $("#CompanyCNBlockedDefects").val(data.CompanyCNBlockedDefects);
+                $("#CompanyCNRepairCosts").val(data.CompanyCNRepairCosts);
+                $("#CompanyCNToolingExp").val(data.CompanyCNToolingExp);
+                $("#CompanyCNRepairHrs").val(data.CompanyCNRepairHrs);
+                $("#CompanyCNReasonPulled").val(data.CompanyCNReasonPulled);
+
+                $("#CompanyCNDefectbyPress").val(data.CompanyCNDefectbyPress);
+                $("#CompanyCNInPressRpr").val(data.CompanyCNInPressRpr);
+                $("#CompanyCNRepairSheet").val(data.CompanyCNRepairSheet);
+                $("#CompanyCNTroubleShoot").val(data.CompanyCNTroubleShoot);
+                $("#CompanyCNTechTips").val(data.CompanyCNTechTips);
+                $("#CompanyCNTooliong").val(data.CompanyCNTooliong);
+                $("#CompanyCNRoverSheet").val(data.CompanyCNRoverSheet);
+                $("#CompanyCNRepairStatus").val(data.CompanyCNRepairStatus);
+                $("#CompanyCNILM").val(data.CompanyCNILM);
+                $("#CompanyCNLastShot").val(data.CompanyCNLastShot);
+                $("#CompanyReg").val(data.CompanyReg);
+                $("#CompanySerialNumber").val(data.CompanySerialNumber);
+
+                $(".table-mold tr").eq(id).addClass('active');
+
+            },
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+    //function AddCompany()
+    //{
+    //    $(".tblCompMainFunc").val('');
+    //    $(".tblCompMainFunc").attr('disabled', 'disabled');
+    //    $("#CompanyName").removeAttr("disabled");
+    //}
+
+    $("#CompanyName").change(function ()
+    {
+        var Name = $("#CompanyName").val();
+        var CID = $("#CompanyID").val();
+
+        $.ajax({
+            url: '/CompanyInfo/CreateCompany',
+            type: 'Post',
+            data: { CompanyName: Name, CID: CID },
+            success: function (data)
+            {
+                    $("#CompanyID").val(data);
+                    $(".tblCompMainFunc").removeAttr('disabled');
+            },
+            error: function ()
+            {
+
+            }
+        })
+    })
+
+    function tblCompMainFunc()
+    {
+        var obj = new Object();
+        obj.CompanyID =  $("#CompanyID").val();
+        obj.CompanyName = $("#CompanyName").val();
+        obj.CompanyAddress =  $("#CompanyAddress").val();
+        obj.CompanyCity = $("#CompanyCity").val();
+        obj.CompanyState = $("#CompanyState").val();
+        obj.CompanyZipCode = $("#CompanyZipCode").val();
+        obj.CompanyCountry = $("#CompanyCountry").val();
+        obj.Company800 = $("#Company800").val();
+        obj.CompanyMainPhone = $("#CompanyMainPhone").val();
+        obj.CompanyFax = $("#CompanyFax").val();
+        obj.CompanyWebsite = $("#CompanyWebsite").val();
+        obj.CompanyEmail = $("#CompanyEmail").val();
+        obj.CompanyFTPsite = $("#CompanyFTPsite").val();
+        obj.CompanyNotes = $("#CompanyNotes").val();
+        obj.CompanyCNTotalTimeRun = $("#CompanyCNTotalTimeRun").val();
+        obj.CompanyCNCavEff = $("#CompanyCNCavEff").val();
+        obj.CompanyCNBlockedDefects = $("#CompanyCNBlockedDefects").val();
+        obj.CompanyCNRepairCosts = $("#CompanyCNRepairCosts").val();
+        obj.CompanyCNToolingExp = $("#CompanyCNToolingExp").val();
+        obj.CompanyCNRepairHrs = $("#CompanyCNRepairHrs").val();
+        obj.CompanyCNReasonPulled = $("#CompanyCNReasonPulled").val();
+
+        obj.CompanyCNDefectbyPress = $("#CompanyCNDefectbyPress").val();
+        obj.CompanyCNInPressRpr = $("#CompanyCNInPressRpr").val();
+        obj.CompanyCNRepairSheet = $("#CompanyCNRepairSheet").val();
+        obj.CompanyCNTroubleShoot = $("#CompanyCNTroubleShoot").val();
+        obj.CompanyCNTechTips = $("#CompanyCNTechTips").val();
+        obj.CompanyCNTooliong = $("#CompanyCNTooliong").val();
+        obj.CompanyCNRoverSheet = $("#CompanyCNRoverSheet").val();
+        obj.CompanyCNRepairStatus = $("#CompanyCNRepairStatus").val();
+        obj.CompanyCNILM = $("#CompanyCNILM").val();
+        obj.CompanyCNLastShot = $("#CompanyCNLastShot").val();
+        obj.CompanyReg = $("#CompanyReg").val();
+        obj.CompanySerialNumber = $("#CompanySerialNumber").val();
+
+        $.ajax({
+            url: '/CompanyInfo/UpdateCompanys',
+            type: 'Post',
+            data: { obj: obj },
+            success: function ()
+            {
+
+            },
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+    function DeleteCompany(CID)
+    {
+        var CID = $("#CompanyID").val();
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this. All related data will be deleted also.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $(".loader__wrap").show();
+                $.ajax({
+                    url: '/CompanyInfo/DeleteCompany?CID=' + CID,
+                    type: 'Post',
+                    success: function () {
+                        window.location.href = "/CompanyInfo/Index";
+                    },
+                    error: function () {
+                    }
+                })
+            }
+        })
+    }
+
+
+    $('.tblCompMainFunc').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.tblCompMainFunc').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblCompany.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.ManagingCompany.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+</script>

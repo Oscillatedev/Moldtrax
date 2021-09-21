@@ -1,0 +1,84 @@
+﻿@model IEnumerable<Moldtrax.Models.tblInspections>
+@{
+    int i = 0;
+}
+
+<div class="textarea_box">
+        <table id="MaintenanceData">
+            <tbody>
+                <tr>
+                    @foreach (var x in Model)
+                    {
+                        {
+                            i++;
+                        }
+                        <td>
+                            <input type="hidden" id="InspectionID" />
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card_header">
+                                        <h5 class="main_top_head">Additional Maintenance @i</h5>
+                                        <input type="hidden" id="IspectedID" value="@x.InspectID" />
+                                        <textarea row="6" id="@x.InspectID" class="Maintenacne form-control">@x.AdditionalMaintenance</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+    
+
+
+    @*@foreach (var x in Model)
+    {
+        {
+            i++;
+        }
+        <input type="hidden" id="InspectionID" />
+        <div class="col-md-4">
+            <div class="card_header">
+                <h5 class="main_top_head">Additional Maintenance @i</h5>
+                <input type="hidden" id="IspectedID" value="@x.InspectID" />
+                <textarea row="6" id="Maintenance"  class="Maintenacne form-control">@x.AdditionalMaintenance</textarea>
+            </div>
+        </div>
+    }*@
+
+    @*<div class="col-md-4">
+                <div class="card_header">
+                    <h5 class="main_top_head">Additional Maintenance 2</h5>
+        <textarea row="6" class="form-control"></textarea>
+                </div>
+            </div>*@
+    @*<div class="col-md-4">
+                <div class="card_header">
+                    <h5 class="main_top_head">Additional Maintenance 3</h5>
+        <textarea row="6" class="form-control"></textarea>
+                </div>
+            </div>*@
+</div>
+<script>
+    $(".Maintenacne").focusout(function ()
+    {
+        debugger;
+        var obj = new Object();
+        obj.InspectID = $(this).attr("ID");
+        obj.AdditionalMaintenance = $(this).val();
+
+        $.ajax({
+
+            url: '/CheckSheet/EditAdditionalMaintenance',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+            },
+            error: function () {
+
+            }
+        })
+
+
+    })
+</script>

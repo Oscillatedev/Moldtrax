@@ -1,0 +1,26 @@
+﻿@using ReportViewerForMvc;
+
+@{
+    ViewBag.Title = "RepairSheet";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    /*div#ReportViewer1_ctl05 {
+        border: none !important;
+        background: #124A7E !important;
+    }
+
+        div#ReportViewer1_ctl05 td, div#ReportViewer1_ctl05 td a {
+            color: #fff !important;
+            padding: 3px 0;
+        }*/
+    .navbar-inverse {
+        background-color: #ff0000 !important;
+    }
+</style>
+
+<div class="text-right">
+    <button onclick="window.close()" class="back_btn">Back</button>
+</div>
+
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer, new { @class = "RptClass" })

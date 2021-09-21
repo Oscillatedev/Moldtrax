@@ -1,0 +1,108 @@
+﻿@{ 
+    Layout = null;
+}
+
+<div class="card_body">
+    <div class="row track3_row">
+        <div class="col-md-12">
+            <div class="table-con1" id="table">
+                <table class="table table-bordered table-responsive" id="table_maintain">
+                    <thead>
+                        <tr>
+                            <th class="td_mt_1"><input type="checkbox" id="SelectAllMold" value=""></th>
+                            <th class="td_mt_2">Press</th>
+                            <th class="td_mt_3">Start Date</th>
+                            <th class="td_mt_4">Start Time</th>
+                            <th class="td_mt_5">Start Tech</th>
+                            <th class="td_mt_6">Mold Config #1</th>
+                            <th class="td_mt_7">Mold Config #2</th>
+                            <th class="td_mt_8">Stop Date</th>
+                            <th class="td_mt_9">Stop Time</th>
+                            <th class="td_mt_10">Stop Tech</th>
+                            <th class="td_mt_11">Stop Reason</th>
+                            <th class="td_mt_12">Cycle Counter</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td><input type="checkbox" id="Chckbox" name="Chckboxmold" value="" class="Subcheckbox"></td>
+                                <td>
+                                    <input type="hidden" id="SetIDVal" name="SetIDVal" value="" />
+                                    <input type="text" id="SetPressNumb" name="SetPressNumb" value="" class="form-control">
+                                </td>
+                                <td>
+                                        <input type="date" id="SetDate" name="SetDate" class="form-control">
+                                </td>
+                                <td>
+                                        <input type="text" id="SetTime" name="SetTime" class="form-control">
+                                </td>
+                                <td>
+                                    <select id="SetTech" name="SetTech" value="" class="form-control SelectHeight">
+                                        <option></option>
+                                        @foreach (var d in ViewBag.TechnicianList)
+                                        {
+                                            <option value="@d.Value">@d.Text</option>
+                                        }
+                                    </select>
+                                    @*<input type="text" id="SetTech" name="SetTech" value="@x.SetTech" class="form-control">*@
+                                </td>
+                                <td>
+                                    <select id="MoldConfig" name="MoldConfig" value="" class="form-control SelectHeight">
+                                        <option></option>
+                                        @foreach (var d in ViewBag.MoldConfigData)
+                                        {
+                                            <option value="@d.Text">@d.Text</option>
+                                        }
+                                    </select>
+                                    @*<input type="text" id="MoldConfig" name="MoldConfig" value="@x.MoldConfig" class="form-control">*@
+                                </td>
+                                <td>
+                                    <select id="MoldConfig2" name="MoldConfig2" value="" class="form-control SelectHeight">
+                                        <option></option>
+                                        @foreach (var d in ViewBag.MoldConfig2)
+                                        {
+                                            <option value="@d.Text">@d.Text</option>
+                                        }
+                                    </select>
+                                    @*<input type="text" id="MoldConfig2" name="MoldConfig2" value="@x.MoldConfig2" class="form-control">*@
+                                </td>
+                                <td>
+                                        <input type="date" id="MldPullDate" name="MldPullDate" class="form-control">
+                                </td>
+                                <td>
+                                        <input type="text" id="MldPullTime" name="MldPullTime" class="form-control" />
+                                </td>
+                                @*<td>
+                                        <input type="text" id="MldProductionCycles" name="MldProductionCycles" value="@x.MldProductionCycles" class="form-control">
+                                    </td>*@
+                                <td>
+                                    <input type="hidden" value="" id="MLDPullTechVal" />
+                                    <select id="MldPullTech" name="MldPullTech" value="" class="form-control SelectHeight">
+                                        <option></option>
+                                        @foreach (var d in ViewBag.TechnicianList)
+                                        {
+                                            <option value="@d.Value">@d.Text</option>
+                                        }
+                                    </select>
+                                    @*<input type="text" id="MldPullTech" name="MldPullTech" value="@x.MldPullTech" class="form-control">*@
+                                </td>
+                                <td>
+                                    <select id="MldPullMaintRequired" name="MldPullMaintRequired" value="" class="form-control SelectHeight">
+                                        <option></option>
+                                        @foreach (var d in ViewBag.MainDropdown)
+                                        {
+                                            <option value="@d.Text">@d.Text</option>
+                                        }
+                                    </select>
+                                    @*<input type="text" id="MldPullMaintRequired" name="MldPullMaintRequired" value="@x.MldPullMaintRequired" class="form-control">*@
+                                </td>
+                                <td>
+                                    <input type="text" id="CycleCounter" name="CycleCounter" value="" class="form-control">
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

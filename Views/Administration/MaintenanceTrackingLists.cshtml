@@ -1,0 +1,154 @@
+﻿@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .modal-dialog thead .th_detail2 {
+        width: 300px !important;
+    }
+</style>
+<div class="row maintain_track_list">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="c_head">
+                <div class="card_header left_side">
+                    <h5 class="main_top_head">Maintenance Tracking Drop Down Preferences</h5>
+                </div>
+                @*<div class="card_header right_side">
+                    <input type="button" class="btn-danger" value="A-Z" id="MoldAscOrder" />
+                    <input type="button" class="btn-danger" value="Z-A" id="MoldDescOrder" />
+                </div>*@
+            </div>
+            <div class="card_body">
+                <div class="card_inner_block">
+                    @*<br>*@
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs sticky-top" role="tablist" id="maintain_track_list">
+                        <li class="nav-item">
+                            <a class="nav-link active" data-toggle="tab" onclick="CallMaintenanceTracking('MoldConfig')" id="MoldConfig"  href="#">Mold Configuration</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('MoldConfig2')" id="MoldConfig2" href="#">Mold Configuration 2</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('StopReason')" id="StopReason" href="#">Stop Reason</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('CorreciveActionType')" id="CorreciveActionType" href="#">Corrective Action Type</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('CorreciveAction')" id="CorreciveAction" href="#">Corrective Action</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('MaintenanceScheduleStatus')" id="MaintenanceScheduleStatus" href="#">Maintenance Schedule Status</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('RepairStatus')" id="RepairStatus" href="#">Repair Status</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceTracking('RepairLocation')" id="RepairLocation" href="#">Repair Location</a>
+                        </li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content" id="maintain_track_list_tab">
+                        <div id="home" class="tab-pane active">
+                           @Html.Action("GetMoldConfig","Administration")
+                        </div>
+                        @*<div id="menu1" class="tab-pane fade">
+                            @Html.Action("GetMoldConfig2", "Administration")
+                        </div>
+                        <div id="menu2" class="tab-pane fade">
+                            @Html.Action("GetStopReason", "Administration")
+                        </div>
+                        <div id="menu3" class="tab-pane fade">
+                            @Html.Action("GetCorrectiveActionType", "Administration")
+                        </div>
+                        <div id="menu4" class="tab-pane fade">
+                            @Html.Action("GetCorrectiveAction", "Administration")
+                        </div>
+                        <div id="menu5" class="tab-pane fade">
+                            @Html.Action("GetMaintenanceSchedule", "Administration")
+                        </div>
+                        <div id="menu6" class="tab-pane fade">
+                            @Html.Action("GetRepairStatus", "Administration")
+                        </div>
+                        <div id="menu7" class="tab-pane fade">
+                         @Html.Action("GetRepairLocation", "Administration")
+                        </div>*@
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        $('#navMaintenancetrac').addClass('actives');
+    });
+
+
+    function CallMaintenanceTracking(str)
+    {
+        var URL = "";
+
+        if (str == "MoldConfig")
+        {
+            URL = "/Administration/GetMoldConfig";
+        }
+
+        else if (str == "MoldConfig2")
+        {
+            URL = "/Administration/GetMoldConfig2";
+        }
+
+        else if (str == "StopReason")
+        {
+            URL = "/Administration/GetStopReason";
+        }
+
+        else if (str == "CorreciveActionType")
+        {
+            URL = "/Administration/GetCorrectiveActionType";
+
+        }
+
+        else if (str == "CorreciveAction")
+        {
+            URL = "/Administration/GetCorrectiveAction";
+        }
+
+        else if (str == "MaintenanceScheduleStatus")
+        {
+            URL = "/Administration/GetMaintenanceSchedule";
+        }
+
+        else if (str == "RepairStatus")
+        {
+            URL = "/Administration/GetRepairStatus";
+        }
+
+        else
+        {
+            URL = "/Administration/GetRepairLocation";
+        }
+
+        $.ajax({
+            url: URL,
+            type: 'Post',
+            success: function (data)
+            {
+                $("#home").html(data);
+            },
+            error: function ()
+            {
+
+            }
+
+        })
+
+    }
+
+</script>

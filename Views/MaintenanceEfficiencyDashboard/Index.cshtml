@@ -1,0 +1,305 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .pcoded-inner-content {
+        padding: 0;
+    }
+
+    .report_body .report_row {
+        margin: 0;
+    }
+
+    .report_body .report_col {
+        padding: 15px;
+    }
+
+    .card.box_design {
+        border-radius: 0;
+        background: #00000017;
+    }
+
+    fieldset {
+        border: 1px groove #ddd !important;
+        padding: 0 5px 0px 5px !important;
+        margin: 0 !important;
+        -webkit-box-shadow: 0px 0px 0px 0px #000;
+        box-shadow: 0px 0px 0px 0px #000;
+    }
+
+    legend {
+        font-size: 13px !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+        width: auto;
+        padding: 0 10px;
+        border-bottom: none;
+        font-style: italic;
+        margin-bottom: 1px;
+    }
+
+    fieldset input {
+        line-height: 20px !important;
+        padding: 0 !important;
+        font-size: 12px !important;
+    }
+
+    .report_header {
+        display: flex;
+    }
+
+    fieldset span {
+        font-size: 12px;
+        vertical-align: top;
+    }
+
+    .report_header h3 {
+        padding-top: 30px;
+    }
+
+    .btn_css button {
+        padding: 4px;
+        font-weight: 500;
+        margin-bottom: 0px;
+        font-size: 13px;
+        /*background: #404648;*/
+        border-radius: 0;
+        margin-top: 37px;
+    }
+
+    a.add_btn {
+        background: #00BCD4;
+        background: #d71c33;
+        color: white;
+        padding: 5px 20px;
+        display: inline-flex;
+        margin-bottom: 6px;
+    }
+    .create_btn {
+        background: #03A9F4;
+        background: #231f20;
+    }
+    .btn_css input, .btn_css button, .btn_css a {
+        padding: 5px 11px;
+    }
+    .btn_css a {
+        font-size: 12px;
+        padding: 3px 8px;
+    }
+        /*input[type="date"]::-webkit-calendar-picker-indicator {
+        color: rgba(0, 0, 0, 0);
+        opacity: 1;
+        display: block;
+        background: url(http://jqueryui.com/resources/demos/datepicker/images/calendar.gif) no-repeat;
+        width: 20px;
+        height: 20px;
+        border-width: thin;
+        margin-top: 10px;
+        margin-right: -5px;
+    }*/
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        display: none;
+    }
+    input[type="date"]::-webkit-inner-spin-button,
+input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+
+</style>
+<div class="w-100 report_header">
+    <div class="w_40">
+        <h3 class="r_head">
+            Maintenance Efficiency Dashboard
+        </h3>
+    </div>
+    <div class="w_60">
+        <div class="w-100">
+            <div class="w_50">
+                <fieldset>
+                    <legend>Select a chart</legend>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="radio">
+                                <input type="radio" name="ChartType" id="ChartType" checked value="1" onchange="CallChartType(1)" /> <span>DoD & Assigned Molds</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" name="ChartType" id="ChartType" value="2" onchange="CallChartType(2)" /> <span>CA & Defects</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="radio">
+                                <input type="radio" name="ChartType" id="ChartType" value="3" onchange="CallChartType(3)" /> <span>Labor & Tooling</span>
+                            </div>
+                            <div class="radio">
+                                <input type="radio" name="ChartType" id="ChartType" value="4" onchange="CallChartType(4)" /> <span>Total Cost per Tech</span>
+                            </div>
+                        </div>
+                    </div>                 
+                </fieldset>
+            </div>
+            <div class="w_45">
+                <fieldset>
+                    <legend>Date Criteria</legend>
+                    <div class="w-100">
+                        <div class="w_40">
+                            <label>Begin Date:</label>
+                        </div>
+                        <div class="w_60">
+                            <input id="StartDate" autocomplete="off" value="@Convert.ToDateTime(ViewBag.StDate).ToString("yyyy-MM-dd")" type="date" class="form-control" />
+
+                            @*<input id="StartDate" value="@Convert.ToDateTime("04/01/2000").ToString("yyyy-MM-dd")" type="date" class="form-control" />*@
+                        </div>
+                    </div>
+                    <div class="w-100">
+                        <div class="w_40">
+                            <label>End Date:</label>
+                        </div>
+                        <div class="w_60">
+                            <input id="EndDate" autocomplete="off" value="@Convert.ToDateTime(ViewBag.EDate).ToString("yyyy-MM-dd")" type="date" class="form-control" />
+                            @*<input id="EndDate" value="@Convert.ToDateTime("06/06/2018").ToString("yyyy-MM-dd")" type="date" class="form-control" />*@
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+            <div class="w_20 btn_css">
+                <button onclick="ShowChart()" class="del_btn">Refresh Chart</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrappers">
+    <div class="horizontal_scroll efficiency_db">
+        <div class="items_div btn_css" id="FirstDiv">
+            <a href="#" onclick="printDiv('LoadMainDiv')" target="_blank" class="add_btn">Print</a>
+            <a href="#" target="_blank" class="create_btn" onclick="CallViewDataFunc('FirstChart')">View Data</a>
+            <div id="LoadMainDiv"></div>
+        </div>
+        <div class="items_div btn_css" id="SecondDiv">
+            <a href="#" onclick="printDiv('MoldTopReason')" target="_blank" class="add_btn">Print</a>
+            <a href="#" target="_blank" class="create_btn" onclick="CallViewDataFunc('SecondChart')">View Data</a>
+            <div id="MoldTopReason"></div>
+        </div>
+        @*<div class="items_div">
+                <a href="#" onclick="printDiv('TopReason123')" target="_blank" class="add_btn">Print</a>
+                <div id="TopReason123"></div>
+                <a href="#" target="_blank" onclick="CallViewDataFunc('XStopReason')">View Data</a>
+            </div>*@
+    </div>
+</div>
+<div class="card box_design">
+    <div class="card_body">
+    </div>
+</div>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+<script>
+    $(document).ready(function ()
+    {
+        $(".items_div").hide();
+    })
+
+
+    function ShowChart() {
+        debugger;
+        var ChartType = $("#ChartType").val();
+        var StartDate = $("#StartDate").val();
+        var EndDate = $("#EndDate").val();
+        var Type = $('input[name=ChartType]:checked').val();
+
+        if (StartDate == "" || EndDate == "") {
+            Swal.fire('Enter begin and end date.')
+            return false;
+        }
+
+        $(".items_div").hide();
+
+        $("#LoadMainDiv").html('');
+        $("#MoldTopReason").html('');
+        $("#TopReason123").html('');
+
+        $.ajax({
+            url: '/MaintenanceEfficiencyDashboard/ShowChart?ChartType=' + Type + '&StartDate=' + StartDate + '&EndDate=' + EndDate,
+            type: 'Post',
+            success: function (data) {
+                debugger;
+                $("#LoadMainDiv").html(data.FirstChart);
+                $("#MoldTopReason").html(data.SecondChart);
+                $(".items_div").show();
+                if (Type == 4) {
+                    $("#SecondDiv").hide();
+                }
+                else {
+                    $("#SecondDiv").show();
+                }
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+
+
+    function printDiv(divName) {
+        var printContents = document.getElementById(divName).innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+
+        window.print();
+
+        document.body.innerHTML = originalContents;
+    }
+
+
+
+    function CallViewDataFunc(str) {
+        debugger;
+        var selectedMold = $("#MoldID").val();
+        var Type = $('input[name=ChartType]:checked').val();
+        var StartDate = $("#StartDate").val();
+        var EndDate = $("#EndDate").val();
+
+        if (Type == 1) {
+
+            if (str == 'FirstChart') {
+                window.open("/MaintenanceEfficiencyDashboard/AvgMoldDegreeofDifficulty?StartDate=" + StartDate + "&EndDate=" + EndDate);
+            }
+            else
+            {
+                window.open("/MaintenanceEfficiencyDashboard/AvgMoldDegreeofDifficulty?StartDate=" + StartDate + "&EndDate=" + EndDate);
+            }
+        }
+        else if (Type == 2) {
+            if (str == 'FirstChart') {
+                window.open("/MaintenanceEfficiencyDashboard/CorrectiveActionsPerformedbyTech?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+            else {
+                window.open("/MaintenanceEfficiencyDashboard/DefectDiscoveredbyTech?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+        }
+        else if (Type == 3) {
+            if (str == 'FirstChart') {
+                window.open("/MaintenanceEfficiencyDashboard/CorrectiveActionsPerformedbyTech?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+            else {
+                window.open("/MaintenanceEfficiencyDashboard/CorrectiveActionsPerformedbyTech?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+            }
+        }
+        else
+        {
+            window.open("/MaintenanceEfficiencyDashboard/CorrectiveActionsPerformedbyTech?StartDate=" + StartDate + "&EndDate=" + EndDate + "&MID=" + selectedMold);
+        }
+
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#navMaintain').addClass('actives');
+        $("#HeaderTop").hide();
+    });
+</script>

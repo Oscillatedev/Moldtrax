@@ -1,0 +1,11 @@
+﻿@using ReportViewerForMvc;
+
+@{
+    ViewBag.Title = "DefectCostAnalysis";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-right">
+    <button onclick="window.close()" class="back_btn">Back</button>
+</div>
+@Html.ReportViewer(ViewBag.ReportViewer as Microsoft.Reporting.WebForms.ReportViewer)

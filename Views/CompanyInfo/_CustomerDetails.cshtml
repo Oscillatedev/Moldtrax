@@ -1,0 +1,279 @@
+﻿@model Moldtrax.Models.tblCustomer
+<style>
+        .w_35 label {
+    width: 35%;
+    float: left;
+}
+.w_35 .form-control {
+    width: 65%;
+    float: left;
+}
+.w_15 label {
+    width: 16.5%;
+    float: left;
+}
+.w_15 .form-control {
+    width: 83.5%;
+    float: left;
+}
+    .w_30 label {
+        width: 32%;
+        float: left;
+        line-height: 26px;
+    }
+
+    .w_30 .form-control {
+        width: 68%;
+        float: left;
+    }
+    .w_35 label, .w_15 label {
+        line-height: 28px;
+    }
+</style>
+<form id="CustomerDetailFrm">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card_header m-0">
+                <h5 class="main_top_head">@Model.CustomerName</h5>
+            </div>
+        </div>
+        <div class="col-md-6 text-right btn_css">
+            <input type="button" class="add_btn" value="Add" onclick="AddCustomer()" />
+            <input type="submit" class="create_btn" value="Save" />
+            <input type="button" class="delete_btn" onclick="DeleteCustomer(@Model.CustomerID)" value="Delete Selected Customer" />
+        </div>
+    </div>
+   
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card box_design" id="cust_info">
+                <div class="card_header">
+                    <h5>Customer Name & Address</h5>
+                </div>
+                <input type="hidden" id="CustomerID" name="CustomerID" value="@Model.CustomerID" />
+                <input type="hidden" value="@Model.CompanyID" id="CompanyID" name="CompanyID" />
+                <div class="card_body">
+                    <label>Name</label>
+                    <input type="text" autocomplete="off" value="@Model.CustomerName" id="CustomerName" name="CustomerName" class="form-control">
+
+                    <label>Address</label>
+                    <textarea autocomplete="off" class="form-control DDProp CallSaveFocusOutFunc" id="CustomerAddress" name="CustomerAddress" rows="2">@Model.CustomerAddress</textarea>
+
+                    <label>City</label>
+                    <input type="text" autocomplete="off" value="@Model.CustomerCity" id="CustomerCity" name="CustomerCity" class="form-control DDProp CallSaveFocusOutFunc">
+
+                    <label>State/Prov</label>
+                    <input type="text" autocomplete="off" value="@Model.CustomerState" id="CustomerState" name="CustomerState" class="form-control DDProp CallSaveFocusOutFunc">
+
+                    <label>Zip/Postal</label>
+                    <input type="text" value="@Model.CustomerZipCode" autocomplete="off" id="CustomerZipCode" name="CustomerZipCode" class="form-control DDProp CallSaveFocusOutFunc">
+
+                    <label>Country</label>
+                    <input type="text" value="@Model.CustomerCountry" autocomplete="off" id="CustomerCountry" name="CustomerCountry" class="form-control DDProp CallSaveFocusOutFunc">
+
+                    <label>Phone</label>
+                    <input type="text" value="@Model.CustomerMainPhone" autocomplete="off" id="CustomerMainPhone" name="CustomerMainPhone" class="form-control DDProp CallSaveFocusOutFunc">
+
+                    <label>Fax</label>
+                    <input type="text" value="@Model.CustomerFax" id="CustomerFax" autocomplete="off" name="CustomerFax" class="form-control DDProp CallSaveFocusOutFunc">
+
+                    <label>Web Site</label>
+                    <input type="text" value="@Model.CustomerWebsite" id="CustomerWebsite" autocomplete="off" name="CustomerWebsite" class="form-control DDProp CallSaveFocusOutFunc">
+                </div>
+            </div>
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Customer Notes</h5>
+                </div>
+                <div class="card_body ">
+                    <textarea class="form-control DDProp CallSaveFocusOutFunc" autocomplete="off" id="CustCustNotes" name="CustCustNotes" style="height: 96px;">@Model.CustCustNotes</textarea>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>First Contact</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont1FirstName" id="CustCont1FirstName" name="CustCont1FirstName" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont1LastName" id="CustCont1LastName" name="CustCont1LastName" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-12">
+                            <label>E-Mail</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont1EMail" id="CustCont1EMail" name="CustCont1EMail" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont1Phone" id="CustCont1Phone" name="CustCont1Phone" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont1Fax" id="CustCont1Fax" name="CustCont1Fax" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Mobile</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont1Mobile" id="CustCont1Mobile" name="CustCont1Mobile" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Second Contact</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont2FirstName" id="CustCont2FirstName" name="CustCont2FirstName" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont2LastName" id="CustCont2LastName" name="CustCont2LastName" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                    <label>E-Mail</label>
+                    <input type="text" class="form-control">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont2Phone" id="CustCont2Phone" name="CustCont2Phone" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont2Fax" id="CustCont2Fax" name="CustCont2Fax" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Mobile</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont2Mobile" id="CustCont2Mobile" name="CustCont2Mobile" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Third Contact</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>First Name</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont3FirstName" id="CustCont3FirstName" name="CustCont3FirstName" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-6">
+                            <label>Last Name</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont3LastName" id="CustCont3LastName" name="CustCont3LastName" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                    <label>E-Mail</label>
+                    <input type="text" value="@Model.CustCont3EMail" autocomplete="off" id="CustCont3EMail" name="CustCont3EMail" class="form-control DDProp CallSaveFocusOutFunc">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont3Phone" id="CustCont3Phone" name="CustCont3Phone" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont3Fax" id="CustCont3Fax" name="CustCont3Fax" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                        <div class="col-md-4">
+                            <label>Mobile</label>
+                            <input type="text" autocomplete="off" value="@Model.CustCont3Mobile" id="CustCont3Mobile" name="CustCont3Mobile" class="form-control DDProp CallSaveFocusOutFunc">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+
+  
+
+
+    //$("#CustomerDetailFrm").submit(function (e)
+    //{
+    //    var data = $("#CustomerDetailFrm").serialize();
+
+    //    e.preventDefault();
+
+    //    $.ajax({
+
+    //        url: '/CompanyInfo/SaveCustomerDetails',
+    //        type: 'Post',
+    //        data: data,
+    //        success: function(data)
+    //        {
+    //            Swal.fire({
+    //                title: "Success",
+    //                text: 'Data saved successfully.',
+    //                type: "success"
+    //            }).then(function () {
+    //                $("#CustDet").html(data);
+    //            })
+    //        },
+    //        error: function ()
+    //        {
+
+    //        }
+    //    })
+
+    //})
+
+
+    //function AddCustomer()
+    //{
+    //    $.ajax({
+    //        url: '/CompanyInfo/CustomerDetail?CustID=-1',
+    //        type: 'Post',
+    //        success: function (data)
+    //        {
+    //            $("#CustDet").html(data);
+    //        },
+
+    //        error: function ()
+    //        {
+
+    //        }
+
+    //    })
+    //}
+
+
+    //function DeleteCustomer(ID)
+    //{
+    //    $.ajax({
+    //        url: '/CompanyInfo/CustomerDelete?CustID=' + ID,
+    //        type: 'Post',
+    //        success: function (data) {
+    //            Swal.fire({
+    //                title: "Deleted!",
+    //                text: 'Data has been deleted.',
+    //                type: "success"
+    //            }).then(function () {
+    //                window.location.href = "/CompanyInfo/Index";
+    //            })
+    //        },
+
+    //        error: function ()
+    //        {
+
+    //        }
+
+    //    })
+    //}
+
+</script>

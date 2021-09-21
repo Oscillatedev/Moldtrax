@@ -1,0 +1,1457 @@
+﻿@model IEnumerable<Moldtrax.Models.tblDfctBlockOff>
+@using Moldtrax.Models
+@{ 
+    int? SetID = 0;
+    foreach (var x in Model)
+    {
+        SetID = x.SetID;
+        break;
+    }
+
+    int TotalCount = 0;
+    foreach (var x in Model)
+    {
+        TotalCount += 1;
+    }
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+    Layout = null;
+
+}
+<style>
+    .highlight12 {
+        background-color: #aaa;
+    }
+    .table-con {
+        height: 302px;
+    }
+    select option {
+        font-family: 'Roboto Mono', monospace !important;
+        font-size: 13px !important;
+    }
+    /*#defectTaskAdd {
+        position: relative;
+    }
+
+    .modal-dialog {
+        position: fixed;
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+    }*/
+</style>
+<script>
+    $("#inner_table_defects tbody tr:first").addClass('highlight12');
+
+    $("#inner_table_defects tbody tr").click(function () {
+        debugger;
+        var selected = $(this).hasClass("highlight12");
+        if (!selected)
+            $("#inner_table_defects tbody tr").removeClass("highlight12");
+        $(this).addClass("highlight12");
+       
+        })
+</script>
+@*<br>*@
+<div class="row">
+    <div class="col-md-12 text-right btn_css">
+        @*<input type="button" value="Add" class="create_btn" onclick="AddDefect()" />*@
+        @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+        <input type="button" value="Add" class="add_btn" id="NewAddDefectBtn" />
+        <input type="hidden" id="SaveDefecttaskBtn" onclick="SaveDefect()" />
+        <input type="hidden" value="Add" class="add_btn" id="OldAddDefectBtn" data-toggle="modal" data-target="#defectTaskAdd" />
+        @*<input type="button" value="Save" class="edit_btn" onclick="SaveDefect()" />*@
+        <button type="button" onclick="CopyData()" id="CopyDatabtn" class="create_btn">Copy</button>
+        <button type="button" onclick="PasteData()" id="PasteBtn" class="add_btn">Paste</button>
+        <input type="button" class="delete_btn" onclick="DeleteSelectedDefect()" value="Delete Defects/Tasks" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_body ">
+                <div class="table-con" id="table2">
+                    <table class="table table-bordered table-responsive" id="inner_table_defects">
+                        <thead>
+                            <tr>
+                                <th class="dtd1"><input type="checkbox" id="ChckAllDefect" value=""></th>
+                                <th class="dtd2">Date</th>
+                                <th class="dtd3">Time</th>
+                                <th class="dtd4">Block</th>
+                                <th class="dtd5">Quality</th>
+                                <th class="dtd6">Repair Tasks/Defects</th>
+                                <th class="dtd7">Cav ID</th>
+                                <th class="dtd8">Technician</th>
+                                <th class="dtd9">Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td><input type="checkbox" value="@x.DfctID" class="Subcheckbox" id="DefectID" name="checknameDefect"></td>
+                                    <td>
+                                        <input type="hidden" value="@x.DfctID" id="DfctID" />
+                                        @if (x.DfctDate != null && x.DfctDate != DateTime.MinValue)
+                                        {
+                                            <input type="text" autocomplete="off" value="@Convert.ToDateTime(x.DfctDate).ToString("MM/dd/yyyy")" id="" name="DfctDate" class="form-control DfctDate DefectTaskFocusOut">
+                                        }
+
+                                        else
+                                        {
+                                            <input type="text" autocomplete="off" value="" id="" name="DfctDate" class="form-control DfctDate DefectTaskFocusOut">
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (x.DfctTime != null && x.DfctTime != DateTime.MinValue)
+                                        {
+                                            <input type="text" autocomplete="off" value="@Convert.ToDateTime(x.DfctTime).ToString("HH:mm")" id="DfctTime" class="form-control CurrentDfctTime DefectTaskFocusOut">
+                                        }
+                                        else
+                                        {
+                                            <input type="text" id="DfctTime" autocomplete="off" class="form-control CurrentDfctTime DefectTaskFocusOut">
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox" value="@x.DfctBlocked" id="DfctBlocked" class="BlockedCheck DefectTaskFocusOut">
+                                    </td>
+                                    <td class="text-center">
+                                        <input type="checkbox" value="@x.DfctQC" id="DfctQC" class="QtCheck DefectTaskFocusOut">
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.DfctDescript" id="DfctVal" />
+                                        <select class="form-control DefectTaskFocusOut OnchangeFunc DfctDescript" id="DfctDescript" name="DfctDescript">
+                                                <option value="0" style="display:none"></option>
+                                                <option disabled>Type  |  TSExplantion</option>
+                                                @foreach (var s in ViewBag.RepairTask)
+                                                {
+                                                    <option value="@s.Value">@Html.Raw(s.Text)</option>
+                                                }
+                                        </select>
+                                        @*<input type="text" value="@x.DfctDescript" id="DfctDescript" class="form-control">*@
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.DfctCavNum" id="DfctVal" />
+
+                                        <select class="form-control DefectTaskFocusOut OnchangeFunc DfctCavNum" id="DfctCavNum">
+                                            <option value="0" style="display:none">|||</option>
+                                            <option disabled>Pos | Cav ID | Act</option>
+                                            @foreach (var s in ViewBag.CavNum)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                        @*<input type="text" value="@x.DfctCavNum" id="DfctCavNum" class="form-control">*@
+                                    </td>
+                                    <td>
+                                        <input type="hidden" value="@x.EmployeeID" id="EmployeeVal" />
+                                        <select class="form-control DefectTaskFocusOut OnchangeFunc" id="EmployeeID">
+                                            <option disabled>Technician</option>
+                                            @foreach (var s in ViewBag.Technician)
+                                            {
+                                                <option value="@s.Value">@s.Text</option>
+                                            }
+                                        </select>
+                                        @*<input type="text" value="@x.EmployeeID" id="EmployeeID" class="form-control">*@
+                                    </td>
+                                    <td>
+                                        <input type="text" autocomplete="off" value="@x.DfctNotes" id="DfctNotes" class="form-control DefectTaskFocusOut">
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <label class="red_total">Total Count: @TotalCount</label>
+        </div>
+    </div>
+
+</div>
+
+<div class="modal fade" id="defectTaskAdd">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Defects/Task List</h4>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-responsive" id="inner_table_defects1">
+                    <thead>
+                        <tr>
+                            <th class="dtd2">Date</th>
+                            <th class="dtd3">Time</th>
+                            <th class="dtd4">Block</th>
+                            <th class="dtd5">Quality</th>
+                            <th class="dtd6">Repair Tasks/Defects</th>
+                            <th class="dtd7">Cav ID</th>
+                            <th class="dtd8">Technician</th>
+                            <th class="dtd9">Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                            <tr>
+                                <td>
+                                    <input type="text" autocomplete="off" value="" id="AddDfctDate" name="DfctDate" class="form-control AddDfctDate">
+                                </td>
+                                <td>
+                                        <input type="text" autocomplete="off" id="AddDfctTime" class="form-control">
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" value="" id="AddDfctBlocked" class="check BlockedCheck">
+                                </td>
+                                <td class="text-center">
+                                    <input type="checkbox" value="" id="AddDfctQC" class="check QtCheck">
+                                </td>
+                                <td>
+                                    <select class="form-control" id="AddDfctDescript">
+                                            <option value="0" style="display:none;"></option>
+                                            <option disabled>Type  |  TSExplantion</option>
+                                            @foreach (var s in ViewBag.RepairTask)
+                                            {
+                                                <option value="@s.Value">@Html.Raw(s.Text)</option>
+                                            }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="AddDfctCavNum">
+                                        <option value="0" style="display:none"></option>
+                                        <option disabled>Pos | Cav ID | Act</option>
+                                        @foreach (var s in ViewBag.CavNum)
+                                        {
+                                            <option value="@s.Value">@s.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <select class="form-control" id="AddEmployeeID">
+                                        <option disabled>Technician</option>
+                                        <option value="0"></option>
+                                        @foreach (var s in ViewBag.Technician)
+                                        {
+                                            <option value="@s.Value">@s.Text</option>
+                                        }
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="text" autocomplete="off" value="" id="AddDfctNotes" class="form-control">
+                                </td>
+                            </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="AddSaveDefectTask" class="add_btn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('table2').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+
+    if (@Permission == 2) {
+        //$(".delete_btn").hide();
+    }
+
+    else if (@Permission == 4 || @Permission == 5 || @Permission == 6 )
+    {
+        $(".delete_btn").hide();
+        $("#SaveDefecttaskBtn, #DfctBlocked, #DfctTime, #DfctQC, #DfctDescript, #DfctCavNum, #EmployeeID, #DfctNotes").attr("disabled", "disabled");
+        $(".DfctDate").attr("disabled", "disabled");
+        $("#PasteBtn, #CopyDatabtn, #NewAddDefectBtn").hide();
+    }
+
+    var spacesToAdd = 2;
+    var biggestLength = 0;
+    var biggestLength2 = 0;
+    var biggestLength2Cav = 0;
+
+    $(".DfctDescript option").each(function () {
+        var Spl = $(this).text().split('|');
+        if ($(this).text() != "") {
+            var len = Spl[0].length;
+            //var len = $(this).text().length;
+            if (len > biggestLength) {
+                biggestLength = len;
+            }
+        }
+    });
+
+    $("#AddDfctDescript option").each(function () {
+        var Spl = $(this).text().split('|');
+        var len = Spl[0].length;
+        //var len = $(this).text().length;
+        if (len > biggestLength) {
+            biggestLength = len;
+        }
+    });
+
+    $(".DfctCavNum option").each(function () {
+        debugger;
+
+        var Spl = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var len = Spl[0].length;
+            var Len2 = Spl[1].length;
+
+            //var len = $(this).text().length;
+            if (len > biggestLength2) {
+                biggestLength2 = len;
+            }
+
+            if (Len2 > biggestLength2Cav) {
+                biggestLength2Cav = Len2;
+            }
+        }
+    });
+
+    $("#AddDfctCavNum option").each(function () {
+        debugger;
+
+        var Spl = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var len = Spl[0].length;
+            var Len2 = Spl[1].length;
+
+            //var len = $(this).text().length;
+            if (len > biggestLength2) {
+                biggestLength2 = len;
+            }
+
+            if (Len2 > biggestLength2Cav) {
+                biggestLength2Cav = Len2;
+            }
+        }
+    });
+
+    var padLength = biggestLength + spacesToAdd;
+    var padLength2 = biggestLength2 + spacesToAdd;
+    var padLength2Cav = biggestLength2Cav + spacesToAdd;
+
+    $(".DfctDescript option").each(function () {
+        var parts = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+
+            var strLength = parts[0].length;
+
+            for (var x = 0; x < (padLength - strLength); x++) {
+                parts[0] = parts[0] + ' ';
+            }
+
+
+            $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+        }
+        });
+
+    $("#AddDfctDescript option").each(function () {
+        var parts = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var strLength = parts[0].length;
+
+            for (var x = 0; x < (padLength - strLength); x++) {
+                parts[0] = parts[0] + ' ';
+            }
+
+            $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+        }
+        });
+
+
+    $(".DfctCavNum option").each(function () {
+        var parts = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var strLength = parts[0].length;
+            var strLengthCav = parts[1].length;
+
+
+            for (var x = 0; x < (padLength2 - strLength); x++) {
+                parts[0] = parts[0] + ' ';
+            }
+
+            for (var x = 0; x < (padLength2Cav - strLengthCav); x++) {
+                parts[1] = parts[1] + ' ';
+            }
+
+            $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1].replace(/ /g, '\u00a0') + '|' + parts[2] ).text;
+        }
+    });
+
+
+    $("#AddDfctCavNum option").each(function () {
+        var parts = $(this).text().split('|');
+
+        if ($(this).text() != "") {
+            var strLength = parts[0].length;
+            var strLengthCav = parts[1].length;
+
+
+            for (var x = 0; x < (padLength2 - strLength); x++) {
+                parts[0] = parts[0] + ' ';
+            }
+
+            for (var x = 0; x < (padLength2Cav - strLengthCav); x++) {
+                parts[1] = parts[1] + ' ';
+            }
+
+            $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1].replace(/ /g, '\u00a0') + '|' + parts[2]).text;
+        }
+    });
+
+
+    //var biggestLengthCav = 0;
+    //$(".DfctCavNum option").each(function () {
+    //    var Spl = $(this).text().split('|');
+    //    var len = Spl[2].length;
+    //    //var len = $(this).text().length;
+    //    if (len > biggestLengthCav) {
+    //        biggestLengthCav = len;
+    //    }
+    //});
+
+    //var padLengthCav = biggestLengthCav + spacesToAdd;
+    //$(".DfctCavNum option").each(function () {
+    //    var parts = $(this).text().split('|');
+    //    var strLength = parts[2].length;
+    //    for (var x = 0; x < (padLengthCav - strLength); x++) {
+    //        parts[0] = parts[0] + ' ';
+    //    }
+    //    $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+    //});
+
+
+
+    $("#AddDfctCavNum").change(function ()
+    {
+        var Val = $("#AddDfctCavNum option:selected").text();
+        var RealVal = $("#AddDfctCavNum option:selected").val();
+
+        var Num = Val.split("|");
+
+        $("#AddDfctCavNum option")[0].value = RealVal;
+        $("#AddDfctCavNum option")[0].innerHTML = Num[1];
+        //$('.DfctCavNum option')[0].value = $('.DfctCavNum option:selected').val();
+        //$('.DfctCavNum option')[0].innerHTML = $('.DfctCavNum option:selected').val();
+        //$(".DfctCavNum").val($('.DfctCavNum option:selected').val());
+        $("#AddDfctCavNum").val(RealVal);
+
+        $("#AddDfctCavNum option").css({ "background-color": "", "color": "" });
+        $("#AddDfctCavNum option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+    })
+
+
+    $("#AddDfctDescript").change(function ()
+    {
+        var Val = $("#AddDfctDescript option:selected").text();
+        var RealVal = $("#AddDfctDescript option:selected").val();
+
+        var Num = Val.split("|");
+
+        $("#AddDfctDescript option")[0].value = RealVal;
+        $("#AddDfctDescript option")[0].innerHTML = Num[0];
+        //$('.DfctCavNum option')[0].value = $('.DfctCavNum option:selected').val();
+        //$('.DfctCavNum option')[0].innerHTML = $('.DfctCavNum option:selected').val();
+        //$(".DfctCavNum").val($('.DfctCavNum option:selected').val());
+        $("#AddDfctDescript").val(RealVal);
+
+        $("#AddDfctDescript option").css({ "background-color": "", "color": "" });
+        $("#AddDfctDescript option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+    })
+
+    $(document).ready(function () {
+
+        $("#inner_table_defects tbody tr").each(function () {
+
+            var Val = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option:selected").text();
+            var RealVal = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option:selected").val();
+
+            var Num = Val.split("|");
+
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option")[0].value = RealVal;
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option")[0].innerHTML = Num[1];
+            //$('.DfctCavNum option')[0].value = $('.DfctCavNum option:selected').val();
+            //$('.DfctCavNum option')[0].innerHTML = $('.DfctCavNum option:selected').val();
+            //$(".DfctCavNum").val($('.DfctCavNum option:selected').val());
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum").val(RealVal);
+
+
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option").css({ "background-color": "", "color": "" });
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+
+
+            var Val1 = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option:selected").text();
+            var RealVal1 = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option:selected").val();
+
+            var Num1 = Val1.split("|");
+
+            $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option")[0].value = RealVal1;
+            $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option")[0].innerHTML = Num1[0];
+            //$('.DfctCavNum option')[0].value = $('.DfctCavNum option:selected').val();
+            //$('.DfctCavNum option')[0].innerHTML = $('.DfctCavNum option:selected').val();
+            //$(".DfctCavNum").val($('.DfctCavNum option:selected').val());
+            $(this).closest("tr").find('td:eq(5)').find("#DfctDescript").val(RealVal1);
+
+            $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option").css({ "background-color": "", "color": "" });
+            $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option[value=" + RealVal1 + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+
+
+            //var spacesToAdd = 2;
+            //var biggestLength = 0;
+            //$(this).closest("tr").find('td:eq(5)').find("#DfctDescript option").each(function () {
+            //    debugger
+            //    var spl = $(this).text().split('|');
+
+            //    var len = spl[0].length;
+            //    //$(this).text().length;
+            //    if (len > biggestLength) {
+            //        biggestLength = len;
+            //    }
+            //});
+
+            //var padLength = biggestLength + spacesToAdd;
+
+            //$(this).closest("tr").find('td:eq(5)').find("#DfctDescript option").each(function () {
+            //    debugger;
+            //    var parts = $(this).text().split('|');
+            //    var strLength = parts[0].length;
+            //    for (var x = 0; x < (padLength - strLength); x++) {
+            //        parts[0] = parts[0] + ' ';
+            //    }
+            //    $(this).text(parts[0].replace(/ /g, '\u00a0') + '|' + parts[1]).text;
+            //});
+
+
+            //var RealVal = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option:selected").val();
+            //$(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option[value=" + RealVal + "]").css({ "background-color": "#0000ff", "color": "#fff" });
+        })
+
+
+        $('.DfctCavNum').change(function () {
+            debugger;
+
+            var Val = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option:selected").text();
+            var RealVal = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option:selected").val();
+
+            var Num = Val.split("|");
+
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option")[0].value = RealVal;
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option")[0].innerHTML = Num[1];
+            //$('.DfctCavNum option')[0].value = $('.DfctCavNum option:selected').val();
+            //$('.DfctCavNum option')[0].innerHTML = $('.DfctCavNum option:selected').val();
+            //$(".DfctCavNum").val($('.DfctCavNum option:selected').val());
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum").val(RealVal);
+
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option").css({ "background-color": "", "color": "" });
+            $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+        });
+    });
+
+    $(".DfctDescript").change(function ()
+    {
+        var Val = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option:selected").text();
+        var RealVal = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option:selected").val();
+
+        var Num = Val.split("|");
+
+        $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option")[0].value = RealVal;
+        $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option")[0].innerHTML = Num[0];
+        //$('.DfctCavNum option')[0].value = $('.DfctCavNum option:selected').val();
+        //$('.DfctCavNum option')[0].innerHTML = $('.DfctCavNum option:selected').val();
+        //$(".DfctCavNum").val($('.DfctCavNum option:selected').val());
+        $(this).closest("tr").find('td:eq(5)').find("#DfctDescript").val(RealVal);
+
+        $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option").css({ "background-color": "", "color": "" });
+        $(this).closest("tr").find('td:eq(5)').find("#DfctDescript option[value=" + RealVal + "]").css({ "background-color": "#1e90ff", "color": "#fff" });
+
+    })
+
+    $("#AddDfctDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+
+    $(".DfctDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+
+    $('input[type="date"]').each(function () {
+        var el = this, type = $(el).attr('type');
+        if ($(el).val() == '') $(el).attr('type', 'text');
+        $(el).focus(function () {
+            $(el).attr('type', type);
+            el.click();
+        });
+
+        $(el).blur(function () {
+            if ($(el).val() == '') $(el).attr('type', 'text');
+        });
+    });
+
+    $(document).ready(function(){
+    $('.check').click(function() {
+        $('.check').not(this).prop('checked', false);
+        });
+
+        $('.BlockedCheck').click(function () {
+            debugger
+            $(this).closest("tr").find('td:eq(4)').find("#DfctQC").prop("checked", false);
+        });
+
+        $('.QtCheck').click(function () {
+            debugger
+            $(this).closest("tr").find('td:eq(3)').find("#DfctBlocked").prop("checked", false);
+        });
+    });
+
+    $("#AddDfctTime").dblclick(function ()
+    {
+        $("#AddDfctTime").val(GetCurrentTime());
+    })
+
+    $(".CurrentDfctTime").dblclick(function ()
+    {
+        $(this).closest("tr").find('td:eq(2)').find("#DfctTime").val(GetCurrentTime());
+    })
+
+    $(".CurrentDfctTime").focusout(function ()
+    {
+        var time = $(this).closest("tr").find('td:eq(2)').find("#DfctTime").val();
+        var TT = convertTo24Hour(time);
+        if (TT != "Invalid date") {
+            $(this).closest("tr").find('td:eq(2)').find("#DfctTime").val(TT);
+        }
+
+    })
+
+
+
+
+    //$(".OnchangeFunc").change(function ()
+    //{
+    //    var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+    //    var obj = new Object();
+    //    obj.SetID = SetID;
+    //    obj.DfctID = $(this).closest("tr").find('td:eq(1)').find("#DfctID").val();
+    //    obj.DfctDate = $(this).closest("tr").find('td:eq(1)').find("#DfctDate").val();
+
+    //    var DfctTime = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#DfctTime").val().toLowerCase());
+
+    //    $(this).closest("tr").find('td:eq(2)').find("#DfctTime").val(DfctTime);
+
+    //    obj.DfctTime = DfctTime;
+
+    //    var Active = 'false';
+    //    if ($(this).closest("tr").find('td:eq(3)').find("#DfctBlocked").prop("checked") == true) {
+    //        Active = 'true';
+    //    }
+
+    //    obj.DfctBlocked = Active;
+
+
+    //    //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+    //    var Active1 = 'false';
+    //    if ($(this).closest("tr").find('td:eq(4)').find("#DfctQC").prop("checked") == true) {
+    //        Active1 = 'true';
+    //    }
+    //    obj.DfctQC = Active1;
+
+    //    //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+    //    obj.DfctDescript = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript").val();
+    //    obj.DfctCavNum = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum").val();
+    //    obj.EmployeeID = $(this).closest("tr").find('td:eq(7)').find("#EmployeeID").val();
+    //    obj.DfctNotes = $(this).closest("tr").find('td:eq(8)').find("#DfctNotes").val();
+    //    obj.MoldID = $("#MoldResinType").val();
+
+    //    $.ajax({
+    //        url: '/MaintenanceTracking/SaveDefectsFocusOut',
+    //        type: 'Post',
+    //        data: obj,
+    //        success: function (data) {
+
+    //        },
+    //        error: function () {
+    //        }
+    //    })
+    //})
+
+
+    $("#AddDfctTime").focusout(function ()
+    {
+        var DfctTime = convertTo24Hour($("#AddDfctTime").val().toLowerCase());
+        if (DfctTime != "Invalid date") {
+            $("#AddDfctTime").val(DfctTime);
+        }
+    })
+
+    function ConvertTimeInto24Format(Time) {
+        var time = Time;
+        var hours = Number(time.match(/^(\d+)/)[1]);
+        var minutes = Number(time.match(/:(\d+)/)[1]);
+        var AMPM = time.match(/\s(.*)$/)[1];
+        if (AMPM == "PM" && hours < 12) hours = hours + 12;
+        if (AMPM == "AM" && hours == 12) hours = hours - 12;
+        var sHours = hours.toString();
+        var sMinutes = minutes.toString();
+        if (hours < 10) sHours = "0" + sHours;
+        if (minutes < 10) sMinutes = "0" + sMinutes;
+        var FTime = (sHours + ":" + sMinutes);
+        return FTime;
+    }
+
+    $("#NewAddDefectBtn").click(function ()
+    {
+        //$("#AddDfctTime").val(GetCurrentTime());
+        $("#OldAddDefectBtn").click();
+
+        $('.modal-dialog').draggable({
+            "handle": ".modal-header"
+        });
+        $(".modal-backdrop").hide();
+    })
+
+     $("#inner_table_defects tbody tr").each(function () {
+         var row = $(this);
+
+         var Date = row.find("TD").eq(1).find("#DfctDate").val();
+         if (Date == '0001-01-01') {
+             row.find("TD").eq(1).find("#DfctDate").val('');
+         }
+
+         if (row.find("TD").eq(3).find("#DfctBlocked").val() == "value") {
+             row.find("TD").eq(3).find("#DfctBlocked").prop("checked", true);
+         }
+
+         if (row.find("TD").eq(4).find("#DfctQC").val() == "value") {
+             row.find("TD").eq(4).find("#DfctQC").prop("checked", true);
+         }
+
+         var df = row.find("TD").eq(5).find("#DfctVal").val();
+         row.find("TD").eq(5).find("#DfctDescript").val(df);
+
+         var CN = row.find("TD").eq(6).find("#DfctVal").val();
+         row.find("TD").eq(6).find("#DfctCavNum").val(CN);
+
+         var sd = row.find("TD").eq(7).find("#EmployeeVal").val();
+         row.find("TD").eq(7).find("#EmployeeID").val(sd);
+
+        })
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.TrblInseditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+    $("#AddSaveDefectTask").click(function ()
+    {
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+
+        if (SetID == null) {
+            //Swal.fire('You need to create Set Data.')
+            $(".del_btn").click();
+            return false;
+        }
+
+        var obj = new Object();
+        obj.SetID = SetID;
+        obj.DfctID = $("#AddDfctID").val();
+        obj.DfctDate = $("#AddDfctDate").val();
+        obj.DfctTime = $("#AddDfctTime").val();
+
+        var Active = 'false';
+        if ($("#AddDfctBlocked").prop("checked") == true) {
+            Active = 'true';
+        }
+
+        obj.DfctBlocked = Active;
+
+
+        //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+        var Active1 = 'false';
+        if ($("#AddDfctQC").prop("checked") == true) {
+            Active1 = 'true';
+        }
+
+        obj.DfctQC = Active1;
+
+        //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+        obj.DfctDescript = $("#AddDfctDescript").val();
+        obj.DfctCavNum = $("#AddDfctCavNum").val();
+        obj.EmployeeID = $("#AddEmployeeID").val();
+        obj.DfctNotes = $("#AddDfctNotes").val();
+        obj.MoldID = $("#MoldResinType").val();
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveDefects',
+            type: 'Post',
+            data: obj,
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MaintenanceMain").html(data);
+                    $(".modal-backdrop").hide();
+
+                    var LatestID = 0;
+                    $("#inner_table_defects tbody tr").each(function () {
+                        var LatestmOLDid = parseInt($(this).closest("tr").find('td:eq(1)').find("#DfctID").val());
+                        var NewLastestMoldID = LatestmOLDid;
+                        var NewLatestID = LatestID;
+
+                        if (NewLastestMoldID > NewLatestID) {
+                            LatestID = LatestmOLDid;
+                        }
+                    })
+
+                    $("#inner_table_defects tbody tr").each(function () {
+                        if (LatestID == $(this).closest("tr").find('td:eq(1)').find("#DfctID").val()) {
+
+                            $(this).click();
+                        }
+                    })
+
+                    $(".modal-open").css("overflow", "visible");
+
+                })
+            },
+            error: function () {
+            }
+        })
+
+    })
+
+    @*function AddDefect()
+    {
+        var htmlstring = "<tr><td><input type='checkbox' value='0' class='Subcheckbox' id='DefectID' name='checknameDefect'></td>";
+        htmlstring += "<td><input type='date' value='' id='DfctDate' name='DfctDate' class='form-control'></td>";
+        htmlstring += "<td><input type='text' value='' id='DfctTime' class='form-control'></td>";
+        htmlstring += "<td><input type='checkbox' value='' id='DfctBlocked' class=''></td>";
+        htmlstring += "<td><input type='checkbox' value='' id='DfctQC' class=''></td>";
+        htmlstring += "<td><select class='form-control' id='DfctDescript'>@foreach (var s in ViewBag.RepairTask){<option value='@s.Value'>@s.Text</option>}</select></td>";
+        htmlstring += "<td><select class='form-control' id='DfctCavNum'>@foreach (var s in ViewBag.CavNum) {<option value='@s.Value'>@s.Text</option>}</select></td>";
+        htmlstring += "<td><select class='form-control' id='EmployeeID' >@foreach (var s in ViewBag.Technician){<option value='@s.Value'>@s.Text</option>}</select></td>";
+        htmlstring += "<td><input type='text' value='' id='DfctNotes' class='form-control'></td></tr>";
+        $("#inner_table_defects tbody").append(htmlstring);
+    }*@
+
+    $(document).ready(function () {
+        $('#ChckAllDefect').click(function () {
+            if ($(this).is(':checked'))
+                $('input[name="checknameDefect"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="checknameDefect"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="checknameDefect"].Subcheckbox').click(function () {
+            if ($('input:checkbox[name="checknameDefect"].Subcheckbox').length == $('input:checkbox[name="checknameDefect"].Subcheckbox:checked').length) {
+                $('input[name="checknameDefect"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="checknameDefect"].SelectAll').prop("checked", false);
+            }
+        })
+    })
+
+    //function SaveDefectTaskList()
+    //{
+    //    var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+    //    var obj = new Object();
+    //    obj.SetID = SetID;
+    //    obj.DfctID = $(this).closest("tr").find('td:eq(1)').find("#DfctID").val();
+    //    obj.DfctDate = $(this).closest("tr").find('td:eq(1)').find("#DfctDate").val();
+
+    //    var DfctTime = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#DfctTime").val().toLowerCase());
+
+    //    $(this).closest("tr").find('td:eq(2)').find("#DfctTime").val(DfctTime);
+
+    //    obj.DfctTime = DfctTime;
+
+    //    var Active = 'false';
+    //    if ($(this).closest("tr").find('td:eq(3)').find("#DfctBlocked").prop("checked") == true) {
+    //        Active = 'true';
+    //    }
+
+    //    obj.DfctBlocked = Active;
+
+    //    var Active1 = 'false';
+    //    if ($(this).closest("tr").find('td:eq(4)').find("#DfctQC").prop("checked") == true) {
+    //        Active1 = 'true';
+    //    }
+    //    obj.DfctQC = Active1;
+    //    obj.DfctDescript = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript").val();
+    //    obj.DfctCavNum = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum").val();
+    //    obj.EmployeeID = $(this).closest("tr").find('td:eq(7)').find("#EmployeeID").val();
+    //    obj.DfctNotes = $(this).closest("tr").find('td:eq(8)').find("#DfctNotes").val();
+    //    obj.MoldID = $("#MoldResinType").val();
+
+    //    $.ajax({
+    //        url: '/MaintenanceTracking/SaveDefectsFocusOut',
+    //        type: 'Post',
+    //        data: obj,
+    //        success: function () {
+
+    //        },
+    //        error: function () {
+    //        }
+    //    })
+    //}
+
+
+    function convertTo24Hour(time) {
+        if (time == "12" || time == "12:00" || time == "12:0") {
+            time = "12pm";
+        }
+        var momentObj = moment(time, ["h:mm A"])
+        return momentObj.format("HH:mm");
+    }
+
+    $(".DefectTaskFocusOut").focusout(function () {
+        $(this).closest("tr").attr('name', '1');
+    })
+
+    //$(".DefectTaskFocusOut").focusout(function ()
+    //{
+    //    var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+    //    var obj = new Object();
+    //    obj.SetID = SetID;
+    //    obj.DfctID = $(this).closest("tr").find('td:eq(1)').find("#DfctID").val();
+    //    obj.DfctDate = $(this).closest("tr").find('td:eq(1)').find("#DfctDate").val();
+
+    //    var DfctTime = convertTo24Hour($(this).closest("tr").find('td:eq(2)').find("#DfctTime").val().toLowerCase());
+
+    //    $(this).closest("tr").find('td:eq(2)').find("#DfctTime").val(DfctTime);
+
+    //    obj.DfctTime = DfctTime;
+
+    //    var Active = 'false';
+    //    if ($(this).closest("tr").find('td:eq(3)').find("#DfctBlocked").prop("checked") == true) {
+    //        Active = 'true';
+    //    }
+
+    //    obj.DfctBlocked = Active;
+
+
+    //    //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+    //    var Active1 = 'false';
+    //    if ($(this).closest("tr").find('td:eq(4)').find("#DfctQC").prop("checked") == true) {
+    //        Active1 = 'true';
+    //    }
+    //    obj.DfctQC = Active1;
+
+    //    //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+    //    obj.DfctDescript = $(this).closest("tr").find('td:eq(5)').find("#DfctDescript").val();
+    //    obj.DfctCavNum = $(this).closest("tr").find('td:eq(6)').find("#DfctCavNum").val();
+    //    obj.EmployeeID = $(this).closest("tr").find('td:eq(7)').find("#EmployeeID").val();
+    //    obj.DfctNotes = $(this).closest("tr").find('td:eq(8)').find("#DfctNotes").val();
+    //    obj.MoldID = $("#MoldResinType").val();
+
+    //    $.ajax({
+    //        url: '/MaintenanceTracking/SaveDefectsFocusOut',
+    //        type: 'Post',
+    //        data: obj,
+    //        success: function (data) {
+
+    //        },
+    //        error: function () {
+    //        }
+    //    })
+
+
+    //})
+
+    //function SavePreviosuDefectData()
+    //{
+    //    var model = new Array();
+
+    //    var SetID = $("#PreviosuSetID").val();
+    //    if (SetID == null) {
+    //        Swal.fire('You need to create Record first.')
+    //        return false;
+    //    }
+
+    //    $("#inner_table_defects tbody tr").each(function () {
+    //        var row = $(this);
+
+    //        if ($(this).attr('name') == 1) {
+    //            var Tooling = {};
+
+    //            Tooling.SetID = SetID;
+    //            Tooling.DfctID = row.find("TD").eq(1).find("#DfctID").val();
+    //            Tooling.DfctDate = row.find("TD").eq(1).find("input[name='DfctDate']").val();
+    //            Tooling.DfctTime = row.find("TD").eq(2).find("#DfctTime").val();
+
+    //            var Active = 'false';
+    //            if (row.find("TD").eq(3).find("#DfctBlocked").prop("checked") == true) {
+    //                Active = 'true';
+    //            }
+
+    //            Tooling.DfctBlocked = Active;
+
+
+    //            //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+    //            var Active1 = 'false';
+    //            if (row.find("TD").eq(4).find("#DfctQC").prop("checked") == true) {
+    //                Active1 = 'true';
+    //            }
+
+    //            Tooling.DfctQC = Active1;
+
+    //            //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+    //            Tooling.DfctDescript = row.find("TD").eq(5).find("#DfctDescript").val();
+    //            Tooling.DfctCavNum = row.find("TD").eq(6).find("#DfctCavNum").val();
+    //            Tooling.EmployeeID = row.find("TD").eq(7).find("#EmployeeID").val();
+    //            Tooling.DfctNotes = row.find("TD").eq(8).find("#DfctNotes").val();
+    //            Tooling.MoldID = $("#MoldResinType").val();
+    //            model.push(Tooling);
+    //        }
+    //    })
+    //    var MoldID = $("#MoldResinType").val();
+
+    //    $.ajax({
+
+    //        url: '/MaintenanceTracking/SaveDefectsList',
+    //        type: 'Post',
+    //        data: JSON.stringify(model),
+    //        contentType: 'application/json',
+    //        dataType: 'html',
+    //        success: function (data) {
+    //        },
+    //        error: function () {
+    //        }
+    //    })
+
+    //}
+
+
+    function SaveDefect() {
+        var model = new Array();
+
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        if (SetID == null) {
+            //Swal.fire('You need to create Record first.')
+            return false;
+        }
+
+        $("#inner_table_defects tbody tr").each(function () {
+            var row = $(this);
+
+            if ($(this).attr('name') == 1) {
+                var Tooling = {};
+
+                Tooling.SetID = SetID;
+                Tooling.DfctID = row.find("TD").eq(1).find("#DfctID").val();
+                Tooling.DfctDate = row.find("TD").eq(1).find("input[name='DfctDate']").val();
+                Tooling.DfctTime = row.find("TD").eq(2).find("#DfctTime").val();
+
+                var Active = 'false';
+                if (row.find("TD").eq(3).find("#DfctBlocked").prop("checked") == true) {
+                    Active = 'true';
+                }
+
+                Tooling.DfctBlocked = Active;
+
+
+                //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+                var Active1 = 'false';
+                if (row.find("TD").eq(4).find("#DfctQC").prop("checked") == true) {
+                    Active1 = 'true';
+                }
+
+                Tooling.DfctQC = Active1;
+
+                //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+                Tooling.DfctDescript = row.find("TD").eq(5).find("#DfctDescript").val();
+                Tooling.DfctCavNum = row.find("TD").eq(6).find("#DfctCavNum").val();
+                Tooling.EmployeeID = row.find("TD").eq(7).find("#EmployeeID").val();
+                Tooling.DfctNotes = row.find("TD").eq(8).find("#DfctNotes").val();
+                Tooling.MoldID = $("#MoldResinType").val();
+                model.push(Tooling);
+            }
+    })
+        var MoldID = $("#MoldResinType").val();
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/SaveDefectsList',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+            },
+            error: function () {
+            }
+        })
+
+    }
+
+
+    function DeleteSelectedDefect() {
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        var MoldID = $("#MoldResinType").val();
+        var selID = new Array();
+        var str = '';
+        $('input:checkbox[name=checknameDefect].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+            }
+            //if (selID == 0) {
+            //    $(this).closest("tr").remove();
+            //}
+        });
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+
+                    $.ajax({
+                        url: "/MaintenanceTracking/DeleteDefects",
+                        type: "post",
+                        data: { str: str, SetID: SetID, MoldID: MoldID },
+                        success: function (data) {
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#MaintenanceMain").html(data);
+
+                            })
+
+                            //window.location.href = '/DetailMoldInfo/Index';
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+    }
+
+    function CopyData()
+    {
+        SaveDefect();
+
+        var MoldID = $("#CopyMold").val();
+        var MainMoldID = $("#MoldResinType").val();
+
+        var model = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checknameDefect].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var row = $(this).closest('tr');
+
+                var Tooling = {};
+                //Tooling.SetID = SetID;
+                Tooling.DfctID = 0;
+                Tooling.DfctDate = row.find("TD").eq(1).find("input[name='DfctDate']").val();
+                Tooling.DfctTime = row.find("TD").eq(2).find("#DfctTime").val();
+
+                var Active = 'false';
+                if (row.find("TD").eq(3).find("#DfctBlocked").prop("checked") == true) {
+                    Active = 'true';
+                }
+
+                Tooling.DfctBlocked = Active;
+
+
+                //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+                var Active1 = 'false';
+                if (row.find("TD").eq(4).find("#DfctQC").prop("checked") == true) {
+                    Active1 = 'true';
+                }
+
+                Tooling.DfctQC = Active1;
+
+                //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+                Tooling.DfctDescript = row.find("TD").eq(5).find("#DfctDescript").val();
+                Tooling.DfctCavNum = row.find("TD").eq(6).find("#DfctCavNum").val();
+                Tooling.EmployeeID = row.find("TD").eq(7).find("#EmployeeID").val();
+                Tooling.DfctNotes = row.find("TD").eq(8).find("#DfctNotes").val();
+                Tooling.MoldID = MoldID;
+                model.push(Tooling);
+            }
+        });
+
+        $.ajax({
+
+            url: '/MaintenanceTracking/CopyDefectData',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'json',
+            success: function (data) {
+                //Swal.fire({
+                //    text: 'Data saved Successfully.',
+                //    type: "success"
+                //}).then(function () {
+                //    $("#MaintenanceMain").html(data);
+                //})
+            },
+            error: function () {
+            }
+        })
+    }
+
+    function PasteData()
+    {
+        SaveDefect();
+
+        //var MoldID = $("#CopyMold").val();
+        var MainMoldID = $("#MoldResinType").val();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        if (SetID == null) {
+            //Swal.fire('You need to create Record first.')
+            return false;
+        }
+
+
+        $.ajax({
+            url: '/MaintenanceTracking/PasteDefectDate?SetID=' + SetID + '&MoldID=' + MainMoldID,
+            type: 'Post',
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                $("#MaintenanceMain").html(data);
+                var LatestID = 0;
+                $("#inner_table_defects tbody tr").each(function () {
+                    var LatestmOLDid = parseInt($(this).closest("tr").find('td:eq(1)').find("#DfctID").val());
+                    var NewLastestMoldID = LatestmOLDid;
+                    var NewLatestID = LatestID;
+
+                    if (NewLastestMoldID > NewLatestID) {
+                        LatestID = LatestmOLDid;
+                    }
+                })
+
+                $("#inner_table_defects tbody tr").each(function () {
+                    if (LatestID == $(this).closest("tr").find('td:eq(1)').find("#DfctID").val()) {
+
+                        $(this).click();
+                    }
+
+                })
+            },
+            error: function () {
+            }
+        })
+
+    }
+
+
+    $('.DefectTaskFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.DefectTaskFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblDDDfctDescript.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.DefectTask.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+
+    $("#SaveCopyMold").click(function () {
+        var MoldID = $("#CopyMold").val();
+        var MainMoldID = $("#MoldResinType").val();
+
+        var model = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checknameDefect].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var row = $(this).closest('tr');
+
+                var Tooling = {};
+                Tooling.SetID = SetID;
+                Tooling.DfctID = 0;
+                Tooling.DfctDate = row.find("TD").eq(1).find("input[name='DfctDate']").val();
+                Tooling.DfctTime = row.find("TD").eq(2).find("#DfctTime").val();
+
+                var Active = 'false';
+                if (row.find("TD").eq(3).find("#DfctBlocked").prop("checked") == true) {
+                    Active = 'true';
+                }
+
+                Tooling.DfctBlocked = Active;
+
+
+                //Tooling.DfctBlocked = row.find("TD").eq(3).find("#DfctBlocked").val();
+
+                var Active1 = 'false';
+                if (row.find("TD").eq(4).find("#DfctQC").prop("checked") == true) {
+                    Active1 = 'true';
+                }
+
+                Tooling.DfctQC = Active1;
+
+                //Tooling.DfctQC = row.find("TD").eq(4).find("#DfctQC").val();
+                Tooling.DfctDescript = row.find("TD").eq(5).find("#DfctDescript").val();
+                Tooling.DfctCavNum = row.find("TD").eq(6).find("#DfctCavNum").val();
+                Tooling.EmployeeID = row.find("TD").eq(7).find("#EmployeeID").val();
+                Tooling.DfctNotes = row.find("TD").eq(8).find("#DfctNotes").val();
+                Tooling.MoldID = MoldID;
+                model.push(Tooling);
+            }
+        });
+        $.ajax({
+
+            url: '/MaintenanceTracking/SaveDefects?MainMoldID=' + MainMoldID,
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function (data) {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#MaintenanceMain").html(data);
+                })
+            },
+            error: function () {
+            }
+        })
+    })
+</script>
+<script>
+    document.getElementById('table2').style.height = window.innerHeight - 454 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

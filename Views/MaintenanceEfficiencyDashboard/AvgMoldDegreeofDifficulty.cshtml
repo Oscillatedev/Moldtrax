@@ -1,0 +1,119 @@
+﻿@model IEnumerable<Moldtrax.Models.CompleteMaintenanceTracking>
+
+@{
+    ViewBag.Title = "AvgMoldDegreeofDifficulty";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .card_header h5 {
+        margin-bottom: 8px;
+    }
+    .code-cut {
+        /*overflow: auto;*/
+        display: inline-block;
+    }
+</style>
+<div class="card box_design">
+    <div class="card_header">
+        <div class="row">
+            <div class="col-md-6">
+                <h5 class="main_top_head">Get Scheduled Stops X Stops</h5>
+            </div>
+            <div class="col-md-6 text-right btn_css">
+                <button onclick="window.close()" class="back_btn">Back</button>
+
+            </div>
+        </div>
+    </div>
+    <div class="card_body">
+        <div class="row">
+            <div class="col-md-12" id="report_tables">
+                <div class="code-cut">
+                    <table id="ScheduleStopXstop" class="table table-striped table-bordered" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Mold <img src="~/images/sort.png" /></th>
+                                <th>Description <img src="~/images/sort.png" /></th>
+                                <th>DoD <img src="~/images/sort.png" /></th>
+                                <th>Configuration <img src="~/images/sort.png" /></th>
+                                <th>Configuration2 <img src="~/images/sort.png" /></th>
+                                <th>Start Date <img src="~/images/sort.png" /></th>
+                                <th>Start Time <img src="~/images/sort.png" /></th>
+                                <th>Press <img src="~/images/sort.png" /></th>
+                                <th>Start Tech <img src="~/images/sort.png" /></th>
+                                <th>Stop Date <img src="~/images/sort.png" /></th>
+                                <th>Stop Time <img src="~/images/sort.png" /></th>
+                                <th>Mold Stop Reason <img src="~/images/sort.png" /></th>
+                                <th>Cycle Count <img src="~/images/sort.png" /></th>
+                                <th>Run Time Hours <img src="~/images/sort.png" /></th>
+                                <th>Stop Tech <img src="~/images/sort.png" /></th>
+                                <th>Repair Date <img src="~/images/sort.png" /></th>
+                                <th>Repair Hours <img src="~/images/sort.png" /></th>
+                                <th>Status <img src="~/images/sort.png" /></th>
+                                <th>Repair Tech <img src="~/images/sort.png" /></th>
+                                <th>Work Order <img src="~/images/sort.png" /></th>
+                                <th>Actual <img src="~/images/sort.png" /></th>
+                                <th>Adjust <img src="~/images/sort.png" /></th>
+                                <th>SetID <img src="~/images/sort.png" /></th>
+                                <th>MoldDataID <img src="~/images/sort.png" /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var x in Model)
+                            {
+                                <tr>
+                                    <td>@x.Mold</td>
+                                    <td>@x.Description</td>
+                                    <td class="num_right">@x.DoD</td>
+                                    <td>@x.Configuration</td>
+                                    <td>@x.Configuration2</td>
+                                    <td class="num_right">@Convert.ToDateTime(x.StartDate).ToShortDateString()</td>
+                                    <td class="num_right">@Convert.ToDateTime(x.StartTime).ToShortTimeString()</td>
+                                    <td>@x.Press</td>
+                                    <td>@x.StartTech</td>
+                                    <td class="num_right">@Convert.ToDateTime(x.StopDate).ToShortDateString()</td>
+                                    <td class="num_right">@Convert.ToDateTime(x.StopTime).ToShortTimeString()</td>
+                                    <td>@x.MoldStopReason</td>
+                                    <td class="num_right">@String.Format("{0:n0}", x.CycleCount) </td>
+                                    <td class="num_right">@String.Format("{0:n2}", x.RunTimeHours)</td>
+                                    <td>@x.StopTech</td>
+                                    <td class="num_right">@Convert.ToDateTime(x.RepairDate).ToShortDateString()</td>
+                                    <td class="num_right">@x.RepairHours</td>
+                                    <td>@x.Status</td>
+                                    <td>@x.RepairTech</td>
+                                    <td>@x.WorkOrder</td>
+                                    <td class="num_right">@String.Format("{0:n2}", x.Actual)</td>
+                                    <td class="num_right">@x.Adjust</td>
+                                    <td class="num_right">@x.SetID</td>
+                                    <td class="num_right">@x.MoldDataID</td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+                </div>
+        </div>
+    </div>
+</div>
+<h2></h2>
+
+
+
+
+
+<script>
+    $(document).ready(function () {
+        $('#ScheduleStopXstop').DataTable({
+            "paging": false
+        });
+        $("#HeaderTop").hide();
+
+    });
+</script>
+
+<script>
+    document.getElementById('report_tables').style.height = window.innerHeight - 100 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

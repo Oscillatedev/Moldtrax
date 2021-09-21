@@ -1,0 +1,401 @@
+﻿@model IEnumerable<Moldtrax.Models.tblDocs>
+
+@{
+    int Userid = ViewBag.MoldDataID;
+    Layout = null;
+}
+
+<style>
+
+    .table-con {
+        height: 230px;
+    }
+
+    #Modal_textareaTTLinks {
+        position: relative;
+    }
+
+    .modal-dialog {
+        position: fixed;
+        width: 100%;
+        margin: 0;
+        padding: 10px;
+    }
+
+    div#table4 {
+    overflow-x: hidden;
+    }
+
+    .DocLink {
+        color: blue !important;
+        text-decoration: underline;
+        cursor: pointer;
+    }
+</style>
+@*<script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery-ui-1.12.1.js"></script>
+<script src="~/Scripts/DatatableJs/jquery.dataTables.min.js"></script>
+<script src="~/Scripts/DatatableJs/dataTables.bootstrap4.min.js"></script>
+<link href="~/Content/Datatable/dataTables.bootstrap4.min.css" rel="stylesheet" />*@
+<div class="row btn_css">
+    <div class="col-md-12 text-right">
+        <input type="button" class="add_btn" id="AddNewTTLinks" value="Add" />
+        <input type="hidden" data-target="#Modal_textareaTTLinks" data-toggle="modal" id="OldNewTTLinks" class="add_btn" value="Add" />
+        @*<input type="button" onclick="SaveLinks()" class="edit_btn" value="Save" />*@
+        <input type="button" onclick="DeleteTTLInks()" id="TTLINKSDelete" class="del_btn" value="Delete" />
+    </div>
+</div>
+<div class="table-con" id="table4">
+    <table id="Linktbl" class="table table-bordered table-responsive">
+        <thead>
+            <tr>
+                <th><input type='checkbox' class='SelectAll' id='QuotecheckallLink' value="0" name='checkname' /></th>
+                <th class="th_tt1">Category</th>
+                <th class="th_tt2">Name</th>
+                <th class="th_tt3">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var x in Model)
+            {
+                <tr>
+                    <td class="link_td1"><input type="checkbox" value='@x.DocID' class="Subcheckbox" name="checknameLink" /></td>
+                    <td class="link_td2">
+                        <input type="hidden" value="@x.DocID" class="form-control" id="DocID" name="DocID" />
+                        <input type="hidden" id="DocSection" class="form-control" name="DocSection" value="@x.DocSection" />
+                        <input type="hidden" value="@x.DocMoldID" class="form-control" id="DocMoldID" name="DocMoldID" />
+                        <select id="Category" name="Category" class="form-control CallingFocusOutTTLinks">
+                            <option></option>
+                            @foreach (var i in ViewBag.CategoryVal)
+                            {
+                                <option value="@i.Value">@i.Text</option>
+                            }
+                        </select>
+                    </td>
+                    <td class="link_td3">
+                        <input type="text" autocomplete="off" value="@x.DocName" id="DocName" name="DocName" class="form-control CallingFocusOutTTLinks" />
+                    </td>
+                    <td class="link_td4">
+                        <input type="text" autocomplete="off" value="@x.DocLink" id="DocLink" name="DocLink" class="form-control CallingFocusOutTTLinks DocLink" />
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" id="Modal_textareaTTLinks">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Create Links</h4>
+            </div>
+            <div class="modal-body">
+                <table id="Linktbl" class="table table-bordered table-responsive">
+                    <thead>
+                        <tr>
+                            <th class="th_tt1">Category</th>
+                            <th class="th_tt2">Name</th>
+                            <th class="th_tt3">Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="link_td2">
+                                <select id="AddCategory" name="Category" class="form-control">
+                                    <option></option>
+                                    @foreach (var i in ViewBag.CategoryVal)
+                                    {
+                                        <option value="@i.Value">@i.Text</option>
+                                    }
+                                </select>
+                            </td>
+                            <td class="link_td3">
+                                <input type="text" autocomplete="off" value="" id="AddDocName" name="DocName" class="form-control" />
+                            </td>
+                            <td class="link_td4">
+                                <input type="text" value="" autocomplete="off" id="AddDocLink" name="DocLink" class="form-control" />
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer btn_css">
+                <input type="button" id="SaveAddLinks" class="add_btn" value="Save" />
+                <input type="button" class="del_btn" data-dismiss="modal" value="Close" />
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('table4').addEventListener("scroll", function () {
+        var translate = "translate(0," + this.scrollTop + "px)";
+        var myElements = this.querySelectorAll("thead");
+        //myElements.style.border = '2px solid red';
+        for (var i = 0; i < myElements.length; i++) {
+            myElements[i].style.transform = translate;
+        }
+    });
+</script>
+<script>
+
+    $(".DocLink").dblclick(function () {
+        debugger;
+        var url = $(this).closest("tr").find('td:eq(3)').find("#DocLink").val();
+        if (url.includes("http") || url.includes("https") || url.includes("Http") || url.includes("Https")) {
+            window.open(url);
+        }
+        else if (url.includes("www")) {
+            window.open("http://" + url);
+        }
+    })
+
+
+    $.fn.dataTable.ext.order['dom-text'] = function (settings, col) {
+        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+            return $('input', td).val();
+        });
+    };
+
+    $.fn.dataTable.ext.order['dom-select'] = function (settings, col) {
+        return this.api().column(col, { order: 'index' }).nodes().map(function (td, i) {
+            return $('select', td).val();
+        });
+    }
+
+    $('#Linktbl').DataTable({
+        paging: false,
+        searching: false,
+        bInfo: false,
+        columnDefs: [
+            {
+                targets: [1, 2, 3],
+                type: 'natural',
+                orderDataType: "dom-text", type: 'string'
+            }
+        ]
+    });
+
+
+        $("#AddNewTTLinks").click(function ()
+        {
+            $("#OldNewTTLinks").click();
+            $('.modal-dialog').draggable({
+                "handle": ".modal-header"
+            });
+            $(".modal-backdrop").hide();
+        })
+
+
+    $("#Linktbl tbody tr").each(function () {
+        var row = $(this);
+        var Trouble;
+        Trouble = row.find("TD").eq(1).find("#DocSection").val();
+        row.find("TD").eq(1).find("#Category").val(Trouble);
+    })
+
+        $("#SaveAddLinks").click(function () {
+            var obj = new Object();
+            obj.DocMoldID = $("#MoldResinType").val();
+            obj.DocSection = $("#AddCategory").val();
+            obj.DocName = $("#AddDocName").val();
+            obj.DocLink = $("#AddDocLink").val();
+            $.ajax({
+                url: '/MaintenanceTracking/SaveTTLinks',
+                type: 'Post',
+                data: obj,
+                success: function (data) {
+                    Swal.fire({
+                        text: 'Data saved Successfully.',
+                        type: "success"
+                    }).then(function () {
+                        $("#innermenu8").html(data);
+                        $(".modal-backdrop").hide();
+                    })
+                },
+                error: function () {
+                }
+            })
+        })
+
+
+        $(".CallingFocusOutTTLinks").focusout(function (e) {
+            e.stopPropagation();
+            var obj = new Object();
+            obj.DocID = $(this).closest("tr").find('td:eq(1)').find("#DocID").val();
+            obj.DocMoldID = $(this).closest("tr").find('td:eq(1)').find("#DocMoldID").val();
+            obj.DocSection = $(this).closest("tr").find('td:eq(1)').find("#Category").val();
+            obj.DocName = $(this).closest("tr").find('td:eq(2)').find("#DocName").val();
+            obj.DocLink = $(this).closest("tr").find('td:eq(3)').find("#DocLink").val();
+
+            $.ajax({
+                url: '/MaintenanceTracking/SaveTTLinksAutoFocus',
+                type: 'Post',
+                data: obj,
+                success: function (data) {
+                },
+                error: function () {
+
+                }
+            })
+
+        })
+
+
+    $(document).ready(function () {
+
+        $('#QuotecheckallLink').click(function () {
+            debugger;
+            if ($(this).is(':checked'))
+                $('input[name="checknameLink"].Subcheckbox').prop('checked', true)
+            else
+                $('input[name="checknameLink"].Subcheckbox').prop('checked', false)
+        });
+
+        $('input[name="checknameLink"].Subcheckbox').click(function () {
+            debugger;
+            if ($('input:checkbox[name="checknameLink"].Subcheckbox').length == $('input:checkbox[name="checknameLink"].Subcheckbox:checked').length) {
+                $('input[name="checknameLink"].SelectAll').prop("checked", true);
+            }
+            else {
+                $('input[name="checknameLink"].SelectAll').prop("checked", false);
+            }
+
+        })
+    })
+
+
+    function AddTrLink()
+    {
+        var htmlstring = "<tr><td><input type='checkbox' value='0' class='Subcheckbox' name='checknameLink' /></td><td><input type='hidden' id='DocSection' name='DocSection' value='' />";
+        htmlstring += "<input type = 'hidden' value = '@Userid' id = 'DocMoldID' name = 'DocMoldID' /><select id='Category' name='Category'><option></option>@foreach (var i in ViewBag.CategoryVal){<option value='@i.Text'>@i.Text</option>}</select></td > ";
+        htmlstring += "<td><input type='text' value='' id='DocName' name='DocName' /></td><td><input type='text' value='' id='DocLink' name='DocLink' /></td></tr>";
+        $("#Linktbl tbody").append(htmlstring);
+
+    }
+
+    function SaveLinks()
+    {
+        var model = new Array();
+
+        $("#Linktbl tbody tr").each(function () {
+            var row = $(this);
+            var Trouble = {};
+
+            Trouble.DocID = row.find("TD").eq(1).find("#DocID").val();
+            Trouble.DocMoldID = row.find("TD").eq(1).find("#DocMoldID").val();
+            Trouble.DocSection = row.find("TD").eq(1).find("#Category").val();
+
+            Trouble.DocName = row.find("TD").eq(2).find("#DocName").val();
+            Trouble.DocLink = row.find("TD").eq(3).find("#DocLink").val();
+            model.push(Trouble);
+        })
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveTTLinks',
+            type: 'Post',
+            data: JSON.stringify(model),
+            contentType: 'application/json',
+            dataType: 'html',
+            success: function ()
+            {
+                Swal.fire({
+                    text: 'Data saved Successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#innermenu8").html(data);
+                })
+            },
+            error: function ()
+            {
+
+            }
+        })
+
+    }
+
+
+    function DeleteTTLInks() {
+        debugger;
+
+        //$(".loader__wrap").show();
+        var MoldID = $("#MoldResinType").val();
+
+        var selID = new Array();
+        var str = '';
+        //$("#loader").show();
+        $('input:checkbox[name=checknameLink].Subcheckbox:checked').each(function () {
+            if ($(this).prop('checked')) {
+                var selID = $(this).val();
+                if (selID == "on")
+                    selID = 0;
+                if (selID > 0) {
+                    str += "" + selID + ",";
+                }
+                debugger;
+            }
+
+        });
+
+        if (str == '') {
+            //Swal.fire('Please select item.')
+        }
+        //else if (str == 0)
+        //{
+
+        //}
+
+        else {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this.",
+                type: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it.'
+            }).then((result) => {
+                if (result.value) {
+                    $(".loader__wrap").show();
+                    //$('input:checkbox[name=checknameNote].Subcheckbox:checked').each(function () {
+                    //    if (selID == -1)
+                    //    {
+                    //        $(this).closest("tr").remove();
+                    //    }
+                    //});
+                    $.ajax({
+                        url: "/MaintenanceTracking/DeleteTTLinks",
+                        type: "post",
+                        data: { str: str, MoldID: MoldID },
+                        success: function (data) {
+                            debugger;
+                            //$("#TroubleShooter").html(data);
+                            //$(".loader__wrap").hide();
+                            Swal.fire({
+                                title: 'Deleted',
+                                text: 'Data has been deleted.',
+                                type: "success"
+                            }).then(function () {
+                                $("#innermenu8").html(data);
+                            })
+
+
+                            //window.location.href = '/DetailMoldInfo/Index';
+                        },
+                        error: function () {
+                            //$(".loader__wrap").hide();
+                        }
+                    });
+                }
+            })
+        }
+        debugger;
+    }
+
+</script>
+<script>
+    document.getElementById('table4').style.height = window.innerHeight - 492 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

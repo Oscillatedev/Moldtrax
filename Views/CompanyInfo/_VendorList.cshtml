@@ -1,0 +1,452 @@
+﻿@model Moldtrax.Models.TBLVendorMain
+    @using Moldtrax.Models
+@{
+    int Total = 0;
+    foreach (var x in Model.TblVendorsList)
+    {
+        Total += 1;
+    }
+}
+<style>
+    .table-con {
+        overflow-y: auto;
+        height: 580px;
+    }
+
+    .w_35 label {
+        width: 35%;
+        float: left;
+    }
+
+    .w_35 .form-control {
+        width: 65%;
+        float: left;
+    }
+
+    .w_15 label {
+        width: 16.5%;
+        float: left;
+    }
+
+    .w_15 .form-control {
+        width: 83.5%;
+        float: left;
+    }
+
+    .w_30 label {
+        width: 32%;
+        float: left;
+        line-height: 26px;
+    }
+
+    .w_30 .form-control {
+        width: 68%;
+        float: left;
+    }
+    .w_35 label, .w_15 label {
+        line-height: 28px;
+    }
+</style>
+@*<br>*@
+
+<div class="row">
+    <div class="col-md-2 m-10">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Select Vendor</h5>
+            </div>
+            <div class="card_body table_layout_left table-con" id="table">
+                <table class="table table-mold table table-responsive">
+                    <tbody>
+                        @foreach (var x in Model.TblVendorsList)
+                        {
+                            <tr onclick="CallVendorList(@x.VendorID, this)">
+                                <td>
+                                    <label>@x.VendorName</label>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <label class="red_total">Total Vendors: @Total</label>
+        </div>
+    </div>
+    <div class="col-md-10" id="VendrDeta">
+        <form id="VendorDetailFrm">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card_header m-0">
+                        <h5 class="main_top_head">@Model.TblVendors.VendorName</h5>
+                    </div>
+                </div>
+                <div class="col-md-6 text-right btn_css">
+                    @*<input type="button" class="back_btn" value="Back" onclick="doUndo()" />*@
+                    <input type="button" class="add_btn" value="Add" onclick="AddVendor()" />
+                    @*<input type="submit" class="edit_btn" value="Save" />*@
+                    <input type="button" class="delete_btn" onclick="DeleteVendor(@Model.TblVendors.VendorID)" value="Delete Selected Customer" />
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card box_design" id="cust_info">
+                        <div class="card_header">
+                            <h5>Vendor Name & Address</h5>
+                        </div>
+                        <input type="hidden" id="VendorID" name="VendorID" value="@Model.TblVendors.VendorID" />
+                        <input type="hidden" value="@Model.TblVendors.CompanyID" id="CompanyID" name="CompanyID" />
+                        <div class="card_body">
+                            <label>Name</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.VendorName" id="VendorName" name="VendorName" class="form-control">
+
+                            <label>Address</label>
+                            <textarea autocomplete="off" class="form-control VendorFocusOutFunc" id="Address1" name="Address1" rows="2">@Model.TblVendors.Address1</textarea>
+
+                            <label>City</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.City" id="City" name="City" class="form-control VendorFocusOutFunc">
+
+                            <label>State/Prov</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.StateOrProvince" id="StateOrProvince" name="StateOrProvince" class="form-control VendorFocusOutFunc">
+
+                            <label>Zip/Postal</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.PostalCode" id="PostalCode" name="PostalCode" class="form-control VendorFocusOutFunc">
+
+                            <label>Country</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.Country" id="Country" name="Country" class="form-control VendorFocusOutFunc">
+
+                            <label>Phone</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.PhoneNumber" id="PhoneNumber" name="PhoneNumber" class="form-control VendorFocusOutFunc">
+
+                            <label>Fax</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.FaxNumber" id="FaxNumber" name="FaxNumber" class="form-control VendorFocusOutFunc">
+
+                            <label>Web Site</label>
+                            <input type="text" autocomplete="off" value="@Model.TblVendors.VendorURL" id="VendorURL" name="VendorURL" class="form-control VendorFocusOutFunc">
+                        </div>
+                    </div>
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Vendor Notes</h5>
+                        </div>
+                        <div class="card_body ">
+                            <textarea autocomplete="off" class="form-control VendorFocusOutFunc" id="Notes" name="Notes" style="height: 97px;">@Model.TblVendors.Notes</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>First Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>First Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont1FirstName" id="VENCont1FirstName" name="VENCont1FirstName" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Last Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont1LastName" id="VENCont1LastName" name="VENCont1LastName" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-12 w_15">
+                                    <label>E-Mail</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont1EMail" id="VENCont1EMail" name="VENCont1EMail" class="form-control VendorFocusOutFunc">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 w_30">
+                                    <label>Phone</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont1Phone" id="VENCont1Phone" name="VENCont1Phone" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-4 w_30">
+                                    <label>Fax</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont1Fax" id="VENCont1Fax" name="VENCont1Fax" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-4 w_30">
+                                    <label>Mobile</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont1Mobile" id="VENCont1Mobile" name="VENCont1Mobile" class="form-control VendorFocusOutFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Second Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>First Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont2FirstName" id="VENCont2FirstName" name="VENCont2FirstName" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Last Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont2LastName" id="VENCont2LastName" name="VENCont2LastName" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-12 w_15">
+                                    <label>E-Mail</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont2EMail" id="VENCont2EMail" name="VENCont2EMail" class="form-control VendorFocusOutFunc">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 w_30">
+                                    <label>Phone</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont2Phone" id="VENCont2Phone" name="VENCont2Phone" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-4 w_30">
+                                    <label>Fax</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont2Fax" id="VENCont2Fax" name="VENCont2Fax" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-4  w_30">
+                                    <label>Mobile</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont2Mobile" id="VENCont2Mobile" name="VENCont2Mobile" class="form-control VendorFocusOutFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Third Contact</h5>
+                        </div>
+                        <div class="card_body">
+                            <div class="row">
+                                <div class="col-md-6 w_35">
+                                    <label>First Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont3FirstName" id="VENCont3FirstName" name="VENCont3FirstName" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-6 w_35">
+                                    <label>Last Name</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont3LastName" id="VENCont3LastName" name="VENCont3LastName" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-12 w_15">
+                                    <label>E-Mail</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont3EMail" id="VENCont3EMail" name="VENCont3EMail" class="form-control VendorFocusOutFunc">
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-4 w_30">
+                                    <label>Phone</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont3Phone" id="VENCont3Phone" name="VENCont3Phone" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-4  w_30">
+                                    <label>Fax</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont3Fax" id="VENCont3Fax" name="VENCont3Fax" class="form-control VendorFocusOutFunc">
+                                </div>
+                                <div class="col-md-4 w_30">
+                                    <label>Mobile</label>
+                                    <input type="text" autocomplete="off" value="@Model.TblVendors.VENCont3Mobile" id="VENCont3Mobile" name="VENCont3Mobile" class="form-control VendorFocusOutFunc">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    //$(function ()
+    //{
+    //    $('#PhoneNumber, #FaxNumber,#VENCont1Mobile,#VENCont2Mobile,#VENCont3Mobile, #VENCont1Phone, #VENCont1Fax, #VENCont2Phone, #VENCont2Fax, #VENCont3Phone, #VENCont3Fax').keydown(function (e) {
+    //        var key = e.charCode || e.keyCode || 0;
+    //        $text = $(this);
+    //        if (key !== 8 && key !== 9) {
+    //            if($text.val().length === 3) {
+    //                $text.val($text.val() + '.');
+    //            }
+    //            if ($text.val().length === 7)
+    //            {
+    //                $text.val($text.val() + '.');
+    //            }
+    //        }
+    //        return (key == 8 || key == 9 || key == 46 || (key >= 48 && key <= 57) || (key >= 96 && key <= 105));
+    //    })
+    //});
+
+
+
+    function CallVendorList(ID, e) {
+        var id = 0;
+        $('.table-mold tr').each(function () {
+            $(this).removeClass('active');
+        });
+
+        //$(e).addClass('active');
+        id = $("table tr").index(e);
+
+        $.ajax({
+            url: '/CompanyInfo/VendorDetail?VenID=' + ID,
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+                $(".table-mold tr").eq(id).addClass('active');
+            },
+            error: function () {
+
+            }
+        })
+    }
+
+    $(".VendorFocusOutFunc").focusout(function ()
+    {
+        var data = $("#VendorDetailFrm").serialize();
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveFocusOuVendorDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+    $("#VendorDetailFrm").submit(function (e) {
+        var data = $("#VendorDetailFrm").serialize();
+
+        e.preventDefault();
+
+        $.ajax({
+
+            url: '/CompanyInfo/SaveVendorDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                Swal.fire({
+                    title: "Success",
+                    text: 'Data saved successfully.',
+                    type: "success"
+                }).then(function () {
+                    $("#home").html(data);
+                })
+            },
+            error: function () {
+
+            }
+        })
+
+    })
+
+
+    function AddVendor() {
+        $.ajax({
+            url: '/CompanyInfo/VendorDetail?VenID=-1',
+            type: 'Post',
+            success: function (data) {
+                $("#home").html(data);
+                $("input").attr('disabled', 'disabled');
+                $("#Notes, #Address1").attr("disabled", 'disabled');
+                $("#VendorName").removeAttr('disabled');
+            },
+
+            error: function () {
+
+            }
+
+        })
+    }
+
+    $("#VendorName").focusout(function () {
+        debugger;
+        var data = $("#VendorDetailFrm").serialize();
+        $.ajax({
+
+            url: '/CompanyInfo/SaveVendorDetails',
+            type: 'Post',
+            data: data,
+            success: function (data) {
+                $("#home").html(data);
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+
+    function DeleteVendor(ID) {
+
+
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this.",
+            type: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, delete it.'
+        }).then((result) => {
+            if (result.value) {
+                $(".loader__wrap").show();
+
+                $.ajax({
+                    url: '/CompanyInfo/VendorDelete?CustID=' + ID,
+                    type: 'Post',
+                    success: function (data) {
+                        Swal.fire({
+                            title: "Deleted!",
+                            text: 'Data has been deleted.',
+                            type: "success"
+                        }).then(function () {
+                            $("#home").html(data);
+                        })
+                    },
+
+                    error: function () {
+
+                    }
+                })
+            }
+        })
+    }
+
+    $('.VendorFocusOutFunc').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.VendorFocusOutFunc').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblVendors.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.Vendors.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+</script>
+<script>
+    document.getElementById('table').style.height = window.innerHeight - 168 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

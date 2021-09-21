@@ -1,0 +1,353 @@
+﻿@model Moldtrax.Models.tblTechTips
+@using Moldtrax.Models
+@{ 
+    Layout = null;
+}
+
+@using System.Text.RegularExpressions;
+<style>
+    .TTMoldImgDiv.table-con {
+        height: 450px;
+        height: 100%;
+    }
+
+    div#inner_tab_content {
+        overflow-x: hidden;
+    }
+
+    #loading1 {
+    display:none !important;
+    }
+
+</style>
+<div class="row" id="mold_techtip1">
+    <div class="col-md-4">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Specifications</h5> 
+                </div>
+                <div class="card_body display_div">
+                    <input type="hidden" id="TechTipsID" name="TechTipsID" value="@Model.TechTipsID" />
+                    <input type="hidden" id="MoldDataID" name="MoldDataID" value="@Model.MoldDataID" />
+                    <label>Height</label>
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOutTechTips" id="MCHeight" name="MCHeight" value="@Model.MCHeight" />
+
+                    <label>Width</label>
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOutTechTips" id="MCWidth" name="MCWidth" value="@Model.MCWidth" />
+
+                    <label>Depth</label>
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOutTechTips" id="MCDepth" name="MCDepth" value="@Model.MCDepth" />
+
+                    <label>Weight</label>
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOutTechTips" id="MCWeight" name="MCWeight" value="@Model.MCWeight" />
+
+                    <label>Width Open</label>
+                    <input type="text" id="MCWidthOpen" autocomplete="off" name="MCWidthOpen" class="form-control CallingFocusOutTechTips" value="@Model.MCWidthOpen" />
+
+                    <label>Ejector Stroke</label>
+                    <input type="text" id="MCEjectorStroke" autocomplete="off" name="MCEjectorStroke" class="form-control CallingFocusOutTechTips" value="@Model.MCEjectorStroke" />
+
+                    <label>Total Height</label>
+                    <input type="text" autocomplete="off" class="form-control CallingFocusOutTechTips" id="MCTotalHeight" name="MCTotalHeight" value="@Model.MCTotalHeight" />
+                </div>
+            </div>
+            <div class="card box_design small_vh">
+                <div class="w-100 image_upper_btn">
+                    <input type="button" id="AddImage" value="Add Image" class="add_btn" />
+                    <input type="button" id="DelPartImage" value="Delete Image" class="del_btn" />
+                </div>
+                <input style="display:none" type="file" id="TTPartImage" onclick="this.value = null;" />
+                <div class="card_header">
+                    <h5>Last Shot Image or Diagram of Part</h5>
+                </div>
+                <div class="card_body ">
+                    @if (Model.TTPartImagePath != null)
+                    {
+                        <img id="UploadTTPartImage" src="@Model.TTPartImagePath" />
+                    }
+                    else
+                    {
+                        <img id="UploadTTPartImage" />
+                    }
+
+                    <div id="loading1">
+                        <img id="loading-image1" src="~/images/Loader3.gif" alt="Loading..." />
+                    </div>
+                </div>
+                <!-- The Modal -->
+                <div id="myImageModal" class="modalImage">
+                    <span class="closeImage">&times;</span>
+                    <img class="modal-Imagecontent" id="img01">
+                    <div id="captionImage"></div>
+                </div>
+            </div>
+    </div>
+
+    @*<input type="submit" />*@
+    <div class="col-md-8">
+            <div class="card box_design box_height">               
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card_header">
+                                <h5>Image or Diagram of Mold</h5>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="w-100 image_upper_btn">
+                                <input type="button" value="Add Image" id="AddImage2" class="add_btn" />
+                                <input type="button" value="Delete Image" id="DeleImage2" class="del_btn" />
+                            </div>
+                        </div>
+                    </div>
+                    
+                        <input type="file" id="TTMoldImage" onclick="this.value = null;" style="display:none" />
+                        <div class="TTMoldImgDiv" id="img_responsive">
+                            @if (Model.TTMoldImagePath != null)
+                            {
+                                <img id="UploadTTMoldImage" src="@Model.TTMoldImagePath" />
+                            }
+                            else
+                            {
+                                <img id="UploadTTMoldImage" />
+                            }
+
+                            <div id="loading">
+                                <img id="loading-image" src="~/images/Loader3.gif" alt="Loading..." />
+                            </div>
+                        </div>
+                    <!-- The Modal -->
+                    <div id="myImageModal2" class="modalImage">
+                        <span class="closeImage2">&times;</span>
+                        <img class="modal-Imagecontent" id="img02">
+                        <div id="captionImage2"></div>
+                    </div>
+
+                    </div>
+                </div>
+            </div>
+            </div>
+<script>
+   
+    function addCommas(x)
+    {
+        var parts = x.toString().split(".");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        return parts.join(".");
+    }
+
+    $("#AddImage").click(function() {
+        $("#TTPartImage").click();
+    })
+
+    $("#AddImage2").click(function () {
+        $("#TTMoldImage").click();
+    })
+
+    $(document).ready(function () {
+
+        $("#loading1").show();
+        $("#TTPartImage").change(function () {
+            var file = document.getElementById("TTPartImage").files[0];
+
+            var formData = new FormData();
+            formData.append(file.name, file);
+
+            var TTID = $("#TechTipsID").val();
+            var MoldID = $("#MoldDataID").val();
+
+            $.ajax({
+                url: '/DetailMoldInfo/UplaodTTPartImage?TTID=' + TTID + '&MoldDataID=' + MoldID,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data)
+                {
+                    $("#TechTipsID").val(data.TechTipsID);
+                    $("#UploadTTPartImage").attr('src', data.TTPartImagePath);
+                    $("#loading1").hide();
+                },
+                error: function () { }
+
+            })
+        });
+
+        $("#TTMoldImage").change(function () {
+
+            $("#loading").show();
+            var file = document.getElementById("TTMoldImage").files[0];
+            var formData = new FormData();
+            formData.append(file.name, file);
+
+            var TTID = $("#TechTipsID").val();
+            var MoldID = $("#MoldDataID").val();
+            $.ajax({
+                url: '/DetailMoldInfo/UplaodTTMoldImage?TTID=' + TTID + '&MoldDataID=' + MoldID,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $("#TechTipsID").val(data.TechTipsID);
+                    $("#UploadTTMoldImage").attr('src', data.TTMoldImagePath);
+                    $("#loading").hide();
+                },
+                error: function () { }
+
+            })
+
+        });
+    });
+
+    $("#DelPartImage").click(function () {
+        debugger;
+        $("#UploadTTPartImage").attr('src', '').fadeIn();
+        var TTID = $("#TechTipsID").val();
+
+        $.ajax({
+            url: '/DetailMoldInfo/DeleteTTPartImage?TTID=' + TTID,
+            type: 'Post',
+            success: function () { },
+            error: function () { }
+
+        })
+    })
+
+    $("#DeleImage2").click(function () {
+        debugger;
+        $("#UploadTTMoldImage").attr('src', '').fadeIn();
+        var TTID = $("#TechTipsID").val();
+
+        $.ajax({
+            url: '/DetailMoldInfo/DeleteTTMoldImage?TTID=' + TTID,
+            type: 'Post',
+            success: function () { },
+            error: function () { }
+        })
+    })
+
+    $(".MyFileCont").change(function () {
+        debugger;
+        var ImgUpload = $(this).closest("tr").find('td:eq(1)').find("#AddImg");
+        var TsGuide = $(this).closest("tr").find('td:eq(1)').find("#TSGuide").val();
+        var ImgDiv = $(this).closest("tr").find('td:eq(2)').find("#UploadedFile");
+        var DefectT = $(this).closest("tr").find('td:eq(2)').find(".DefectT").val();
+
+        var file = ImgUpload[0];
+
+        var File1 = ImgUpload[0];
+
+        var readImg = new FileReader();
+
+        readImg.readAsDataURL(file.files[0]);
+        readImg.onload = function (e) {
+
+            ImgDiv.attr('src', e.target.result).fadeIn();
+
+        }
+
+        var formData = new FormData();
+        formData.append(File1.files[0].name, File1.files[0]);
+
+        formData.append('TsGuide', TsGuide);
+
+        $.ajax({
+            url: '/DetailMoldInfo/UplaodImage?TsGuide=' + TsGuide,
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function () {
+            },
+            error: function () { }
+
+
+        })
+
+    })
+
+
+
+    $('.CallingFocusOutTechTips').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.CallingFocusOutTechTips').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblTechTips.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.TechTips.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+
+</script>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myImageModal");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var img = document.getElementById("UploadTTPartImage");
+    var modalImg = document.getElementById("img01");
+    var captionText = document.getElementById("captionImage");
+    img.onclick = function () {
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt;
+    }
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("closeImage")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+</script>
+
+<script>
+    // Get the modal
+    var modal = document.getElementById("myImageModal2");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var img = document.getElementById("UploadTTMoldImage");
+    var modalImg = document.getElementById("img02");
+    var captionText = document.getElementById("captionImage2");
+    img.onclick = function () {
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt;
+    }
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("closeImage2")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+</script>

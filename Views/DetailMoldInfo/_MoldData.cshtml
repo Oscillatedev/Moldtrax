@@ -1,0 +1,189 @@
+﻿@model IEnumerable<Moldtrax.Models.tblMoldData>
+@{
+    int TotalMold = 0;
+    foreach (var x in Model)
+    {
+        TotalMold += 1;
+    }
+
+    Layout = null;
+}
+
+@using GridMvc.Html
+
+<style>
+    /* width */
+    .table_card::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .table_card::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .table_card::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        .table_card::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    button {
+        cursor: pointer;
+    }
+</style>
+<div id="sticky-anchor"></div>
+<div class="card box_design">
+    <div class="card_header" id="sticky">
+        <h5>Select Mold</h5>
+    </div>
+
+
+    <div id="table_left_2" class="card_body table_card MoldTble">
+        <table id="MainMoldList" class="table table-mold MoldCls">
+            <tbody>
+                @foreach (var x in Model)
+                {
+                    <tr id="@x.MoldDataID" onclick="CallMoldDetails(@x.MoldDataID,'@HttpUtility.HtmlEncode(x.MoldName)', '@HttpUtility.HtmlEncode(x.MoldDesc)', this)">
+                        <td>@x.MoldName</td>
+                        <td>@x.MoldDesc</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <label class="red_total">Total Mold: @TotalMold</label>
+</div>
+<script>
+    document.getElementById('table_left_2').style.height = window.innerHeight - 105 + 'px';
+    //window.onresize = autoResizeDiv;
+
+    function sticky_relocate() {
+        var window_top = $(window).scrollTop();
+        var div_top = $('#sticky-anchor').offset().top;
+        if (window_top > div_top) {
+            $('#sticky').addClass('stick');
+        } else {
+            $('#sticky').removeClass('stick');
+        }
+    }
+
+    $(function () {
+        $(window).scroll(sticky_relocate);
+        sticky_relocate();
+    });
+</script>
+<script>
+
+        $(document).ready(function () {
+            $('.table-mold tbody tr:first').addClass('active');
+            $('.table-mold tbody tr:first').attr('name','1');
+        });
+
+        function CallMoldDetails(ID,Name,Desc, e)
+        {
+            Name = unescape(Name);
+            Desc = unescape(Desc);
+
+            debugger;
+            $.ajax({
+                url: '/DetailMoldInfo/GetTraciRiskFactor?MID=' + ID,
+                type: 'Post',
+                success: function (data)
+                {
+                    $("#TraciRiskFactor").html('Traci Risk Factor: ' + data);
+                },
+                error: function ()
+                {
+
+                }
+            })
+
+            var PreviousMoldID = '';
+
+            $('.table-mold tbody tr').each(function (i) {
+                    if ($(this).attr('name') == 1) {
+                        PreviousMoldID = $(this).attr('id');
+                    }
+            });
+
+
+            debugger;
+            $("#MainMoldHidnID").val(ID);
+
+            $('.table-mold tr').each(function () {
+                $(this).removeClass('active');
+            });
+
+            if (ID != 0) {
+                var htmlstring = "Mold: " + Name + "  ( " + Desc + " )";
+                $("#MainTitle").html(htmlstring);
+                $("#RightTitle").html("Mold ID: " + ID);
+                $("#MainMoldHidnID").val(ID);
+            }
+
+            $(e).addClass('active');
+
+            var activeTab = $(".nav-tabs li").find(".active");
+
+            var name = activeTab.attr('id');
+
+            if (name == "Mold") {
+                $("#SaveBtnMoldDetails").click();
+            }
+            else if (name == "Tooling") {
+                $("#EditTooling").click();
+            }
+            else if (name == "TroubleShooter") {
+                $("#EditTroubleShtr").click();
+            }
+            else if (name == "TechTips") {
+                $("#SavetechTips").click();
+                var sd = $(".TechTipsNavTab li").find(".active");
+                sss = sd.attr('id');
+            }
+            else if (name == "Servicing") {
+                $("#SaveServicingData").click();
+            }
+            else if (name == "Notes")
+            {
+                $("#SaveNotesBtn").click();
+            }
+
+
+            $.ajax({
+                url: '/DetailMoldInfo/CreateCookieMoldDataID?ID=' + ID + "&FuncName=" + name,
+                type: 'Get',
+                success: function (data) {
+                    $('.nav-link').not('.active').removeClass('disabled');
+                    $("#MoldTb").html(data);
+                    $(".editable").attr('data-placeholder', '');
+                    $(".medium-editor-element").attr('data-placeholder', '');
+                    if (name == "TechTips")
+                    {
+                        debugger
+                        $("#" + sss + "")[0].click();
+                    }
+
+                },
+                error: function () { }
+
+            })
+
+            $('.table-mold tr').each(function () {
+                $(this).attr('name','');
+            });
+
+            $('.table-mold tr').each(function (i) {
+                var vv = $(this).attr('id');
+                if (vv == ID) {
+                    $(this).attr('name', '1');
+                }
+            });
+        }
+
+</script>

@@ -1,0 +1,356 @@
+﻿@model Moldtrax.Models.tblMoldData
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .ui-autocomplete {
+        overflow: auto;
+        max-height: 100px;
+    }
+
+    select#MoldResinType {
+        width: 100%;
+        border-radius: 0;
+    }
+
+    span.select2-selection.select2-selection--single {
+        border-radius: 0;
+        border: none;
+        width: 100%;
+        box-shadow: none;
+    }
+
+    .track_select .select2-container {
+        width: 100% !important;
+        display: block;
+        height: 31px;
+        padding: 0px 2px 0px 2px;
+        font-size: 12px;
+        line-height: 1.42857143;
+        color: #000000;
+        background-color: #ffffff;
+        background-image: none;
+        border: 1px solid #ccc;
+        border-radius: 0px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+        -webkit-transition: border-color ease-in-out .15s,-webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+    }
+
+    span#select2-MoldResinType-container:focus, span.select2-selection.select2-selection--single:focus, input.select2-search__field.user-success:focus {
+        outline: none;
+    }
+
+    div#table_maintain_length {
+        display: none;
+    }
+
+    .select2-container .select2-selection--single .select2-selection__rendered {
+        white-space: break-spaces !important;
+    }
+</style>
+
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+
+<div class="card box_design">
+    <div class="card_body">
+        <div class="row track1_row">
+            <div class="col-md-3 track_select">
+                @*@Html.DropDownListFor(model => model.MoldResinType, ViewBag.MoldText as SelectList, new { htmlAttributes = new { @class = "form-control PropDis bigdrop" } })*@
+                <select size="15" id="MoldResinType" name="MoldResinType" class="form-control PropDis">
+                    @foreach (var x in ViewBag.MoldText)
+                    {
+                        <option value="@x.Value">@x.Text</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-6">
+                <div class="card_header">
+                    <h5 id="Maintain_title">Mold: @Model.MoldName (@Model.MoldDesc)</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card box_design" id="MainMoldTab">
+    @Html.Action("GetMaintenanceData", "MaintenanceTracking")
+</div>
+
+<div class="row track4_row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_body">
+                <div class="card_inner_block">
+                    @*<br>*@
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs sticky-top MaintenanceTrackingList" role="tablist" id="mold_maintenance">
+                        <li class="nav-item" id="MaintenanceSche" name="1">
+                            <a class="nav-link active" data-toggle="tab" onclick="CallMaintenanceFunc('MaintenanceSche')" id="MaintenanceSche" href="#">Maintenance Schedule</a>
+                        </li>
+                        <li class="nav-item" id="MaintenanceIns">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('MaintenanceIns')" id="MaintenanceIns" href="#">Maintenance Instructions</a>
+                        </li>
+                        <li class="nav-item" id="DefectTask">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('DefectTask')" id="DefectTask" href="#">Defects/Tasks List</a>
+                        </li>
+                        <li class="nav-item" id="CorrectiveAction">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('CorrectiveAction')" id="CorrectiveAction" href="#">Corrective Action Made</a>
+                        </li>
+                        <li class="nav-item" id="ActionReview">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('ActionReview')" id="ActionReview" href="#">Action Review</a>
+                        </li>
+                        <li class="nav-item" id="TrbleShooter">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('TrbleShooter')" id="TrbleShooter" href="#">Troubleshooter Guide</a>
+                        </li>
+                        <li class="nav-item" id="ToolingList">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('ToolingList')" id="ToolingList" href="#">Tooling List</a>
+                        </li>
+                        <li class="nav-item" id="TechTipsMain">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('TechTipsMain')" id="TechTipsMain" href="#">Tech Tips</a>
+                        </li>
+                        <li class="nav-item" id="CavityLayout">
+                            <a class="nav-link" data-toggle="tab" onclick="CallMaintenanceFunc('CavityLayout')" id="CavityLayout" href="#">Cavity Layout</a>
+                        </li>
+                    </ul>
+                    <!-- Tab panes -->
+                    <div class="tab-content" id="mold_maintenance_tab">
+                        <div id="MaintenanceMain" class="tab-pane active">
+                            @Html.Action("MaintenanceScheduleGetData", "MaintenanceTracking")
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#navMaint').addClass('actives');
+        $('#MoldResinType').select2().on('select2:open', function (e) {
+            $('.select2-search__field').attr('placeholder', 'Type for search..');
+        });
+
+        $('#MoldResinType').val($('#MoldResinType option:eq(0)').val()).trigger('change');
+        //$("#moldresintype").prepend("<option value='' disabled></option>");
+        //$("#moldresintype").get(0).options[0].style.fontsize = "xx-large";
+    });
+
+
+    $("#MoldResinType").change(function () {
+        debugger;
+        var MoldID = $("#MoldResinType").val();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+
+        $(".mold_id_span").html(MoldID);
+        //var MoldNAME = $("#MoldResinType").text();
+
+        var skillsSelect = document.getElementById("MoldResinType");
+        var selectedText = skillsSelect.options[skillsSelect.selectedIndex].text;
+        var val = selectedText.split(':');
+
+        var Name = "Mold: " + val[0] + " (" + val[1] + ")";
+
+        $("#Maintain_title").html(Name);
+        $("#MoldInsideMain").html(Name);
+
+        var activeTab = $(".nav-tabs li").find(".active");
+        var name = activeTab.attr('id');
+
+        //Saving Main MoldData
+        $("#SaveMainMoldData").click();
+
+
+        var Url = "";
+
+        if (name == "MaintenanceSche") {
+            $("#SaveMaintenenanceSche").click();
+            $("#SaveMainTrouble").click();
+            Url = "/MaintenanceTracking/MaintenanceScheduleGetData?MoldID=" + MoldID + "&MOLDChange=1";
+        }
+
+        else if (name == "MaintenanceIns") {
+            $("#SaveMainInstruction").click();
+            Url = "/MaintenanceTracking/MaintenanceInstructionGetData?MoldID=" + MoldID + "&MOLDChange=1";
+        }
+
+        else if (name == "DefectTask") {
+            $("#SaveDefecttaskBtn").click();
+            Url = "/MaintenanceTracking/GetDefecttTaskData?MoldID=" + MoldID + "&MOLDChange=1";
+        }
+
+        else if (name == "CorrectiveAction") {
+            $("#SaveCorrectiveActionbtn").click();
+            Url = "/MaintenanceTracking/GetCorrectiveData?MoldID=" + MoldID + "&MOLDChange=1";
+        }
+
+        else if (name == "ActionReview") {
+            Url = "/MaintenanceTracking/ActionReviewGetData?MoldID=" + MoldID + "&MOLDChange=1";
+        }
+        else if (name == "TrbleShooter") {
+            $("#SaveTroubleMaineBtn").click();
+            Url = "/MaintenanceTracking/TroubleShooterGetData?ID=" + MoldID + "&MOLDChange=1";
+        }
+        else if (name == "ToolingList") {
+            $("#SaveMainToolingBtn").click();
+            Url = "/MaintenanceTracking/ToolingGetData?ID=" + MoldID + "&MOLDChange=1";
+        }
+        else if (name == "TechTipsMain") {
+            $("#SaveMaintenanceTechTipbtn").click();
+            Url = "/MaintenanceTracking/GetTechTips?ID=" + MoldID + "&MOLDChange=1";
+            var sd = $(".MainTechTipsNavTab li").find(".active");
+            sss = sd.attr('id');
+        }
+        else {
+            Url = "/MaintenanceTracking/GetLayoutData?ID=" + MoldID + "&MOLDChange=1";
+        }
+
+        jQuery.ajaxSettings.traditional = true;
+
+        $.ajax({
+            url: Url,
+            type: 'Post',
+            success: function (data) {
+                debugger
+
+                $('.nav-link').not('.active').removeClass('disabled');
+                $("#MainMoldTab").html(data.MoldData);
+
+                $("#MaintenanceMain").html(data.OtherInfo);
+                $(".editable").attr('data-placeholder', '');
+                $(".medium-editor-placeholder").attr("data-placeholder", "");
+                if (name == "TechTipsMain") {
+                    $("#" + sss + "")[0].click();
+                }
+            },
+            error: function () {
+
+            }
+        })
+
+        $("#table_maintain tbody tr").each(function () {
+            var row = $(this);
+            row.attr('name', '');
+        })
+    })
+
+
+    function CallMaintenanceFunc(str) {
+        debugger;
+        var MoldID = $("#MoldResinType").val();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+
+        //Saving Main MoldData
+        $("#SaveMainMoldData").click();
+
+        var PreviousTab = '';
+
+        $('.MaintenanceTrackingList li').each(function (i) {
+            if ($(this).attr('name') == 1) {
+                PreviousTab = $(this).attr('id');
+            }
+        });
+
+        if (PreviousTab == "MaintenanceSche") {
+            $("#SaveMaintenenanceSche").click();
+            $("#SaveMainTrouble").click();
+ 
+        }
+        else if (PreviousTab == "MaintenanceIns") {
+            $("#SaveMainInstruction").click();
+        }
+        else if (PreviousTab == "DefectTask") {
+            $("#SaveDefecttaskBtn").click();
+        }
+        else if (PreviousTab == "CorrectiveAction") {
+            $("#SaveCorrectiveActionbtn").click();
+        }
+        else if (PreviousTab == "TrbleShooter") {
+            $("#SaveTroubleMaineBtn").click();
+        }
+        else if (PreviousTab == "ToolingList") {
+            $("#SaveMainToolingBtn").click();
+        }
+        else if (PreviousTab == "TechTipsMain")
+        {
+            $("#SaveMaintenanceTechTipbtn").click();
+        }
+
+
+
+        var Url = "";
+        if (str == "MaintenanceSche") {
+            Url = "/MaintenanceTracking/MaintenanceScheduleGetData?MoldID=" + MoldID;
+        }
+
+        else if (str == "MaintenanceIns") {
+            Url = "/MaintenanceTracking/MaintenanceInstructionGetData?SetID=" + SetID + "&MoldID=" + MoldID;
+        }
+
+        else if (str == "DefectTask") {
+            Url = "/MaintenanceTracking/GetDefecttTaskData?SetID=" + SetID + "&MoldID=" + MoldID;
+        }
+
+        else if (str == "CorrectiveAction") {
+            Url = "/MaintenanceTracking/GetCorrectiveData?SetID=" + SetID + "&MoldID=" + MoldID;
+        }
+
+        else if (str == "ActionReview") {
+            Url = "/MaintenanceTracking/ActionReviewGetData?MOldID=" + MoldID + "&SetID=" + SetID;
+        }
+        else if (str == "TrbleShooter") {
+            Url = "/MaintenanceTracking/TroubleShooterGetData?ID=" + MoldID;
+        }
+        else if (str == "ToolingList") {
+            Url = "/MaintenanceTracking/ToolingGetData?ID=" + MoldID;
+        }
+        else if (str == "TechTipsMain") {
+            Url = "/MaintenanceTracking/GetTechTips?ID=" + MoldID;
+        }
+        else {
+            Url = "/MaintenanceTracking/GetLayoutData?ID=" + MoldID;
+        }
+
+        $.ajax({
+            url: Url,
+            type: 'Post',
+            success: function (data) {
+                $("#MaintenanceMain").html(data);
+                $(".editable").attr('data-placeholder', '');
+                $(".medium-editor-placeholder").attr("data-placeholder", "")
+            },
+            error: function () {
+
+            }
+        })
+
+        $("#table_maintain tbody tr").each(function () {
+            var row = $(this);
+            row.attr('name', '');
+        })
+
+        $('.MaintenanceTrackingList li').each(function (i) {
+            $(this).attr('name', '');
+        });
+
+        $('.MaintenanceTrackingList li').each(function (i) {
+            var vv = $(this).attr('id');
+            if (vv == str) {
+                $(this).attr('name', '1');
+            }
+        });
+
+    }
+</script>

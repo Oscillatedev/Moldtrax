@@ -1,0 +1,684 @@
+﻿@model Moldtrax.Models.tblRoverSetData
+@using Moldtrax.Models
+@{ 
+
+    int Permission = 3;
+    if (Session["Permission"] != null)
+    {
+        Permission = Convert.ToInt32(Session["Permission"]);
+    }
+    else
+    {
+        Response.Redirect("~/Account/Login");
+    }
+
+
+    Layout = null;
+
+}
+
+<style>
+    .TrblInseditable, #MldSetPullNotes, #MldRepairComments {
+        width: 100% !important;
+    }
+
+    img#UploadImgIns {
+        height: 284px;
+    }
+
+    .maintenance_instr_text .TrblInseditable {
+        height: 98px;
+        overflow-y: auto;
+    }
+
+    .runtime_info_text .TrblInseditable {
+        height: 138px;
+        overflow-y: auto;
+    }
+
+    .TrblInseditable::-webkit-scrollbar, .Comditable::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    .TrblInseditable::-webkit-scrollbar-track, .Comditable::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    .TrblInseditable::-webkit-scrollbar-thumb, .Comditable::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        .TrblInseditable::-webkit-scrollbar-thumb:hover, .Comditable::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    /*.table td {
+        position: relative;
+    }*/
+    .modal-dialog {
+        top: 0;
+        right: 0;
+    }
+</style>
+@*<br>*@
+<div class="row">
+    <div class="col-md-4">
+        <div class="track_left_div btn_css">
+            <button class="add_btn" id="AddImgIns">Add Image</button>
+            <input type="hidden" id="SaveMainInstruction" onclick="SaveMaintenanaceInstruction()" />
+            <input type="file" style="display:none" id="AddMainInsImg" onclick="this.value = null;" />
+            <button class="del_btn" id="DeleteInsImg">Delete Image</button>
+        </div>
+        <div class="card box_design">
+            <div class="card_body ">
+                @if (Model.MoldDefectMapPath != null)
+                {
+                    <img id="UploadImgIns" src="@Model.MoldDefectMapPath" />
+                }
+                else
+                {
+                    <img id="UploadImgIns" />
+                }
+            </div>
+            <!-- The Modal -->
+            <div id="myImageModal3" class="modalImage">
+                <span class="closeImage3">&times;</span>
+                <img class="modal-Imagecontent3" id="img03">
+                <div id="captionImage3"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <form id="instrFrm">
+            <div class="row">
+                <div class="col-md-12 text-right btn_css">
+                    @*<input type="submit" id="" value="Save" class="edit_btn" />*@
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Repair Information</h5>
+                        </div>
+                        <input type="hidden" id="SetID" name="SetID" value="@Model.SetID" />
+                        <div class="card_body">
+                            <label>Date Repair Completed</label>
+                            @if (Model.MldRepairedDate == null || Model.MldRepairedDate == DateTime.MinValue)
+                            {
+                                <input type="text" autocomplete="off" value="" id="MldRepairedDate" name="MldRepairedDate" class="form-control MaintenanceInsFocusOut">
+                            }
+                            else
+                            {
+                                <input type="text" autocomplete="off" value="@Convert.ToDateTime(Model.MldRepairedDate).ToString("MM/dd/yyyy")" id="MldRepairedDate" name="MldRepairedDate" class="form-control MaintenanceInsFocusOut">
+                            }
+                            <input type="hidden" data-toggle="modal" data-target="#ModalInstruc_textarea" id="ShowPopUp" />
+                            <label>Repair Hours</label>
+                            <input type="text" autocomplete="off" value="@Model.MldRepairedTime" id="MldRepairedTime" name="MldRepairedTime" class="form-control MaintenanceInsFocusOut">
+
+                            <label>Repaired By</label>
+                            <input type="hidden" value="@Model.MldRepairdBy" id="MldRepairVal" />
+                            <select id="MldRepairdBy" name="MldRepairdBy" class="form-control MaintenanceInsFocusOut">
+                                @foreach (var x in ViewBag.TechnicianList)
+                                {
+                                    <option value="@x.Value">@x.Text</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Maintenance Instructions</h5>
+                        </div>
+                        <div class="card_body maintenance_instr_text">
+                            <div class="MldSetPullNts" id="">
+                                <textarea autocomplete="off" class="form-control TrblInseditable MaintenanceInsFocusOut" id="MldSetPullNotes" name="MldSetPullNotes">@Model.MldSetPullNotes</textarea>
+                            </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Runtime Information</h5>
+                        </div>
+                        <div class="card_body">
+                            <label>Work Order</label>
+                            <input type="text" autocomplete="off" value="@Model.MldWorkOrder" id="MldWorkOrder" name="MldWorkOrder" class="form-control MaintenanceInsFocusOut">
+                            <label>Production Run Count</label>
+                            <input type="text" id="MldProductionCycles" name="MldProductionCycles" value="@String.Format("{0:n0}", Model.CycleCounter)" class="form-control">
+                            @*<input type="text" id="MldProductionCycles" name="MldProductionCycles" value="@String.Format("{0:n0}", Model.MldProductionCycles)" class="form-control MaintenanceInsFocusOut">*@
+                            <label>Estimated Time Run</label>
+                            <input type="text" autocomplete="off" id="EstTime" value="@ViewBag.EstTime" class="form-control">
+
+                            <label>Available Cycles</label>
+                            <input type="text" id="AvailableCycles" autocomplete="off" value="@string.Format("{0:n0}",Math.Round(ViewBag.AvailableCycle))" class="form-control">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-7">
+                    <div class="card box_design">
+                        <div class="card_header">
+                            <h5>Repair Comments</h5>
+                        </div>
+                        <div class="card_body runtime_info_text">
+                            <div class="MldRepairCmt" id="">
+                                <textarea id="MldRepairComments" autocomplete="off" name="MldRepairComments" class="form-control TrblInseditable MaintenanceInsFocusOut">@Model.MldRepairComments</textarea>
+                            </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@*<button type="button" class="del_btn" data-toggle="modal" data-target="#ModalInstruc_textarea">
+    Hide
+</button>*@
+
+<div class="modal" id="ModalInstruc_textarea">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close1" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea class="textarea-editor2" autocomplete="off" id="ShowTxtVal"></textarea>
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <button id="SaveTxtbtn" class="add_btn">Save</button>
+                        <button class="del_btn" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    $('.textarea-editor2').summernote(
+        {
+            toolbar: [
+              ['style', ['style']],
+              ['fontsize', ['fontsize']],
+              ['font', ['bold', 'italic', 'underline', 'clear']],
+              ['fontname', ['fontname']],
+              ['color', ['color']],
+              ['para', ['ul', 'ol', 'paragraph']],
+              ['height', ['height']],
+              ['insert', ['link', 'picture', 'hr']],
+              ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 500,                 // set editor height
+            minHeight: null,             // set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+    $('.note-editable').css('font-size', '13px');
+
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script src="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/js/medium-editor.min.js"></script>
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/medium-editor@latest/dist/css/medium-editor.min.css" type="text/css" media="screen" charset="utf-8">
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    $('.textarea-editor2').summernote(
+        {
+            toolbar: [
+                ['style', ['style']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 100,                 // set editor height
+            minHeight: null,
+            popover: {
+                link: []
+            },// set minimum height of editor
+            maxHeight: null,             // set maximum height of editor
+            focus: true                  // set focus to editable area after initializing summernote
+        });
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script>
+    
+    $("#MldRepairedDate").datepicker({
+        dateFormat: "mm/dd/yy",
+        changeMonth: true,
+        changeYear: true
+    });
+
+   if (@Permission == 2)
+    {
+        $(".track_left_div").hide();
+        $(".MaintenanceInsFocusOut").attr("disabled", "disabled");
+    }
+
+   else if (@Permission == 3)
+    {
+        $(".track_left_div").hide();
+        //$(".MaintenanceInsFocusOut").attr("disabled", "disabled");
+    }
+
+   else if (@Permission == 4)   
+    {
+        $("#textbox_2").attr("contenteditable", false);
+        $("#AddMainInsImg, #DeleteInsImg, #MldRepairedDate, #MldRepairedTime, #MldRepairdBy, #MldSetPullNotes, #MldWorkOrder, #MldProductionCycles, #EstTime, #AvailableCycles, #MldRepairComments").attr("disabled", "disabled");
+        $('.MldRepairCmt').css('pointer-events', 'none');
+        $("#AddImgIns, #DeleteInsImg").hide();
+    }
+    else if (@Permission == 5)   
+    {
+        $("#AddMainInsImg, #DeleteInsImg, #MldRepairedDate, #MldRepairedTime, #MldRepairdBy, #MldSetPullNotes, #MldWorkOrder, #MldProductionCycles, #EstTime, #AvailableCycles, #MldRepairComments").attr("disabled", "disabled");
+        $('.MldSetPullNts, .MldRepairCmt').css('pointer-events', 'none');
+        $("#AddImgIns, #DeleteInsImg").hide();
+    }
+
+    else if (@Permission == 6)   
+    {
+        $("#AddMainInsImg, #DeleteInsImg, #MldRepairedDate, #MldRepairedTime, #MldRepairdBy, #MldSetPullNotes, #MldWorkOrder, #MldProductionCycles, #EstTime, #AvailableCycles, #MldRepairComments").attr("disabled", "disabled");
+        $('.MldSetPullNts, .MldRepairCmt').css('pointer-events', 'none');
+        $("#AddImgIns, #DeleteInsImg").hide();
+    }
+
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+    //$('input[type="date"]').each(function () {
+    //    var el = this, type = $(el).attr('type');
+    //    if ($(el).val() == '') $(el).attr('type', 'text');
+    //    $(el).focus(function () {
+    //        $(el).attr('type', type);
+    //        el.click();
+    //    });
+
+    //    $(el).blur(function () {
+    //        if ($(el).val() == '') $(el).attr('type', 'text');
+    //    });
+    //});
+
+    $(".MldRepairCmt").dblclick(function ()
+    {
+        //$("#ShowPopUp").click();
+        //var data = $("#MldRepairComments").val();
+        //$("#ShowTxtVal").val(data);
+
+        $(".editable").attr('data-placeholder', '')
+        var row = $(this);
+        var dd = $("#MldRepairComments").val();
+        $("#ShowPopUp").click();
+
+        //$("#ShowTxtVal").attr('data-placeholder', '');
+        $(".note-editable").html(dd);
+        row.eq(0).find(".TrblInseditable").attr('name', 'NewDDID');
+        row.eq(0).find("#MldRepairComments").attr('name', 'NewDDID2');
+        if (dd == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $(function () {
+        $(".dt").datepicker({
+            dateFormat: "mm/dd/yy",
+            changeMonth: true,
+            changeYear: true
+        });
+    });
+
+    //$(function () {
+    //    $('.dt').datetimepicker(
+    //        {
+    //            format: 'YYYY-MM-DD',
+    //        });
+    //});
+
+    $(".MldSetPullNts").dblclick(function () {
+        //$("#ShowPopUp").click();
+        //var data = $("#MldRepairComments").val();
+        //$("#ShowTxtVal").val(data);
+        $(".TrblInseditable").attr('data-placeholder', '')
+        var row = $(this);
+        var dd = $("#MldSetPullNotes").val();
+        $("#ShowPopUp").click();
+
+        //$("#ShowTxtVal").attr('data-placeholder', '');
+        $(".note-editable").html(dd);
+        row.eq(0).find(".TrblInseditable").attr('name', 'NewDDID');
+        row.eq(0).find("#MldSetPullNotes").attr('name', 'NewDDID2');
+        if (dd == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#SaveTxtbtn").click(function () {
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID]').attr('name', '');
+        $('[name=NewDDID2]').attr('name', '');
+
+        $(".close1").click();
+    })
+    //$("#MldSetPullNotes").dblclick(function () {
+    //    $("#ShowPopUp").click();
+    //    var data = $("#MldSetPullNotes").val();
+    //    $("#ShowTxtVal").val(data);
+    //})
+
+
+
+    var TB = $("#MldRepairVal").val();
+    $("#MldRepairdBy").val(TB);
+
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+    //ColorPickerExtension = MediumEditor.util.derives(MediumEditor.statics.DefaultButton, ColorPickerDerived);
+
+    var editor = new MediumEditor('.TrblInseditable', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+
+    $("#AddImgIns").click(function () {
+        $("#AddMainInsImg").click();
+    })
+
+    //$(document).ready(function () {
+        $("#AddMainInsImg").change(function () {
+            var file = document.getElementById("AddMainInsImg").files[0];
+            //var readImg = new FileReader();
+            //readImg.readAsDataURL(file);
+            //readImg.onload = function (e) {
+            //    $('#UploadImgIns').attr('src', e.target.result).fadeIn();
+            //}
+
+            var formData = new FormData();
+            formData.append(file.name, file);
+
+            //var SetID = $("#SetID").val();
+            var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+            //var MoldID = $("#MoldDataID").val();
+
+            //formData.append('TsGuide', TsGuide);
+
+            $.ajax({
+                url: '/MaintenanceTracking/UplaodInstructionImg?SetID=' + SetID,
+                type: 'POST',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    $("#UploadImgIns").attr('src',data);
+                },
+                error: function () { }
+
+            })
+        })
+    //})
+
+    $("#MldProductionCycles").focusout(function () {
+        var data = addCommas($("#MldProductionCycles").val());
+        $("#MldProductionCycles").val(data);
+        $(".highlight").find("td").eq(11).find("#CycleCounter").val(data);
+        $(".highlight").closest('tr').attr('name', '1');
+    });
+
+
+    function SaveMaintenanaceInstruction()
+    {
+        var obj = new Object();
+        obj.SetID = $("#SetID").val();
+
+
+        var Procycle = $("#MldProductionCycles").val().replace(/\,/g, '');
+        obj.MldProductionCycles = Procycle;
+        obj.MldRepairedDate = $("#MldRepairedDate").val();
+        obj.MldRepairedTime = $("#MldRepairedTime").val();
+        obj.MldRepairdBy = $("#MldRepairdBy").val();
+        obj.MldSetPullNotes = $(".MldSetPullNts").find(".TrblInseditable").html();
+        obj.MldWorkOrder = $("#MldWorkOrder").val();
+        obj.MldRepairComments = $(".MldRepairCmt").find(".TrblInseditable").html();
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveMainIns',
+            type: 'Post',
+            data: obj,
+            success: function ()
+            {
+
+            },
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+
+    $(".MaintenanceInsFocusOut").focusout(function () {
+        SaveMaintenanaceInstruction();
+    })
+
+    $("#MldRepairdBy").change(function ()
+    {
+        SaveMaintenanaceInstruction();
+    })
+
+    $("#DeleteInsImg").click(function () {
+        $("#UploadImgIns").attr('src', '').fadeIn();
+
+        var SetID = $("#SetID").val();
+
+        $.ajax({
+            url: '/MaintenanceTracking/DeleteInstructionImg?SetID=' + SetID,
+            type: 'Post',
+            success: function () { },
+            error: function () { }
+
+        })
+        //$('#UploadedFile').attr('src', '').fadeIn();
+    })
+
+    $("#instrFrm").submit(function (e) {
+        e.preventDefault();
+        var sd = $("#instrFrm").serialize();
+        var SetID = $(".highlight").find("td").eq(1).find("#SetIDVal").val();
+        if (SetID == null) {
+            //Swal.fire('You need to create Record first.')
+            return false;
+        }
+        $.ajax({
+            url: '/MaintenanceTracking/SaveMainIns',
+            type: 'Post',
+            data: sd,
+            success: function (data) {
+                Swal.fire('Data saved Successfully.')
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $('.MaintenanceInsFocusOut').on('focusin', function () {
+        $(this).data('val', $(this).val());
+    });
+
+
+      $(function () {
+          $('.MaintenanceInsFocusOut').on('change', function () {
+             $(this).closest("tr").attr('name', '1');
+            var obj = new Object();
+            obj.TableName = '@GetDBTableName.tblRoverSetData.ToString()';
+            obj.NewColVal = $(this).val();
+            obj.LabelName = $(this).attr("ID");
+             obj.OldColVal = $(this).data('val');
+             obj.DataKey = $(this).closest("tr").eq(2).find("#MoldDataID").val();
+            obj.Action = '@GetAction.Update.ToString()';
+            obj.PageName = '@GetTabName.MaintenanceInstructions.ToString()';
+
+
+            if ($(this).data('val') != $(this).val()) {
+                $.ajax({
+                    url: '/Account/CallUpdateLogFunc',
+                    type: 'Post',
+                    data: obj,
+                    success: function () {
+
+                    },
+                    error: function () {
+
+                    }
+                })
+            }
+        });
+    });
+
+    $("#SaveSelectedIns").click(function () {
+        var obj = new Object();
+        obj.SetID = $("#SetID").val();
+        obj.MldRepairedDate = $("#MldRepairedDate").val();
+        obj.MldRepairedTime = $("#MldRepairedTime").val();
+        obj.MldRepairdBy = $("#RepairedBy").val();
+        obj.MldSetPullNotes = $("#MldSetPullNotes").val();
+        obj.MldWorkOrder = $("#MldWorkOrder").val();
+        obj.MldRepairComments = $("#MldRepairComments").val();
+
+        $.ajax({
+            url: '/MaintenanceTracking/SaveMainIns',
+            type: 'Post',
+            data: JSON.stringify(obj),
+            success: function () {
+                Swal.fire('Data saved Successfully.')
+            },
+            error: function () {
+
+            }
+        })
+    })
+
+    $(document).ready(function () {
+        $(".TrblInseditable").attr('data-placeholder', '');
+    })
+</script>
+@*<script>
+        document.getElementById('table2').style.height = window.innerHeight - 440 + 'px';
+        window.onresize = autoResizeDiv;
+    </script>*@
+<script>
+    // Get the modal
+    var modal = document.getElementById("myImageModal3");
+
+    // Get the image and insert it inside the modal - use its "alt" text as a caption
+    var img = document.getElementById("UploadImgIns");
+    var modalImg = document.getElementById("img03");
+    var captionText = document.getElementById("captionImage3");
+    img.onclick = function () {
+        modal.style.display = "block";
+        modalImg.src = this.src;
+        captionText.innerHTML = this.alt;
+    }
+
+    // Get the <span> element that closes the modal
+    var span = document.getElementsByClassName("closeImage3")[0];
+
+    // When the user clicks on <span> (x), close the modal
+    span.onclick = function () {
+        modal.style.display = "none";
+    }
+</script>

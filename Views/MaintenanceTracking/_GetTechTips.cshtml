@@ -1,0 +1,334 @@
+﻿
+@model Moldtrax.Models.tblTechTips
+    @{ 
+        int Permission = 3;
+        if (Session["Permission"] != null)
+        {
+            Permission = Convert.ToInt32(Session["Permission"]);
+        }
+        else
+        {
+            Response.Redirect("~/Account/Login");
+        }
+
+            Layout = null;
+    }
+
+@*<script src="~/Scripts/jquery-3.3.1.js"></script>*@
+<script src="~/Scripts/medium-editor.min.js"></script>
+<link href="~/Content/medium-editor.min.css" rel="stylesheet" />
+<script src="~/Scripts/spectrum.min.js"></script>
+<link href="~/Content/beagle.css" rel="stylesheet" />
+<link href="~/Content/spectrum.min.css" rel="stylesheet" />
+<style>
+    .form-control.editablett.medium-editor-element {
+        height: 34vh;
+    }
+    #sepci .form-control.editablett.medium-editor-element {
+    height: 65vh;
+}
+    input.edit_btn {
+        margin-bottom: 0;
+    }
+</style>
+@*<br />*@
+<form id="TechTipSbmtForm">
+@*<form method="post" id="SaveTechTipsFrm" action="/MaintenanceTracking/SaveTechTipsMoldSpec">*@
+    <div class="row">
+        <div class="col-md-6">
+            <h3><span>Tech Tips </span></h3>
+        </div>
+        <div class="col-md-6 text-right">
+            <input type="hidden" id="SaveMaintenanceTechTipbtn" onclick="SaveMaintTechTips()" />
+            @*<input type="submit" value="Save" class="edit_btn" />*@
+        </div>
+    </div>
+    @*<br>*@
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs sticky-top MainTechTipsNavTab" role="tablist" id="inner_tab">
+        <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#home1" id="MoldSpecs">Mold Specs</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="HotRunner" href="#innermenu1">Hot Runner</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="Disassembly" href="#innermenu2">Disassembly</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="Cleaning" href="#innermenu3">Cleaning</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="Assembly" href="#innermenu4">Assembly</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="FinalCheck" href="#innermenu5">Final Check</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="ToolKit" href="#innermenu6">Tool Kit</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="Polishing" href="#innermenu7">Polishing</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" id="Links" href="#innermenu8">Links</a>
+        </li>
+    </ul>
+
+    <!-- Tab panes -->
+    <input type="hidden" value="@Model.TechTipsID" id="TechTipsID" name="TechTipsID" />
+    <input type="hidden" value="@ViewBag.MoldDataID" id="MoldDataID" name="MoldDataID" />
+    <div class="tab-content" id="inner_tab_content">
+        <div id="home1" class="tab-pane active">
+            @*<br>*@
+            @*@Html.Action("TechTipsMoldSpec", "DetailMoldInfo")*@
+            @Html.Partial("_TechTipsMoldSpecData", Model)
+        </div>
+        <div id="innermenu1" class="tab-pane fade">
+            @*<br>*@
+            @*@Html.Action("TechTipsHotRunner","DetailMoldInfo")*@
+            @Html.Partial("_TTHotRunner", Model)
+        </div>
+
+        <div id="innermenu2" class="tab-pane fade CallingFocusOutTechTips">
+            @*<br>*@
+            @*<button onclick="SaveRemainingVal('TTDisassmbly')">Save</button>*@
+            <div id="Editor6">
+                <textarea autocomplete="off" class="form-control editablett TTDisassmbly" rows="100" id="TTDisassmbly" name="TTDisassmbly">@Model.TTDisassmbly</textarea>
+                <input type="button" style="display:none;" id="ShowtxtbtnMainFunc" data-target="#Modal_textarea5" data-toggle="modal" />
+            </div>
+            </div>
+        <div id="innermenu3" class="tab-pane fade CallingFocusOutTechTips">
+            @*<br>*@
+            @*<button onclick="SaveRemainingVal('TTClean')">Save</button>*@
+            <div id="Editor7">
+                <textarea autocomplete="off" class="form-control editablett TTClean" rows="100" id="TTClean" name="TTClean">@Model.TTClean</textarea>
+            </div>
+        </div>
+        <div id="innermenu4" class="tab-pane fade CallingFocusOutTechTips">
+            @*<br>*@
+            @*<button onclick="SaveRemainingVal('TTAssmbly')">Save</button>*@
+            <div id="Editor8">
+                <textarea autocomplete="off" class="form-control editablett TTAssmbly" rows="100" id="TTAssmbly" name="TTAssmbly">@Model.TTAssmbly</textarea>
+            </div>
+        </div>
+        <div id="innermenu5" class="tab-pane fade CallingFocusOutTechTips">
+            @*<br>*@
+            @*<button onclick="SaveRemainingVal('TTFinalChk')">Save</button>*@
+            <div id="Editor9">
+                <textarea autocomplete="off" class="form-control editablett TTFinalChk" rows="100" id="TTFinalChk" name="TTFinalChk">@Model.TTFinalChk</textarea>
+            </div>
+        </div>
+        <div id="innermenu6" class="tab-pane fade CallingFocusOutTechTips">
+            @*<br>*@
+            @*<button onclick="SaveRemainingVal('TTToolKit')">Save</button>*@
+            <div id="Editor10">
+                <textarea autocomplete="off" class="form-control editablett TTToolKit" rows="100" id="TTToolKit" name="TTToolKit">@Model.TTToolKit</textarea>
+            </div>
+        </div>
+        <div id="innermenu7" class="tab-pane fade CallingFocusOutTechTips">
+            @*<br>*@
+            @*<button onclick="SaveRemainingVal('TTPolishing')">Save</button>*@
+            <div id="Editor11">
+                <textarea autocomplete="off" class="form-control editablett TTPolishing" rows="100" id="TTPolishing" name="TTPolishing">@Model.TTPolishing</textarea>
+            </div>
+        </div>
+        <div id="innermenu8" class="tab-pane fade">
+            @*<br>*@
+            @Html.Action("TTLinksGetData", "MaintenanceTracking")
+        </div>
+    </div>
+</form>
+
+<div class="modal" id="Modal_textarea5">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" style="display:none" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <textarea id="MainEditor" autocomplete="off" class="textarea-editor"></textarea>
+                @*<div id="ShowTxtVal" class="editable"></div>*@
+                <div class="row">
+                    <div class="col-md-12 text-right btn_css">
+                        <input type="button" id="SaveTxtbtnMain" class="add_btn" value="Save" />
+                        <input type="button" class="del_btnMain delete_btn" value="Cancel" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script src="~/Scripts/MediumEditorApply.js"></script>*@
+<script>
+
+      $(document).ready(function () {
+        $(".medium-editor-toolbar-anchor-preview-inner").attr("target", "_blank");
+    });
+
+   if (@Permission == 2 || @Permission == 3) {
+        $("#TTLinksDeleteBtn").hide();
+    }
+    else if (@Permission == 4 || @Permission == 5 || @Permission == 6)
+    {
+         $(".CallingFocusOutTechTips, .CallingFocusOutTTLinks").attr('disabled', 'disabled');
+        $("#TTDisassmbly, #TTClean, #TTAssmbly, #TTFinalChk, #TTToolKit, #TTPolishing, #TTHRDisassembly, #TTHRClean, #TTHRAssembly, #TTHRFinalChk, #TTHRPolishing, #TTHRToolKit").prop('disabled', true);
+         $("#TTLinksDeleteBtn, #AddImage, #DelPartImage,#OldTTLinks, #AddImage2, #DeleImage2, #AddNewTTLinks, #TTLINKSDelete").hide();
+
+         $(".editablett, .note-editable").attr('contenteditable', false);
+         $("#SaveTxtbtnMain").hide();
+
+         //$('.editor_div').css('pointer-events', 'none');
+         //$("#Editor6, #Editor7, #Editor8, #Editor9, #Editor10, #Editor11").css('pointer-events', 'none');
+    }
+
+
+    $("#MCWeight").focusout(function () {
+        var Weight = $("#MCWeight").val().replace(/\,/g, '');
+        $("#MCWeight").val(addCommas(Weight));
+    })
+
+    function SaveMaintTechTips()
+    {
+        //var data = $("#TechTipSbmtForm").serialize();
+
+        var obj = new Object();
+        obj.MCHeight = $("#MCHeight").val();
+        obj.MCWidth = $("#MCWidth").val();
+        obj.MCDepth = $("#MCDepth").val();
+        obj.MCWeight = $("#MCWeight").val();
+        obj.MCWidthOpen = $("#MCWidthOpen").val();
+        obj.MCEjectorStroke = $("#MCEjectorStroke").val();
+        obj.MCTotalHeight = $("#MCTotalHeight").val();
+        obj.TTHRSystem = $("#TTHRSystem").val();
+        obj.TTHRSerialNumber = $("#TTHRSerialNumber").val();
+        obj.TTHRProgramNumber = $("#TTHRProgramNumber").val();
+        obj.TTHRType = $("#TTHRType").val();
+        obj.TTHRActuation = $("#TTHRActuation").val();
+        obj.TTHRProbeType = $("#TTHRProbeType").val();
+        obj.TTHRController = $("#TTHRController").val();
+        obj.TTHRNumberZones = $("#TTHRNumberZones").val();
+        obj.TTHRNumberDrops = $("#TTHRNumberDrops").val();
+        obj.TTHROpenPressureMax = $("#TTHROpenPressureMax").val();
+        obj.TTHROpenPressureTypical = $("#TTHROpenPressureTypical").val();
+        obj.TTHRClosePressureMax = $("#TTHRClosePressureMax").val();
+        obj.TTHRClosePressureTypical = $("#TTHRClosePressureTypical").val();
+        obj.TTHRProbeHeater = $("#TTHRProbeHeater").val();
+        obj.TTHRProbeHeaterThermoType = $("#TTHRProbeHeaterThermoType").val();
+        obj.TTHRManifoldHeater = $("#TTHRManifoldHeater").val();
+        obj.TTHRManifoldHeaterThermoType = $("#TTHRManifoldHeaterThermoType").val();
+        obj.BridgeHeater = $("#BridgeHeater").val();
+        obj.BridgeThermocouple = $("#BridgeThermocouple").val();
+        obj.SprueHeater = $("#SprueHeater").val();
+        obj.SprueThermocouple = $("#SprueThermocouple").val();
+        obj.TTHRMaxOperatTemp = $("#TTHRMaxOperatTemp").val();
+        obj.TTHRClampPlateBoltTorque = $("#TTHRClampPlateBoltTorque").val();
+        obj.TechTipsID = $("#TechTipsID").val();
+        obj.MoldDataID = $("#MoldDataID").val();
+
+
+        if (document.getElementById('YesRadio').checked) {
+            obj.TTHRDropsServicableInPress = true;
+        }
+        else {
+            obj.TTHRDropsServicableInPress = false;
+        }
+
+        var TTHRDisassembly = $("#Editor0").html();
+        var TTHRDisassembly1 = $.parseHTML(TTHRDisassembly);
+        obj.TTHRDisassembly = TTHRDisassembly1[1].innerHTML;
+
+
+        var TTHRClean = $("#Editor1").html();
+        var TTHRClean1 = $.parseHTML(TTHRClean);
+        obj.TTHRClean = TTHRClean1[1].innerHTML;
+
+        var TTHRAssembly = $("#Editor2").html();
+        var TTHRAssembly1 = $.parseHTML(TTHRAssembly);
+        obj.TTHRAssembly = TTHRAssembly1[1].innerHTML;
+
+        var TTHRFinalChk = $("#Editor3").html();
+        var TTHRFinalChk1 = $.parseHTML(TTHRFinalChk);
+        obj.TTHRFinalChk = TTHRFinalChk1[1].innerHTML;
+
+        var TTHRPolishing = $("#Editor4").html();
+        var TTHRPolishing1 = $.parseHTML(TTHRPolishing);
+        obj.TTHRPolishing = TTHRPolishing1[1].innerHTML;
+
+        var TTHRToolKit = $("#Editor5").html();
+        var TTHRToolKit1 = $.parseHTML(TTHRToolKit);
+        obj.TTHRToolKit = TTHRToolKit1[1].innerHTML;
+
+        var TTDisassmbly = $("#Editor6").html();
+        var TTDisassmbly1 = $.parseHTML(TTDisassmbly);
+        obj.TTDisassmbly = TTDisassmbly1[1].innerHTML;
+
+        var TTClean = $("#Editor7").html();
+        var TTClean1 = $.parseHTML(TTClean);
+        obj.TTClean = TTClean1[1].innerHTML;
+
+        var TTAssmbly = $("#Editor8").html();
+        var TTAssmbly1 = $.parseHTML(TTAssmbly);
+        obj.TTAssmbly = TTAssmbly1[1].innerHTML;
+
+
+        var TTFinalChk = $("#Editor9").html();
+        var TTFinalChk1 = $.parseHTML(TTFinalChk);
+        obj.TTFinalChk = TTFinalChk1[1].innerHTML;
+
+        var TTToolKit = $("#Editor10").html();
+        var TTToolKit1 = $.parseHTML(TTToolKit);
+        obj.TTToolKit = TTToolKit1[1].innerHTML;
+
+        var TTPolishing = $("#Editor11").html();
+        var TTPolishing1 = $.parseHTML(TTPolishing);
+        obj.TTPolishing = TTPolishing1[1].innerHTML;
+
+
+        var TTHRNotes = $("#Editor12").html();
+        var TTHRNotes1 = $.parseHTML(TTHRNotes);
+        obj.TTHRNotes = TTHRNotes1[1].innerHTML;
+
+        jQuery.ajaxSettings.traditional = true;
+
+        $.ajax({
+            type: 'POST',
+            url: '/MaintenanceTracking/SaveTechTipsMoldSpec',
+            data: obj,
+            success: function (data)
+            {
+               
+            },
+            error: function ()
+            {
+
+            }
+        })
+    }
+
+</script>
+<script>
+    document.getElementById('innermenu2').style.height = window.innerHeight - 463 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('innermenu3').style.height = window.innerHeight - 463 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('innermenu4').style.height = window.innerHeight - 463 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('innermenu5').style.height = window.innerHeight - 463 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('innermenu6').style.height = window.innerHeight - 463 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>
+<script>
+    document.getElementById('innermenu7').style.height = window.innerHeight - 463 + 'px';
+    //window.onresize = autoResizeDiv;
+</script>

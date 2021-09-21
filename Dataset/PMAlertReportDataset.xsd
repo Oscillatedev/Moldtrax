@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema id="PMAlertReportDataset" targetNamespace="http://tempuri.org/PMAlertReportDataset.xsd" xmlns:mstns="http://tempuri.org/PMAlertReportDataset.xsd" xmlns="http://tempuri.org/PMAlertReportDataset.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop" attributeFormDefault="qualified" elementFormDefault="qualified">
+  <xs:annotation>
+    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
+      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
+        <Connections />
+        <Tables />
+        <Sources />
+      </DataSource>
+    </xs:appinfo>
+  </xs:annotation>
+  <xs:element name="PMAlertReportDataset" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:EnableTableAdapterManager="true" msprop:Generator_DataSetName="PMAlertReportDataset" msprop:Generator_UserDSName="PMAlertReportDataset">
+    <xs:complexType>
+      <xs:choice minOccurs="0" maxOccurs="unbounded">
+        <xs:element name="DataTable1" msprop:Generator_TableClassName="DataTable1DataTable" msprop:Generator_TableVarName="tableDataTable1" msprop:Generator_TablePropName="DataTable1" msprop:Generator_RowDeletingName="DataTable1RowDeleting" msprop:Generator_RowChangingName="DataTable1RowChanging" msprop:Generator_RowEvHandlerName="DataTable1RowChangeEventHandler" msprop:Generator_RowDeletedName="DataTable1RowDeleted" msprop:Generator_UserTableName="DataTable1" msprop:Generator_RowChangedName="DataTable1RowChanged" msprop:Generator_RowEvArgName="DataTable1RowChangeEvent" msprop:Generator_RowClassName="DataTable1Row">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element name="Mold" msprop:Generator_ColumnVarNameInTable="columnMold" msprop:Generator_ColumnPropNameInRow="Mold" msprop:Generator_ColumnPropNameInTable="MoldColumn" msprop:Generator_UserColumnName="Mold" type="xs:string" minOccurs="0" />
+              <xs:element name="Description" msprop:Generator_ColumnVarNameInTable="columnDescription" msprop:Generator_ColumnPropNameInRow="Description" msprop:Generator_ColumnPropNameInTable="DescriptionColumn" msprop:Generator_UserColumnName="Description" type="xs:string" minOccurs="0" />
+              <xs:element name="Config1" msprop:Generator_ColumnVarNameInTable="columnConfig1" msprop:Generator_ColumnPropNameInRow="Config1" msprop:Generator_ColumnPropNameInTable="Config1Column" msprop:Generator_UserColumnName="Config1" type="xs:string" minOccurs="0" />
+              <xs:element name="Config2" msprop:Generator_ColumnVarNameInTable="columnConfig2" msprop:Generator_ColumnPropNameInRow="Config2" msprop:Generator_ColumnPropNameInTable="Config2Column" msprop:Generator_UserColumnName="Config2" type="xs:string" minOccurs="0" />
+              <xs:element name="StartDate" msprop:Generator_ColumnVarNameInTable="columnStartDate" msprop:Generator_ColumnPropNameInRow="StartDate" msprop:Generator_ColumnPropNameInTable="StartDateColumn" msprop:Generator_UserColumnName="StartDate" type="xs:string" minOccurs="0" />
+              <xs:element name="StopDate" msprop:Generator_ColumnVarNameInTable="columnStopDate" msprop:Generator_ColumnPropNameInRow="StopDate" msprop:Generator_ColumnPropNameInTable="StopDateColumn" msprop:Generator_UserColumnName="StopDate" type="xs:string" minOccurs="0" />
+              <xs:element name="CyclesToReachYellowLimits" msprop:Generator_ColumnVarNameInTable="columnCyclesToReachYellowLimits" msprop:Generator_ColumnPropNameInRow="CyclesToReachYellowLimits" msprop:Generator_ColumnPropNameInTable="CyclesToReachYellowLimitsColumn" msprop:Generator_UserColumnName="CyclesToReachYellowLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="HoursToReachYellowLimits" msprop:Generator_ColumnVarNameInTable="columnHoursToReachYellowLimits" msprop:Generator_ColumnPropNameInRow="HoursToReachYellowLimits" msprop:Generator_ColumnPropNameInTable="HoursToReachYellowLimitsColumn" msprop:Generator_UserColumnName="HoursToReachYellowLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="CyclesToReachRedLimits" msprop:Generator_ColumnVarNameInTable="columnCyclesToReachRedLimits" msprop:Generator_ColumnPropNameInRow="CyclesToReachRedLimits" msprop:Generator_ColumnPropNameInTable="CyclesToReachRedLimitsColumn" msprop:Generator_UserColumnName="CyclesToReachRedLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="HoursToReachRedLimits" msprop:Generator_ColumnVarNameInTable="columnHoursToReachRedLimits" msprop:Generator_ColumnPropNameInRow="HoursToReachRedLimits" msprop:Generator_ColumnPropNameInTable="HoursToReachRedLimitsColumn" msprop:Generator_UserColumnName="HoursToReachRedLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="Color" msprop:Generator_ColumnVarNameInTable="columnColor" msprop:Generator_ColumnPropNameInRow="Color" msprop:Generator_ColumnPropNameInTable="ColorColumn" msprop:Generator_UserColumnName="Color" type="xs:string" minOccurs="0" />
+              <xs:element name="Press" msprop:Generator_ColumnVarNameInTable="columnPress" msprop:Generator_ColumnPropNameInRow="Press" msprop:Generator_ColumnPropNameInTable="PressColumn" msprop:Generator_UserColumnName="Press" type="xs:string" minOccurs="0" />
+              <xs:element name="NewCyclesToReachYellowLimits" msprop:Generator_ColumnVarNameInTable="columnNewCyclesToReachYellowLimits" msprop:Generator_ColumnPropNameInRow="NewCyclesToReachYellowLimits" msprop:Generator_ColumnPropNameInTable="NewCyclesToReachYellowLimitsColumn" msprop:Generator_UserColumnName="NewCyclesToReachYellowLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="NewCyclesToReachRedLimits" msprop:Generator_ColumnVarNameInTable="columnNewCyclesToReachRedLimits" msprop:Generator_ColumnPropNameInRow="NewCyclesToReachRedLimits" msprop:Generator_ColumnPropNameInTable="NewCyclesToReachRedLimitsColumn" msprop:Generator_UserColumnName="NewCyclesToReachRedLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="NewHoursToReachYellowLimits" msprop:Generator_ColumnVarNameInTable="columnNewHoursToReachYellowLimits" msprop:Generator_ColumnPropNameInRow="NewHoursToReachYellowLimits" msprop:Generator_ColumnPropNameInTable="NewHoursToReachYellowLimitsColumn" msprop:Generator_UserColumnName="NewHoursToReachYellowLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="NewHoursToReachRedLimits" msprop:Generator_ColumnVarNameInTable="columnNewHoursToReachRedLimits" msprop:Generator_ColumnPropNameInRow="NewHoursToReachRedLimits" msprop:Generator_ColumnPropNameInTable="NewHoursToReachRedLimitsColumn" msprop:Generator_UserColumnName="NewHoursToReachRedLimits" type="xs:string" minOccurs="0" />
+              <xs:element name="NewStopDate" msprop:Generator_ColumnVarNameInTable="columnNewStopDate" msprop:Generator_ColumnPropNameInRow="NewStopDate" msprop:Generator_ColumnPropNameInTable="NewStopDateColumn" msprop:Generator_UserColumnName="NewStopDate" type="xs:string" minOccurs="0" />
+              <xs:element name="NewStopSortOrder" msprop:Generator_ColumnVarNameInTable="columnNewStopSortOrder" msprop:Generator_ColumnPropNameInRow="NewStopSortOrder" msprop:Generator_ColumnPropNameInTable="NewStopSortOrderColumn" msprop:Generator_UserColumnName="NewStopSortOrder" type="xs:string" minOccurs="0" />
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:choice>
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

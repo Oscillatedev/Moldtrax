@@ -1,0 +1,727 @@
+﻿@model Moldtrax.Models.tblTechTips
+
+@{ 
+    Layout = null;
+}
+
+
+<style>
+    /* width */
+    #tab_runner .form-control.editable.medium-editor-element::-webkit-scrollbar {
+        width: 10px;
+    }
+
+    /* Track */
+    #tab_runner .form-control.editable.medium-editor-element::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+
+    /* Handle */
+    #tab_runner .form-control.editable.medium-editor-element::-webkit-scrollbar-thumb {
+        background: #888;
+    }
+
+        /* Handle on hover */
+        #tab_runner .form-control.editable.medium-editor-element::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+    ::selection {
+        color: #000;
+        /* WebKit/Blink Browsers */
+        background-color: #b1d7fe;
+    }
+
+    ::-moz-selection {
+        color: #ccc;
+        /* Gecko Browsers */
+        background-color: #b1d7fe;
+    }
+
+    .editable,
+    .editable:focus {
+        outline: 0px solid transparent;
+    }
+
+    .form-control.editablett.medium-editor-element {
+        /*height: 88vh;*/
+        height: 98vh;
+        word-break: break-word;
+    }
+    #Editor12 .form-control.editablett.medium-editor-element {
+        height: 50vh;
+    }
+
+</style>
+
+<div class="row">
+    <div class="col-md-6 col-sm-6">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Specifications</h5>
+            </div>
+            <div class="card_body ">
+                <input type="hidden" value="@Model.TechTipsID" id="TechTipsID" name="TechTipsID" />
+                <input type="hidden" value="@Model.MoldDataID" id="MoldDataID" name="MoldDataID" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <label>System</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRSystem" name="TTHRSystem" value="@Model.TTHRSystem">
+                        <button style="display:none;" id="Showtxtbtn" data-target="#Modal_textarea" data-toggle="modal"></button>
+
+                        <label>Serial Number</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRSerialNumber" name="TTHRSerialNumber" value="@Model.TTHRSerialNumber">
+
+                        <label>Program Number</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRProgramNumber" name="TTHRProgramNumber" value="@Model.TTHRProgramNumber">
+
+                        <label>Type</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRType" name="TTHRType" value="@Model.TTHRType">
+
+                        <label>Actuation</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRActuation" name="TTHRActuation" value="@Model.TTHRActuation">
+                    </div>
+                    <div class="col-md-6">
+                        <label>Probe Type</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRProbeType" name="TTHRProbeType" value="@Model.TTHRProbeType">
+
+                        <label>Controller</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRController" name="TTHRController" value="@Model.TTHRController">
+
+                        <label>Number of Zones</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRNumberZones" name="TTHRNumberZones" value="@Model.TTHRNumberZones">
+
+                        <label>Number of Drops</label>
+                        <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRNumberDrops" name="TTHRNumberDrops" value="@Model.TTHRNumberDrops">
+
+                        <label>Drops Servicable In-Press?</label>
+                        <div class="form-group">
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" id="YesRadio" class="form-check-input" value="@Model.TTHRDropsServicableInPress" name="optradio">Yes
+                                </label>
+                            </div>
+                            <div class="form-check-inline">
+                                <label class="form-check-label">
+                                    <input type="radio" id="NoRadio" class="form-check-input" name="optradio">No
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="inner_box">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Open Pressures</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <label>Maximum Psi</label>
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHROpenPressureMax" name="TTHROpenPressureMax" value="@Model.TTHROpenPressureMax">
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <label>Typical Psi</label>
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHROpenPressureTypical" name="TTHROpenPressureTypical" value="@Model.TTHROpenPressureTypical">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="inner_box">
+            <div class="card box_design">
+                <div class="card_header">
+                    <h5>Closed Pressures</h5>
+                </div>
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <label>Maximum Psi</label>
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" id="TTHRClosePressureMax" name="TTHRClosePressureMax" value="@Model.TTHRClosePressureMax" type="text">
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-12">
+                            <label>Typical Psi</label>
+                            <input class="form-control CallingFocusOutTechTips" type="text" autocomplete="off" id="TTHRClosePressureTypical" name="TTHRClosePressureTypical" value="@Model.TTHRClosePressureTypical">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="inner_box">
+            <div class="card box_design">
+                <div class="card_body">
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-12">
+                            <label></label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12 text-center">
+                            <label>Heater</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12 text-center">
+                            <label>Thermocouple</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-12">
+                            <label>Probe</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRProbeHeater" name="TTHRProbeHeater" value="@Model.TTHRProbeHeater">
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" type="text" autocomplete="off" id="TTHRProbeHeaterThermoType" name="TTHRProbeHeaterThermoType" value="@Model.TTHRProbeHeaterThermoType">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-12">
+                            <label>Manifold</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRManifoldHeater" name="TTHRManifoldHeater" value="@Model.TTHRManifoldHeater">
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRManifoldHeaterThermoType" name="TTHRManifoldHeaterThermoType" value="@Model.TTHRManifoldHeaterThermoType">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-12">
+                            <label>Bridge</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" type="text" autocomplete="off" id="BridgeHeater" name="BridgeHeater" value="@Model.BridgeHeater">
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" type="text" autocomplete="off" id="BridgeThermocouple" name="BridgeThermocouple" value="@Model.BridgeThermocouple">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-2 col-sm-2 col-12">
+                            <label>Sprue</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" type="text" id="SprueHeater" autocomplete="off" name="SprueHeater" value="@Model.SprueHeater">
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" type="text" id="SprueThermocouple" autocomplete="off" name="SprueThermocouple" value="@Model.SprueThermocouple">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-sm-7 col-12">
+                            <label>Maximum Operating Temperature</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" autocomplete="off" type="text" id="TTHRMaxOperatTemp" name="TTHRMaxOperatTemp" value="@Model.TTHRMaxOperatTemp">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-7 col-sm-7 col-12">
+                            <label>Manifold Plate Bolt Torque</label>
+                        </div>
+                        <div class="col-md-5 col-sm-5 col-12">
+                            <input class="form-control CallingFocusOutTechTips" type="text" autocomplete="off" id="TTHRClampPlateBoltTorque" name="TTHRClampPlateBoltTorque" value="@Model.TTHRClampPlateBoltTorque">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+    <div class="col-md-6 col-sm-6">
+        <div class="card box_design">
+            <div class="card_header">
+                <h5>Specifications</h5>
+            </div>
+            <div class="card_body">
+                @*<br>*@
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist" id="hot_runner">
+                    <li class="nav-item">
+                        <a class="nav-link active" onclick="GetFocusOnEditor()" data-toggle="tab" href="#homes">Disassembly</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="GetFocusOnEditor()" data-toggle="tab" href="#menus1">Clean</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="GetFocusOnEditor()" data-toggle="tab" href="#menus2">Assembly</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="GetFocusOnEditor()" data-toggle="tab" href="#homes2">Processing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="GetFocusOnEditor()" data-toggle="tab" href="#menus12">Inspection</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" onclick="GetFocusOnEditor()" data-toggle="tab" href="#menus22">Servicing</a>
+                    </li>
+                </ul>
+
+                <!-- Tab panes -->
+                <div class="tab-content" id="tab_runner">
+                    <div id="homes" class="tab-pane active">
+                        @*<br>*@
+                        <div class="editor_div editor1c CallingFocusOutTechTips" id="Editor0">
+                            <textarea class="form-control CallingFocusOutTechTips TTHRDisassembly editablett" autocomplete="off" rows="20" id="TTHRDisassembly" name="">@Model.TTHRDisassembly</textarea>
+                            <input type="button" style="display:none;" id="ShowtxtbtnPop" data-target="#Modal_textarea" data-toggle="modal" />
+                        </div>
+                    </div>
+                    <div id="menus1" class="tab-pane fade">
+                        @*<br>*@
+                        <div class="editor_div editor1c CallingFocusOutTechTips" id="Editor1">
+                            <textarea class="form-control editablett TTHRClean" rows="20" autocomplete="off" id="TTHRClean" name="TTHRClean">@Model.TTHRClean</textarea>
+                        </div>
+                    </div>
+                    <div id="menus2" class="tab-pane fade">
+                        @*<br>*@
+                        <div class="editor_div editor1c CallingFocusOutTechTips" id="Editor2">
+                            <textarea class="form-control editablett TTHRAssembly" rows="20" id="TTHRAssembly" autocomplete="off" name="TTHRAssembly">@Model.TTHRAssembly</textarea>
+                        </div>
+                    </div>
+                    <div id="homes2" class="tab-pane">
+                        @*<br>*@
+                        <div class="editor_div editor1c CallingFocusOutTechTips" id="Editor3">
+                            <textarea class="form-control editablett TTHRFinalChk" rows="20" id="TTHRFinalChk" autocomplete="off" name="TTHRFinalChk">@Model.TTHRFinalChk</textarea>
+                        </div>
+                    </div>
+                    <div id="menus12" class="tab-pane fade">
+                        @*<br>*@
+                        <div class="editor_div editor1c CallingFocusOutTechTips" id="Editor4">
+                            <textarea class="form-control editablett TTHRPolishing" rows="20" id="TTHRPolishing" autocomplete="off" name="TTHRPolishing">@Model.TTHRPolishing</textarea>
+                        </div>
+                    </div>
+                    <div id="menus22" class="tab-pane fade">
+                        @*<br>*@
+                        <div class="editor_div editor1c CallingFocusOutTechTips" id="Editor5">
+                            <textarea class="form-control editablett TTHRToolKit" rows="20" autocomplete="off" id="TTHRToolKit" name="TTHRToolKit">@Model.TTHRToolKit</textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card box_design">
+            <div class="card_body">
+                <label>Notes</label>
+                <div id="Editor12" class="editor_div editor1c CallingFocusOutTechTips">
+                    <textarea id="TTHRNotes" name="TTHRNotes" class="form-control CallingFocusOutTechTips TTHRNotes editablett">@Model.TTHRNotes</textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="~/dist/summernote-lite.js"></script>
+<script>
+    $('#MainEditor').summernote(
+        {
+            toolbar: [
+                ['style', ['style']],
+                ['fontsize', ['fontsize']],
+                ['font', ['bold', 'italic', 'underline', 'clear']],
+                ['fontname', ['fontname']],
+                ['color', ['color']],
+                ['para', ['ul', 'ol', 'paragraph']],
+                ['height', ['height']],
+                ['insert', ['link', 'picture', 'hr']],
+                ['view', ['fullscreen', 'codeview', 'help']]
+            ],
+            height: 550,                 // set editor height
+            minHeight: null,
+            popover: {
+                link: []
+            },// set minimum height of editor
+            maxHeight: null,
+            focus: true
+            // set maximum height of editor
+        });
+    $('.note-editable').css('font-size', '12px');
+</script>
+<link href="~/dist/summernote-lite.css" rel="stylesheet" />
+<script>
+
+    $.fn.extend({
+        placeCursorAtEnd: function () {
+            // Places the cursor at the end of a contenteditable container (should also work for textarea / input)
+            if (this.length === 0) {
+                throw new Error("Cannot manipulate an element if there is no element!");
+            }
+            var el = this[0];
+            var range = document.createRange();
+            var sel = window.getSelection();
+            var childLength = el.childNodes.length;
+            if (childLength > 0) {
+                var lastNode = el.childNodes[childLength - 1];
+                var lastNodeChildren = lastNode.childNodes.length;
+                range.setStart(lastNode, lastNodeChildren);
+                range.collapse(true);
+                sel.removeAllRanges();
+                sel.addRange(range);
+            }
+            return this;
+        }
+    });
+
+
+    $(".note-toolbar").click(function () {
+        debugger
+        var data = $(this);
+        data.find(".note-editable").trigger('focus');
+    });
+
+    $(document).ready(function () {
+        debugger;
+        $(".editablett").attr('data-placeholder', '');
+
+      var DropValue =  '@Model.TTHRDropsServicableInPress'
+
+        if (DropValue == 'True') {
+            $("#YesRadio").prop("checked", true);
+            $("#NoRadio").prop("checked", false);
+        }
+        else
+        {
+            $("#YesRadio").prop("checked", false);
+            $("#NoRadio").prop("checked", true);
+        }
+    })
+
+    $("#Editor0").dblclick(function () {
+        debugger;
+        var dd = $("#Editor0").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRDisassembly").attr('name', 'NewDDID');
+        $(".TTHRDisassembly").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#Editor1").dblclick(function () {
+        debugger;
+        var dd = $("#Editor1").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRClean").attr('name', 'NewDDID');
+        $(".TTHRClean").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#Editor2").dblclick(function () {
+        debugger;
+        var dd = $("#Editor2").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRAssembly").attr('name', 'NewDDID');
+        $(".TTHRAssembly").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#Editor3").dblclick(function () {
+        debugger;
+        var dd = $("#Editor3").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRFinalChk").attr('name', 'NewDDID');
+        $(".TTHRFinalChk").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#Editor4").dblclick(function () {
+        debugger;
+        var dd = $("#Editor4").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRPolishing").attr('name', 'NewDDID');
+        $(".TTHRPolishing").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#Editor5").dblclick(function () {
+        debugger;
+        var dd = $("#Editor5").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRToolKit").attr('name', 'NewDDID');
+        $(".TTHRToolKit").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    })
+
+    $("#Editor6").dblclick(function () {
+        debugger;
+        var dd = $("#Editor6").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTDisassmbly").attr('name', 'NewDDID');
+        $(".TTDisassmbly").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+    $("#Editor7").dblclick(function () {
+        debugger;
+        var dd = $("#Editor7").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTClean").attr('name', 'NewDDID');
+        $(".TTClean").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+    $("#Editor8").dblclick(function () {
+        debugger;
+        var dd = $("#Editor8").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTAssmbly").attr('name', 'NewDDID');
+        $(".TTAssmbly").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+    $("#Editor9").dblclick(function () {
+        debugger;
+        var dd = $("#Editor9").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTFinalChk").attr('name', 'NewDDID');
+        $(".TTFinalChk").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+    $("#Editor10").dblclick(function () {
+        debugger;
+        var dd = $("#Editor10").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTToolKit").attr('name', 'NewDDID');
+        $(".TTToolKit").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+    $("#Editor11").dblclick(function () {
+        debugger;
+        var dd = $("#Editor11").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTPolishing").attr('name', 'NewDDID');
+        $(".TTPolishing").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+    });
+
+    $("#Editor12").dblclick(function () {
+        var dd = $("#Editor12").html();
+        var newdata = $.parseHTML(dd);
+        $("#ShowtxtbtnPopMain").click();
+        $(".note-editable").html(newdata[1].innerHTML);
+        $("#TTHRNotes").attr('name', 'NewDDID');
+        $(".TTHRNotes").attr('name', 'NewDDID2');
+
+        if (newdata[1].innerHTML == "") {
+            $('.note-editable').trigger('focus');
+        }
+
+        else {
+            $('.note-editable').placeCursorAtEnd();
+        }
+
+    });
+
+
+    
+
+
+    $("#SaveTxtbtn").click(function () {
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+        $(".popover-content").hide();
+    })
+
+    $(".del_btn").click(function () {
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close1").click();
+    });
+
+    $("#SaveTxtbtnMain").click(function () {
+        debugger;
+        var data = $(".note-editable").html();
+        $('[name=NewDDID]').html(data);
+        $('[name=NewDDID2]').html(data);
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close2").click();
+        $(".popover-content").hide();
+    })
+
+    $(".del_btnMain").click(function () {
+        $('[name=NewDDID2]').attr('name', '');
+        $('[name=NewDDID]').attr('name', '');
+        $(".close2").click();
+    });
+
+    var ColorPickerExtension = MediumEditor.extensions.button.extend({
+        name: "colorPicker",
+        action: "applyForeColor",
+        aria: "color picker",
+        contentDefault: "<span class='editor-color-picker'>Text Color<span>",
+
+        init: function () {
+            this.button = this.document.createElement('button');
+            this.button.classList.add('medium-editor-action');
+            this.button.innerHTML = '<b>C</b>';
+            initPicker(this.button);
+        }
+    });
+
+    var pickerExtension = new ColorPickerExtension();
+
+    function setColor(color) {
+        pickerExtension.base.importSelection(this.selectionState);
+        pickerExtension.document.execCommand("styleWithCSS", false, true);
+        pickerExtension.document.execCommand("foreColor", false, color);
+    }
+
+    function initPicker(element) {
+        $(element).spectrum({
+            allowEmpty: true,
+            color: "#f00",
+            showInput: true,
+            showAlpha: true,
+            showPalette: true,
+            showInitial: true,
+            hideAfterPaletteSelect: false,
+            preferredFormat: "hex3",
+            change: function (color) {
+                setColor(color);
+            },
+            hide: function (color) {
+                //applyColor(color);
+            },
+            palette: [
+                ["#000", "#444", "#666", "#999", "#ccc", "#eee", "#f3f3f3", "#fff"],
+                ["#f00", "#f90", "#ff0", "#0f0", "#0ff", "#00f", "#90f", "#f0f"],
+                ["#f4cccc", "#fce5cd", "#fff2cc", "#d9ead3", "#d0e0e3", "#cfe2f3", "#d9d2e9", "#ead1dc"],
+                ["#ea9999", "#f9cb9c", "#ffe599", "#b6d7a8", "#a2c4c9", "#9fc5e8", "#b4a7d6", "#d5a6bd"],
+                ["#e06666", "#f6b26b", "#ffd966", "#93c47d", "#76a5af", "#6fa8dc", "#8e7cc3", "#c27ba0"],
+                ["#c00", "#e69138", "#f1c232", "#6aa84f", "#45818e", "#3d85c6", "#674ea7", "#a64d79"],
+                ["#900", "#b45f06", "#bf9000", "#38761d", "#134f5c", "#0b5394", "#351c75", "#741b47"],
+                ["#600", "#783f04", "#7f6000", "#274e13", "#0c343d", "#073763", "#20124d", "#4c1130"]
+            ]
+        });
+    }
+
+    var editor = new MediumEditor('.editablett', {
+        toolbar: {
+            buttons: ['bold', 'italic', 'underline', 'anchor', 'colorPicker', 'h2', 'h3', 'orderedlist', 'unorderedlist']
+        },
+        extensions: {
+            'colorPicker': pickerExtension
+        }
+    });
+</script>
