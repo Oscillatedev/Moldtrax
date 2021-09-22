@@ -16,7 +16,7 @@ namespace Moldtrax
             routes.MapRoute(
                 name: "Default",
                 url: "{controller}/{action}/{id}",
-                defaults: new { controller = "DetailMoldInfo", action = "Index", id = UrlParameter.Optional }
+                defaults: new { controller = "Account", action = "Callback", id = UrlParameter.Optional }
             );
         }
     }

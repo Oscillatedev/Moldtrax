@@ -13,30 +13,6 @@ namespace Moldtrax.Filters
     {
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
-           // Logger.Log("came here");
-            if (httpContext.Session["accessToken"]!=null)
-            {
-                var token = httpContext.Session["accessToken"].ToString();
-                var headers = new Dictionary<string, string>
-                {
-                    { "Authorization",token}
-                };
-
-                HttpRequestInput input = new HttpRequestInput
-                {
-                    BaseUrl = "graph.microsoft.com/beta/",
-                    Url = "me",
-                    Headers = headers
-    ,
-                };
-                var response = HttpService.Instance.Get(input).GetAwaiter().GetResult();
-                if (response.IsSuccessStatusCode)
-                {
-                    var context = response.Content.ReadAsStringAsync().Result;
-                    Logger.Log(context);
-                }
-                return true;
-            }
             return false;
             
 

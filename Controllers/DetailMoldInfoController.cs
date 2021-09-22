@@ -20,7 +20,7 @@ using System.Web.Routing;
 namespace Moldtrax.Controllers
 {
     [SessionExpireFilter]
-   // [CustomAuthorize]
+    [CustomAuthorize]
     public class DetailMoldInfoController : Controller
     {
         private MoldtraxDbContext db = new MoldtraxDbContext();
@@ -30,6 +30,11 @@ namespace Moldtrax.Controllers
         
         public ActionResult Index(int CID =0)
         {
+
+            //ApplicationUserManager userManager = HttpContext.GetOwinContext().GetUserManager();
+
+            var  userId = HttpContext.User.Identity.IsAuthenticated;
+
             if (CID == 0)
             {
                 CID = ShrdMaster.Instance.GetCompanyID();

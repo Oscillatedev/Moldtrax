@@ -9,7 +9,7 @@ namespace Moldtrax.Common
     public class HttpService
     {
         private static Lazy<HttpService> _instance = new Lazy<HttpService>();
-        private HttpService() { }
+        
 
         public static HttpService Instance
         {

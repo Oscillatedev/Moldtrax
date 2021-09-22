@@ -910,6 +910,58 @@ namespace Moldtrax.Controllers
             base.Dispose(disposing);
         }
 
+        public ActionResult Callback()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                var claims = ClaimsPrincipal.Current.Identities.FirstOrDefault().Claims.ToList();
+                var userClaim = claims.FirstOrDefault(x => x.Type == "employeeid");
+                if(userClaim != null)
+                {
+                    var UserRole = db.Ezy_Groupusers.Where(x => x.UserID == userClaim.Value).FirstOrDefault();
+                }
+                
+
+                //string UserDefaultRole = UserRole == null ? string.Empty : UserRole.GroupName;
+
+                //if (user.RoleID == 1 || UserDefaultRole == "Admins")
+                //{
+                //    string numbers = "0123456789";
+                //    Random random = new Random();
+                //    string otp = string.Empty;
+                //    for (int i = 0; i < 5; i++)
+                //    {
+                //        int tempval = random.Next(0, numbers.Length);
+                //        otp += tempval;
+                //    }
+
+                //    Session["msgotp"] = otp;
+                //    Session["OTPLoginUser"] = user.UserID;
+                //    string msg = "Your OTP from Moldtrax BD is " + otp;
+                //    bool f = ShrdMaster.Instance.SendEmail(user.Email, "Subjected to OTP", msg);
+                //    if (f)
+                //    {
+                //        TempData["ErrorMsg"] = "OTP has been sent to your email id. Please enter OTP.";
+                //    }
+                //    else
+                //    {
+                //        TempData["ErrorMsg"] = "Oops somethig went wrong. Please try again.";
+                //    }
+
+                //    return RedirectToAction("OTPLogin", "Account");
+                //}
+                //else
+                //{
+                return ValidateUser(null);
+                // }
+            }
+            else
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+        }
+
         #region Helpers
         // Used for XSRF protection when adding external logins
         private const string XsrfKey = "XsrfId";

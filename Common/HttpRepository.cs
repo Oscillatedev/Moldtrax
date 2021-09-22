@@ -11,7 +11,7 @@ namespace Moldtrax.Common
         private HttpClient _client;
 
         private static Lazy<HttpRepository> _instance = new Lazy<HttpRepository>();
-        private HttpRepository() { }
+       
 
         public static HttpRepository Instance
         {
@@ -57,29 +57,36 @@ namespace Moldtrax.Common
 
         public async Task<HttpResponseMessage> Post(HttpRequestInput input)
         {
-            _client = GetClient();
-            _client.BaseAddress = new Uri(input.BaseUrl);
-            _client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
-            //.Accept
-            //.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-            if (input.Headers != null && input.Headers.Count > 0)
+            try
             {
-                foreach (var header in input.Headers)
+                _client = GetClient();
+                _client.BaseAddress = new Uri(input.BaseUrl);
+                _client.DefaultRequestHeaders.TryAddWithoutValidation("Content-Type", "application/json; charset=utf-8");
+                //.Accept
+                //.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                if (input.Headers != null && input.Headers.Count > 0)
                 {
-                    if (header.Key.ToLower() == "authorization")
+                    foreach (var header in input.Headers)
                     {
-                        var split = header.Value.Split(' ');
-                        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(split[0], split[1]);
-                    }
-                    else
-                    {
-                        _client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                        if (header.Key.ToLower() == "authorization")
+                        {
+                            var split = header.Value.Split(' ');
+                            _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(split[0], split[1]);
+                        }
+                        else
+                        {
+                            _client.DefaultRequestHeaders.TryAddWithoutValidation(header.Key, header.Value);
+                        }
                     }
                 }
+                var response = await _client.PostAsync(input.Url, input.Content);
+                //_client.Dispose();
+                return response;
             }
-            var response = await _client.PostAsync(input.Url, input.Content);
-            //_client.Dispose();
-            return response;
+            catch(Exception ex)
+            {
+                return null;
+            }
         }
 
 

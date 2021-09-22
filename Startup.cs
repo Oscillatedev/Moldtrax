@@ -6,7 +6,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
+using IdentityModel.Client;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Owin;
 using Microsoft.Owin.Extensions;
 using Microsoft.Owin.Security;
@@ -29,6 +31,7 @@ namespace Moldtrax
             var _clientID = ConfigurationManager.AppSettings["ClientID"];
             var _authority = ConfigurationManager.AppSettings["Authority"];
             var _scopes = ConfigurationManager.AppSettings["Scopes"];
+            var tokenEdnpoint = "https://login.microsoftonline.com/8b24551d-7c2c-4beb-8b61-95f32d9929ef/oauth2/v2.0/token";
 
             // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=316888
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
@@ -38,50 +41,28 @@ namespace Moldtrax
             app.UseOpenIdConnectAuthentication(
             new OpenIdConnectAuthenticationOptions
             {
-
+                // Sets the ClientId, authority, RedirectUri as obtained from web.config
                 ClientId = _clientID,
                 Authority = _authority,
-                Scope = _scopes,
+                RedirectUri = "https://localhost:44311/Account/callback",
+                Scope = OpenIdConnectScope.OpenIdProfile,
+                // ResponseType is set to request the code id_token - which contains basic information about the signed-in user
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,
-                Notifications = new OpenIdConnectAuthenticationNotifications()
+                // ValidateIssuer set to false to allow personal and work accounts from any organization to sign in to your application
+                // To only allow users from a single organizations, set ValidateIssuer to true and 'tenant' setting in web.config to the tenant name
+                // To allow users from only a list of specific organizations, set ValidateIssuer to true and use ValidIssuers parameter
+                TokenValidationParameters = new TokenValidationParameters()
                 {
-                    AuthenticationFailed = OnAuthenticationFailed,
-
-                    SecurityTokenValidated = (context) =>
-                    {
-                        var claims = context.AuthenticationTicket.Identity.Claims;
-
-                        
-                        HttpContext.Current.Session["accessToken"] = context.ProtocolMessage.AccessToken;
-                        var groups = from c in claims
-                                     where c.Type == "groups"
-                                     select c;
-                        foreach (var group in groups)
-                        {
-                            context.AuthenticationTicket.Identity.AddClaim(new Claim(ClaimTypes.Role, group.Value));
-                        }
-                        return Task.FromResult(0);
-                    },
-                    SecurityTokenReceived = (context) =>
-                    {
-                        var token = context.ProtocolMessage.AccessToken;
-                        
-                       
-;                        //Logger.Log($"Token  : {token}");
-                        return Task.FromResult(0);
-                    },
-                    TokenResponseReceived = (context) =>
-                    {
-                        return Task.FromResult(0);
-                    }
+                    ValidateIssuer = false // This is a simplification
+                },
+                // OpenIdConnectAuthenticationNotifications configures OWIN to send notification of failed authentications to OnAuthenticationFailed method
+                Notifications = new OpenIdConnectAuthenticationNotifications
+                {
+                    AuthenticationFailed = OnAuthenticationFailed
                 }
-
             });
 
-           // var user = new ClaimsPrincipal();
-            //var accessToken = user.FindFirst("access_token").Value;
-
-            // This makes any middleware defined above this line run before the Authorization rule is applied in web.config
+            
             app.UseStageMarker(PipelineStage.Authenticate);
         }
 

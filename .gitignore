@@ -38,6 +38,8 @@ bld/
 msbuild.log
 msbuild.err
 msbuild.wrn
+packages/
+dist/
 
 # Visual Studio 
 .vs/
