@@ -192,7 +192,7 @@ namespace Moldtrax.Controllers
 
         public ActionResult ValidateUser(ezy_Users user)
         {
-            FormsAuthentication.SetAuthCookie(user.UserID, true);
+           //FormsAuthentication.SetAuthCookie(user.UserID, true);
             Session["User"] = user.UserID;
 
             HttpCookie nameCookie = new HttpCookie("LoginMainUser");
@@ -211,7 +211,7 @@ namespace Moldtrax.Controllers
 
             Session["RoleID"] = user.RoleID;
 
-            SetupFormsAuthTicket(user, false);
+            //SetupFormsAuthTicket(user, false);
 
 
             var dd = db.Ezy_Groupusers.Where(x => x.UserID == user.UserID).FirstOrDefault();
@@ -910,15 +910,19 @@ namespace Moldtrax.Controllers
             base.Dispose(disposing);
         }
 
+        
         public ActionResult Callback()
         {
             if (User.Identity.IsAuthenticated)
             {
+                ezy_Users user = null;
                 var claims = ClaimsPrincipal.Current.Identities.FirstOrDefault().Claims.ToList();
-                var userClaim = claims.FirstOrDefault(x => x.Type == "employeeid");
+                var userClaim = claims.FirstOrDefault(x => x.Type.ToLower() == "employeeid");
                 if(userClaim != null)
                 {
+                    user = db.Ezy_Users.FirstOrDefault(x => x.UserID == userClaim.Value);
                     var UserRole = db.Ezy_Groupusers.Where(x => x.UserID == userClaim.Value).FirstOrDefault();
+
                 }
                 
 
@@ -952,7 +956,7 @@ namespace Moldtrax.Controllers
                 //}
                 //else
                 //{
-                return ValidateUser(null);
+                return ValidateUser(user);
                 // }
             }
             else

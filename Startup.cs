@@ -31,7 +31,8 @@ namespace Moldtrax
             var _clientID = ConfigurationManager.AppSettings["ClientID"];
             var _authority = ConfigurationManager.AppSettings["Authority"];
             var _scopes = ConfigurationManager.AppSettings["Scopes"];
-            var tokenEdnpoint = "https://login.microsoftonline.com/8b24551d-7c2c-4beb-8b61-95f32d9929ef/oauth2/v2.0/token";
+            var _redirectUri = ConfigurationManager.AppSettings["redirectUri"];
+           
 
             // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=316888
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
@@ -44,7 +45,7 @@ namespace Moldtrax
                 // Sets the ClientId, authority, RedirectUri as obtained from web.config
                 ClientId = _clientID,
                 Authority = _authority,
-                RedirectUri = "https://localhost:44311/Account/callback",
+                RedirectUri = _redirectUri,
                 Scope = OpenIdConnectScope.OpenIdProfile,
                 // ResponseType is set to request the code id_token - which contains basic information about the signed-in user
                 ResponseType = OpenIdConnectResponseType.CodeIdToken,

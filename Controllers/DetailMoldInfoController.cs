@@ -1,5 +1,4 @@
-﻿using Moldtrax.Filters;
-using Moldtrax.Models;
+﻿using Moldtrax.Models;
 using Moldtrax.Providers;
 using Moldtrax.ViewMoldel;
 using System;
@@ -15,12 +14,11 @@ using System.Reflection;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 
 namespace Moldtrax.Controllers
 {
     [SessionExpireFilter]
-    [CustomAuthorize]
+    
     public class DetailMoldInfoController : Controller
     {
         private MoldtraxDbContext db = new MoldtraxDbContext();
